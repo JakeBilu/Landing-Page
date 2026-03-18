@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HS Design — Landing Page Wireframe</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', sans-serif; background: #f5f5f0; color: #1a1a1a; }
+
+  /* WIREFRAME STYLES */
+  .section { width: 100%; padding: 60px 40px; border-bottom: 2px dashed #ccc; position: relative; }
+  .section-label { position: absolute; top: 12px; left: 16px; font-size: 11px; font-weight: 700; color: #999; letter-spacing: 2px; text-transform: uppercase; }
+  .container { max-width: 960px; margin: 0 auto; }
+
+  /* NAV */
+  nav { background: #fff; padding: 20px 40px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px dashed #ccc; position: sticky; top: 0; z-index: 100; }
+  .logo-box { width: 120px; height: 36px; background: #ddd; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 12px; color: #888; }
+  .nav-links { display: flex; gap: 24px; }
+  .nav-links span { font-size: 13px; color: #888; cursor: pointer; }
+  .nav-cta { background: #1a1a1a; color: #fff; padding: 10px 20px; border-radius: 6px; font-size: 13px; }
+
+  /* HERO */
+  .hero { background: #fff; min-height: 560px; display: flex; align-items: center; }
+  .hero-content { flex: 1; padding-right: 60px; }
+  .hero-tag { display: inline-block; background: #e8f5e9; color: #2e7d32; padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 600; margin-bottom: 24px; }
+  .hero-h1 { font-size: 42px; font-weight: 800; line-height: 1.2; margin-bottom: 20px; color: #1a1a1a; }
+  .hero-h1 span { color: #4caf50; }
+  .hero-sub { font-size: 16px; color: #666; line-height: 1.7; margin-bottom: 36px; max-width: 480px; }
+  .btn-primary { background: #1a1a1a; color: #fff; padding: 16px 32px; border-radius: 8px; font-size: 15px; font-weight: 600; display: inline-block; cursor: pointer; }
+  .btn-secondary { background: transparent; color: #1a1a1a; padding: 16px 24px; font-size: 15px; display: inline-block; cursor: pointer; margin-left: 12px; }
+  .hero-img { flex: 1; height: 400px; background: #e0e0e0; border-radius: 16px; display: flex; align-items: center; justify-content: center; color: #999; font-size: 13px; min-width: 340px; }
+
+  /* STATS BAR */
+  .stats-bar { background: #1a1a1a; color: #fff; padding: 28px 40px; }
+  .stats-inner { display: flex; justify-content: space-around; max-width: 960px; margin: 0 auto; }
+  .stat { text-align: center; }
+  .stat-num { font-size: 32px; font-weight: 800; color: #a5d6a7; }
+  .stat-label { font-size: 13px; color: #aaa; margin-top: 4px; }
+
+  /* PAIN */
+  .pain-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-top: 40px; }
+  .pain-card { background: #fff; border-radius: 12px; padding: 28px; border: 1px solid #e0e0e0; }
+  .pain-icon { width: 44px; height: 44px; background: #fce4ec; border-radius: 10px; margin-bottom: 16px; display: flex; align-items: center; justify-content: center; font-size: 22px; }
+  .pain-title { font-size: 16px; font-weight: 700; margin-bottom: 8px; }
+  .pain-desc { font-size: 14px; color: #777; line-height: 1.6; }
+  .section-title { font-size: 30px; font-weight: 800; margin-bottom: 8px; }
+  .section-sub { font-size: 15px; color: #777; max-width: 560px; }
+
+  /* PROTOCOL */
+  .protocol-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-top: 40px; }
+  .protocol-card { background: #fff; border-radius: 12px; padding: 32px; border-left: 4px solid #4caf50; }
+  .protocol-num { font-size: 11px; font-weight: 700; color: #4caf50; letter-spacing: 2px; margin-bottom: 12px; }
+  .protocol-title { font-size: 18px; font-weight: 700; margin-bottom: 12px; }
+  .protocol-items { list-style: none; }
+  .protocol-items li { font-size: 13px; color: #666; padding: 5px 0; padding-left: 16px; position: relative; }
+  .protocol-items li::before { content: "→"; position: absolute; left: 0; color: #4caf50; }
+
+  /* CASES */
+  .cases-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 40px; }
+  .case-card { border-radius: 12px; overflow: hidden; background: #fff; border: 1px solid #e0e0e0; }
+  .case-img { height: 200px; background: #e0e0e0; display: flex; align-items: center; justify-content: center; color: #999; font-size: 13px; }
+  .case-info { padding: 20px; }
+  .case-tag { font-size: 11px; color: #4caf50; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+  .case-title { font-size: 15px; font-weight: 700; margin: 8px 0 6px; }
+  .case-result { font-size: 13px; color: #666; }
+
+  /* SERVICES */
+  .services-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-top: 40px; }
+  .service-card { background: #fff; border-radius: 12px; padding: 28px; border: 1px solid #e0e0e0; text-align: center; }
+  .service-card.featured { border: 2px solid #1a1a1a; }
+  .service-badge { font-size: 11px; background: #1a1a1a; color: #fff; padding: 4px 10px; border-radius: 20px; display: inline-block; margin-bottom: 12px; }
+  .service-name { font-size: 16px; font-weight: 700; margin-bottom: 8px; }
+  .service-price { font-size: 22px; font-weight: 800; margin: 12px 0; }
+  .service-features { list-style: none; text-align: left; margin-top: 16px; }
+  .service-features li { font-size: 13px; color: #666; padding: 5px 0; border-bottom: 1px solid #f0f0f0; }
+
+  /* FOUNDER */
+  .founder-inner { display: flex; gap: 60px; align-items: center; margin-top: 40px; }
+  .founder-img { width: 240px; height: 300px; background: #e0e0e0; border-radius: 16px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; color: #999; font-size: 13px; }
+  .founder-content h2 { font-size: 28px; font-weight: 800; margin-bottom: 16px; }
+  .founder-content p { font-size: 15px; color: #666; line-height: 1.8; margin-bottom: 16px; }
+  .founder-tags { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 20px; }
+  .founder-tag { background: #f0f0f0; padding: 6px 14px; border-radius: 20px; font-size: 12px; color: #444; }
+
+  /* CTA FINAL */
+  .cta-final { background: #1a1a1a; color: #fff; text-align: center; }
+  .cta-final h2 { font-size: 36px; font-weight: 800; margin-bottom: 16px; }
+  .cta-final h2 span { color: #a5d6a7; }
+  .cta-final p { font-size: 16px; color: #aaa; margin-bottom: 36px; }
+  .cta-buttons { display: flex; gap: 16px; justify-content: center; }
+  .btn-white { background: #fff; color: #1a1a1a; padding: 16px 32px; border-radius: 8px; font-size: 15px; font-weight: 700; cursor: pointer; }
+  .btn-outline { border: 2px solid #fff; color: #fff; padding: 16px 32px; border-radius: 8px; font-size: 15px; cursor: pointer; }
+
+  /* FOOTER */
+  footer { background: #111; color: #555; text-align: center; padding: 24px; font-size: 13px; }
+
+  /* ANNOTATIONS */
+  .note { background: #fff9c4; border-left: 3px solid #f9a825; padding: 8px 14px; font-size: 12px; color: #5d4037; margin-top: 16px; border-radius: 4px; display: inline-block; }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="logo-box">HS Design Logo</div>
+  <div class="nav-links">
+    <span>Services</span>
+    <span>Method</span>
+    <span>Cases</span>
+    <span>About</span>
+  </div>
+  <div class="nav-cta">Free Space Audit →</div>
+</nav>
+
+<!-- S1: HERO -->
+<section class="section hero">
+  <span class="section-label">Section 1 — Hero</span>
+  <div class="container" style="display:flex; align-items:center; gap:40px;">
+    <div class="hero-content">
+      <div class="hero-tag">🧬 Space Biohacker</div>
+      <h1 class="hero-h1">你的空间正在<br><span>消耗你的认知能力</span></h1>
+      <p class="hero-sub">HS Design 结合斯多葛主义与空间生物科学，将你的居住环境转化为最强大的生产力系统。</p>
+      <div>
+        <div class="btn-primary">预约免费空间健康诊断</div>
+        <span class="btn-secondary">查看案例 →</span>
+      </div>
+      <div class="note">📍 主 CTA：免费咨询（本地）／ 次 CTA：案例</div>
+    </div>
+    <div class="hero-img">[ 案例主图 / AI 生成空间照片 ]<br>极简白 + 植物 + 自然光</div>
+  </div>
+</section>
+
+<!-- STATS BAR -->
+<div class="stats-bar">
+  <div class="stats-inner">
+    <div class="stat"><div class="stat-num">50+</div><div class="stat-label">已完成项目</div></div>
+    <div class="stat"><div class="stat-num">3+</div><div class="stat-label">服务年限</div></div>
+    <div class="stat"><div class="stat-num">JB → SG</div><div class="stat-label">服务范围</div></div>
+    <div class="stat"><div class="stat-num">Free</div><div class="stat-label">健康空间咨询</div></div>
+  </div>
+</div>
+
+<!-- S2: PAIN POINTS -->
+<section class="section" style="background:#fafafa;">
+  <span class="section-label">Section 2 — Pain Points</span>
+  <div class="container">
+    <p style="font-size:12px; color:#4caf50; font-weight:700; letter-spacing:2px; text-transform:uppercase; margin-bottom:12px;">你是否也有这些问题？</p>
+    <h2 class="section-title">普通设计做不到的事</h2>
+    <p class="section-sub">大多数室内设计只解决"好不好看"，但忽略了空间对你身体和大脑的实际影响。</p>
+    <div class="pain-grid">
+      <div class="pain-card">
+        <div class="pain-icon">😴</div>
+        <div class="pain-title">睡眠质量差</div>
+        <div class="pain-desc">卧室光照、温度、电磁场设计错误，导致入睡困难，深睡比例低，早晨醒来仍然疲惫。</div>
+      </div>
+      <div class="pain-card">
+        <div class="pain-icon">🧠</div>
+        <div class="pain-title">工作效率碎片化</div>
+        <div class="pain-desc">工作区布局、噪音、CO₂浓度未经优化，专注时间无法超过 90 分钟，决策质量持续下降。</div>
+      </div>
+      <div class="pain-card">
+        <div class="pain-icon">💸</div>
+        <div class="pain-title">空间贵但没结果</div>
+        <div class="pain-desc">花了大价钱设计，住进去却发现"美观但不舒服"。因为设计师卖的是风格，不是系统。</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- S3: BIOHACK PROTOCOL -->
+<section class="section" style="background:#fff;">
+  <span class="section-label">Section 3 — Biohack Protocol（核心差异化）</span>
+  <div class="container">
+    <p style="font-size:12px; color:#4caf50; font-weight:700; letter-spacing:2px; text-transform:uppercase; margin-bottom:12px;">HS Design 方法论</p>
+    <h2 class="section-title">空间生物黑客协议</h2>
+    <p class="section-sub">三大系统优化，让你的空间成为你表现最好的环境。</p>
+    <div class="protocol-grid">
+      <div class="protocol-card">
+        <div class="protocol-num">PROTOCOL 01</div>
+        <div class="protocol-title">光照系统 ☀️</div>
+        <ul class="protocol-items">
+          <li>早晨蓝光区（唤醒皮质醇）</li>
+          <li>工作区中性白光（专注）</li>
+          <li>傍晚暖光过渡（褪黑素保护）</li>
+          <li>睡眠区零蓝光设计</li>
+        </ul>
+      </div>
+      <div class="protocol-card">
+        <div class="protocol-num">PROTOCOL 02</div>
+        <div class="protocol-title">空气系统 🌿</div>
+        <ul class="protocol-items">
+          <li>CO₂ 浓度管理（目标 &lt;700ppm）</li>
+          <li>植物配置（净化 + 湿度）</li>
+          <li>气流动线规划</li>
+          <li>材料 VOC 控制</li>
+        </ul>
+      </div>
+      <div class="protocol-card">
+        <div class="protocol-num">PROTOCOL 03</div>
+        <div class="protocol-title">认知工作区 🧠</div>
+        <ul class="protocol-items">
+          <li>视野开阔度设计（减少压迫感）</li>
+          <li>噪音分区（深度工作区隔离）</li>
+          <li>桌面极简系统</li>
+          <li>90 分钟专注周期动线</li>
+        </ul>
+      </div>
+    </div>
+    <div class="note">💡 这一节是整个页面最重要的差异化，视觉上要最突出</div>
+  </div>
+</section>
+
+<!-- S4: CASE STUDIES -->
+<section class="section" style="background:#fafafa;">
+  <span class="section-label">Section 4 — Case Studies</span>
+  <div class="container">
+    <p style="font-size:12px; color:#4caf50; font-weight:700; letter-spacing:2px; text-transform:uppercase; margin-bottom:12px;">真实案例</p>
+    <h2 class="section-title">空间改变，结果说话</h2>
+    <div class="cases-grid">
+      <div class="case-card">
+        <div class="case-img">[ 案例照片 1 ]</div>
+        <div class="case-info">
+          <div class="case-tag">Residential · JB</div>
+          <div class="case-title">创业者家庭办公室改造</div>
+          <div class="case-result">→ 专注时长提升 40%<br>→ 入睡时间缩短 25 分钟</div>
+        </div>
+      </div>
+      <div class="case-card">
+        <div class="case-img">[ 案例照片 2 ]</div>
+        <div class="case-info">
+          <div class="case-tag">Commercial · JB</div>
+          <div class="case-title">精品办公室设计</div>
+          <div class="case-result">→ CO₂ 从 1200 降至 580ppm<br>→ 团队午后效率提升</div>
+        </div>
+      </div>
+      <div class="case-card">
+        <div class="case-img">[ 案例照片 3 ]</div>
+        <div class="case-info">
+          <div class="case-tag">Residential · Remote</div>
+          <div class="case-title">远程图纸服务（新加坡客户）</div>
+          <div class="case-result">→ 纯图纸交付<br>→ 客户自行施工落地</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- S5: SERVICES -->
+<section class="section" style="background:#fff;">
+  <span class="section-label">Section 5 — Services & Pricing</span>
+  <div class="container">
+    <p style="font-size:12px; color:#4caf50; font-weight:700; letter-spacing:2px; text-transform:uppercase; margin-bottom:12px;">服务套餐</p>
+    <h2 class="section-title">选择你需要的支持层级</h2>
+    <div class="services-grid">
+      <div class="service-card">
+        <div class="service-name">健康空间咨询</div>
+        <div class="service-price" style="color:#4caf50;">免费</div>
+        <ul class="service-features">
+          <li>✓ 30 分钟线上/线下</li>
+          <li>✓ 空间问题诊断</li>
+          <li>✓ 优化建议报告</li>
+        </ul>
+      </div>
+      <div class="service-card">
+        <div class="service-name">纯图纸方案</div>
+        <div class="service-price">询价</div>
+        <ul class="service-features">
+          <li>✓ Layout Plan</li>
+          <li>✓ 3D 效果图</li>
+          <li>✓ 适合跨国客户</li>
+        </ul>
+      </div>
+      <div class="service-card featured">
+        <div class="service-badge">最受欢迎</div>
+        <div class="service-name">图纸 + 施工</div>
+        <div class="service-price">询价</div>
+        <ul class="service-features">
+          <li>✓ 完整设计方案</li>
+          <li>✓ 施工落地</li>
+          <li>✓ 生物黑客协议执行</li>
+          <li>✓ 柔佛新山限定</li>
+        </ul>
+      </div>
+      <div class="service-card">
+        <div class="service-name">纯监工</div>
+        <div class="service-price">询价</div>
+        <ul class="service-features">
+          <li>✓ 你有图纸，需要监工</li>
+          <li>✓ 施工质量把关</li>
+          <li>✓ 柔佛新山限定</li>
+        </ul>
+      </div>
+    </div>
+    <div class="note">⚠️ 价格待你确认后填入，或用"询价"保持灵活性</div>
+  </div>
+</section>
+
+<!-- S6: FOUNDER -->
+<section class="section" style="background:#fafafa;">
+  <span class="section-label">Section 6 — Founder Story</span>
+  <div class="container">
+    <div class="founder-inner">
+      <div class="founder-img">[ 创始人照片 ]</div>
+      <div class="founder-content">
+        <p style="font-size:12px; color:#4caf50; font-weight:700; letter-spacing:2px; text-transform:uppercase; margin-bottom:12px;">创始人</p>
+        <h2>我自己就是<br>第一个实验对象</h2>
+        <p>我是 Jake，29 岁，HS Design 创始人。我不只是设计师，我是一个用自己的空间做实验的投资者。</p>
+        <p>当我开始系统性地优化我的睡眠区、工作区和光照环境后，我的决策效率提升了——这不是感觉，是可以量化的结果。</p>
+        <p>这套方法，我想用在你的空间上。</p>
+        <div class="founder-tags">
+          <span class="founder-tag">🧬 Space Biohacker</span>
+          <span class="founder-tag">📊 投资者思维</span>
+          <span class="founder-tag">🌿 斯多葛主义</span>
+          <span class="founder-tag">📍 Johor Bahru</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- S7: FINAL CTA -->
+<section class="section cta-final">
+  <span class="section-label" style="color:#555;">Section 7 — Final CTA</span>
+  <div class="container">
+    <h2>准备好优化你的<span> 空间系统</span>了吗？</h2>
+    <p>首次咨询完全免费。我们一起找出你空间里正在消耗你的问题。</p>
+    <div class="cta-buttons">
+      <div class="btn-white">预约免费空间健康诊断</div>
+      <div class="btn-outline">查看更多案例</div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  © 2026 HS Design · Johor Bahru, Malaysia · hsdesign.bukku.my
+</footer>
+
+</body>
+</html>
