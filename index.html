@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>HS Design — 健康空间设计 | 柔佛新山室内设计</title>
-<meta name="description" content="HS Design 专注于健康空间设计，通过科学的光照、空气和布局系统，改善你的睡眠质量与日常健康。驻扎柔佛新山，马来西亚。">
+<title>Health Space Interior — 健康空间设计 | 柔佛新山室内设计</title>
+<meta name="description" content="Health Space Interior 专注于健康空间设计，通过科学的光照、空气和布局系统，改善你的睡眠质量与日常健康。驻扎柔佛新山，马来西亚。">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 html{scroll-behavior:smooth;}
@@ -12,9 +12,10 @@ body{font-family:'Segoe UI',-apple-system,BlinkMacSystemFont,'PingFang SC','Micr
 img{max-width:100%;display:block;}
 a{text-decoration:none;color:inherit;}
 :root{
-  --green:#4a7c59;--green-light:#e8f0eb;--green-pale:#f2f7f3;
+  --green:#5a9e8f;--green-light:#e6f4f1;--green-pale:#f2faf8;
+  --gold:#c9a84c;
   --black:#1a1a1a;--grey:#6b7280;--grey-light:#f5f5f0;
-  --white:#ffffff;--border:#e5e7e0;
+  --white:#ffffff;--border:#e0ebe8;
   --radius:14px;--radius-sm:8px;
   --shadow:0 4px 24px rgba(0,0,0,0.07);
   --shadow-lg:0 12px 48px rgba(0,0,0,0.10);
@@ -36,8 +37,7 @@ a{text-decoration:none;color:inherit;}
 /* NAV */
 nav{position:sticky;top:0;z-index:100;background:rgba(250,250,248,.92);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0 24px;}
 .nav-inner{max-width:var(--max-w);margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:68px;}
-.nav-logo{font-size:20px;font-weight:800;letter-spacing:-.5px;}
-.nav-logo span{color:var(--green);}
+.nav-logo img{height:44px;width:auto;}
 .nav-links{display:flex;gap:32px;list-style:none;}
 .nav-links a{font-size:14px;color:var(--grey);font-weight:500;transition:color .2s;}
 .nav-links a:hover{color:var(--black);}
@@ -66,7 +66,7 @@ nav{position:sticky;top:0;z-index:100;background:rgba(250,250,248,.92);backdrop-
 .stats-bar{background:var(--black);color:var(--white);padding:36px 24px;}
 .stats-inner{max-width:var(--max-w);margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);gap:24px;}
 .stat{text-align:center;}
-.stat-num{font-size:32px;font-weight:900;color:#a5d6a7;line-height:1;}
+.stat-num{font-size:32px;font-weight:900;color:var(--gold);line-height:1;}
 .stat-label{font-size:13px;color:#9ca3af;margin-top:6px;}
 
 /* PAIN */
@@ -119,7 +119,7 @@ nav{position:sticky;top:0;z-index:100;background:rgba(250,250,248,.92);backdrop-
 .service-badge{font-size:11px;font-weight:700;letter-spacing:1px;background:var(--green);color:var(--white);padding:4px 12px;border-radius:20px;display:inline-block;margin-bottom:16px;align-self:flex-start;}
 .service-card h3{font-size:17px;font-weight:800;margin-bottom:6px;}
 .service-price{font-size:26px;font-weight:900;color:var(--green);margin:14px 0 20px;}
-.service-card.featured .service-price{color:#a5d6a7;}
+.service-card.featured .service-price{color:var(--gold);}
 .service-features{list-style:none;flex:1;}
 .service-features li{font-size:13px;color:var(--grey);padding:7px 0;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;}
 .service-card.featured .service-features li{color:#d1d5db;border-color:#333;}
@@ -153,8 +153,7 @@ nav{position:sticky;top:0;z-index:100;background:rgba(250,250,248,.92);backdrop-
 /* FOOTER */
 footer{background:#111;color:#555;padding:32px 24px;}
 .footer-inner{max-width:var(--max-w);margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;}
-.footer-logo{font-size:16px;font-weight:800;color:#fff;}
-.footer-logo span{color:#4a7c59;}
+.footer-logo img{height:36px;width:auto;filter:brightness(0) invert(1);}
 .footer-links{display:flex;gap:20px;}
 .footer-links a{font-size:13px;color:#555;transition:color .2s;}
 .footer-links a:hover{color:#fff;}
@@ -201,7 +200,7 @@ footer{background:#111;color:#555;padding:32px 24px;}
 <!-- NAV -->
 <nav>
   <div class="nav-inner">
-    <div class="nav-logo">HS<span>Design</span></div>
+    <div class="nav-logo"><img src="images/logo.png" alt="Health Space Interior"></div>
     <ul class="nav-links">
       <li><a href="#protocol" data-zh="方法论" data-en="Method">方法论</a></li>
       <li><a href="#cases" data-zh="案例" data-en="Cases">案例</a></li>
@@ -285,7 +284,7 @@ footer{background:#111;color:#555;padding:32px 24px;}
 <!-- PROTOCOL -->
 <section class="protocol" id="protocol">
   <div class="container">
-    <p class="section-tag" data-zh="HS Design 方法论" data-en="HS Design Method">HS Design 方法论</p>
+    <p class="section-tag" data-zh="Health Space Interior 方法论" data-en="Health Space Interior Method">Health Space Interior 方法论</p>
     <h2 class="section-title" data-zh="健康空间设计系统" data-en="The Healthy Space System">健康空间设计系统</h2>
     <p class="section-sub" data-zh="三大系统。每个项目。不妥协。" data-en="Three systems. Every project. No compromise.">三大系统。每个项目。不妥协。</p>
     <div class="protocol-grid">
@@ -322,7 +321,7 @@ footer{background:#111;color:#555;padding:32px 24px;}
     </div>
     <div class="protocol-note">
       <div class="protocol-note-icon">💡</div>
-      <p data-zh="<strong>这就是 HS Design 与柔佛新山所有同行的区别所在。</strong>我们不只是设计空间——我们打造经过科学优化、真正支持你健康与睡眠的生活环境。每一个决策都有依据，不是趋势驱动。" data-en="<strong>This is what separates HS Design from every other firm in Johor Bahru.</strong> We don't just design rooms — we create environments scientifically optimised to support your health and sleep. Every decision is backed by science, not trend."><strong>这就是 HS Design 与柔佛新山所有同行的区别所在。</strong>我们不只是设计空间——我们打造经过科学优化、真正支持你健康与睡眠的生活环境。每一个决策都有依据，不是趋势驱动。</p>
+      <p data-zh="<strong>这就是 Health Space Interior 与柔佛新山所有同行的区别所在。</strong>我们不只是设计空间——我们打造经过科学优化、真正支持你健康与睡眠的生活环境。每一个决策都有依据，不是趋势驱动。" data-en="<strong>This is what separates Health Space Interior from every other firm in Johor Bahru.</strong> We don't just design rooms — we create environments scientifically optimised to support your health and sleep. Every decision is backed by science, not trend."><strong>这就是 Health Space Interior 与柔佛新山所有同行的区别所在。</strong>我们不只是设计空间——我们打造经过科学优化、真正支持你健康与睡眠的生活环境。每一个决策都有依据，不是趋势驱动。</p>
     </div>
   </div>
 </section>
@@ -435,7 +434,7 @@ footer{background:#111;color:#555;padding:32px 24px;}
 <section class="founder" id="founder">
   <div class="founder-inner">
     <div class="founder-img-wrap">
-      <img src="images/founder-photo.jpg" alt="Jake — HS Design 创始人" loading="lazy" onerror="this.parentElement.style.background='#e8f0eb';">
+      <img src="images/founder-photo.jpg" alt="Jake — Health Space Interior 创始人" loading="lazy" onerror="this.parentElement.style.background='#e8f0eb';">
     </div>
     <div class="founder-content">
       <p class="section-tag" data-zh="创始人" data-en="The Founder">创始人</p>
@@ -443,7 +442,7 @@ footer{background:#111;color:#555;padding:32px 24px;}
         <span data-zh="我自己就是" data-en="I was my own">我自己就是</span><br>
         <em data-zh="第一个实验对象。" data-en="first experiment.">第一个实验对象。</em>
       </h2>
-      <p data-zh="我是 Jake，29岁，HS Design 创始人。在我成为设计师之前，我就对健康和睡眠质量深度着迷。我开始改造自己的空间，记录睡眠和专注力的变化，结果是可以量化的。" data-en="I'm Jake, 29, founder of HS Design. Before I was a designer, I was obsessed with health and sleep quality. I started changing my own space, tracking the changes in sleep and focus, and the difference was measurable.">我是 Jake，29岁，HS Design 创始人。在我成为设计师之前，我就对健康和睡眠质量深度着迷。我开始改造自己的空间，记录睡眠和专注力的变化，结果是可以量化的。</p>
+      <p data-zh="我是 Jake，29岁，Health Space Interior 创始人。在我成为设计师之前，我就对健康和睡眠质量深度着迷。我开始改造自己的空间，记录睡眠和专注力的变化，结果是可以量化的。" data-en="I'm Jake, 29, founder of Health Space Interior. Before I was a designer, I was obsessed with health and sleep quality. I started changing my own space, tracking the changes in sleep and focus, and the difference was measurable.">我是 Jake，29岁，Health Space Interior 创始人。在我成为设计师之前，我就对健康和睡眠质量深度着迷。我开始改造自己的空间，记录睡眠和专注力的变化，结果是可以量化的。</p>
       <p data-zh="那时我才意识到：大多数人住在一个悄悄影响他们健康的空间里。不是因为他们没有品味——而是没有人告诉他们，空间设计直接影响睡眠与健康。" data-en="That's when I realised: most people are living in spaces that quietly affect their health. Not because they lack taste — because nobody told them that space design directly impacts sleep and wellbeing.">那时我才意识到：大多数人住在一个悄悄影响他们健康的空间里。不是因为他们没有品味——而是没有人告诉他们，空间设计直接影响睡眠与健康。</p>
       <p data-zh="HS Design 的存在就是为了改变这一点。每个项目都围绕一个核心目标——让你回到家，就能真正放松、好好睡觉、恢复精力。" data-en="HS Design exists to change that. Every project centres on one goal — when you come home, you can truly relax, sleep well, and wake up restored.">HS Design 的存在就是为了改变这一点。每个项目都围绕一个核心目标——让你回到家，就能真正放松、好好睡觉、恢复精力。</p>
       <div class="founder-tags">
@@ -475,14 +474,14 @@ footer{background:#111;color:#555;padding:32px 24px;}
 <!-- FOOTER -->
 <footer>
   <div class="footer-inner">
-    <div class="footer-logo">HS<span>Design</span></div>
+    <div class="footer-logo"><img src="images/logo.png" alt="Health Space Interior"></div>
     <div class="footer-links">
       <a href="#protocol" data-zh="方法论" data-en="Method">方法论</a>
       <a href="#cases" data-zh="案例" data-en="Cases">案例</a>
       <a href="#services" data-zh="服务" data-en="Services">服务</a>
       <a href="#contact" data-zh="联系我们" data-en="Contact">联系我们</a>
     </div>
-    <div class="footer-copy" data-zh="© 2026 HS Design · 柔佛新山，马来西亚" data-en="© 2026 HS Design · Johor Bahru, Malaysia">© 2026 HS Design · 柔佛新山，马来西亚</div>
+    <div class="footer-copy" data-zh="© 2026 Health Space Interior · 柔佛新山，马来西亚 · Operated by HS Design" data-en="© 2026 Health Space Interior · Johor Bahru, Malaysia · Operated by HS Design">© 2026 Health Space Interior · 柔佛新山，马来西亚 · Operated by HS Design</div>
   </div>
 </footer>
 
