@@ -150,7 +150,7 @@ function renderSections() {
         <button class="btn btn-r btn-sm" onclick="delSection(${si})" title="Delete section">🗑</button>
       </div>
       <div class="sec-items" id="sec-items-${si}"></div>
-      <div class="sec-subtotal" id="sec-subtotal-${si}">Section Total: <strong>RM 0.00</strong></div>
+      <div class="sec-subtotal" id="sec-total-${si}">Section Total: <strong>RM 0.00</strong></div>
       <button class="btn btn-g btn-sm" onclick="addItem(${si})" style="margin-top:6px">+ Add Item</button>
     `;
     c.appendChild(secEl);
@@ -323,7 +323,7 @@ function recalc() {
       secSell += lineSell;
       totalSell += lineSell;
     });
-    const el = document.getElementById('sec-subtotal-' + si);
+    const el = document.getElementById('sec-total-' + si);
     if (el) el.innerHTML = 'Section Total: <strong>RM ' + fmt(secSell) + '</strong>';
   });
   const profit = totalSell - totalCost;
@@ -394,6 +394,19 @@ async function delQuote() {
 // ─── PDF ─────────────────────────────────────────────────────────────────────
 function openPDF() {
   gatherForm();
+  // Sync section names and item sell values from DOM → _data before PDF generation
+  const sectionBlocks = document.querySelectorAll('.section-block');
+  sectionBlocks.forEach((block, si) => {
+    const secNameInput = block.querySelector('.sec-name');
+    if (secNameInput && _data[si]) _data[si].section = secNameInput.value;
+    const itemEls = block.querySelectorAll('.item');
+    itemEls.forEach((itemEl, ii) => {
+      const sellInput = itemEl.querySelector('.f-sell');
+      if (sellInput && _data[si] && _data[si].items[ii]) {
+        _data[si].items[ii].sell = parseFloat(sellInput.value) || 0;
+      }
+    });
+  });
   const terms = _terms.filter(t=>t.trim());
   let grandTotal = 0;
   const rows = [];
