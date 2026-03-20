@@ -141,6 +141,18 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#f0f2f5;color:var(--gray
 .qp-terms h4{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#2d5a47;margin-bottom:10px}
 .qp-terms li{margin-bottom:4px;font-size:12px;color:#6b7280}
 .qp-footer{margin-top:28px;text-align:center;font-size:11px;color:#9a9ab0;padding-top:14px;border-top:1px solid #e8e8e8}
+/* Quick-add section pills */
+.quick-sections{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:10px;padding:8px 10px;background:#f0faf7;border-radius:7px;border:1px solid #c8e6da}
+.qs-label{font-size:11px;font-weight:600;color:var(--green-dark);margin-right:2px;white-space:nowrap}
+.qs-pill{padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600;cursor:pointer;border:1.5px solid var(--green);background:#fff;color:var(--green-dark);transition:all .15s}
+.qs-pill:hover{background:var(--green);color:#fff}
+.qs-other{border-color:#d1d5db;color:var(--gray-500)}
+.qs-other:hover{background:var(--gray-100);color:var(--gray-700);border-color:var(--gray-300)}
+/* Cost breakdown grid: desc | unit | qty | unit price | amt | del */
+.csub{display:grid;grid-template-columns:1fr 70px 60px 80px 80px 32px;gap:5px;margin-bottom:6px;align-items:center}
+.csub input,.csub select{padding:6px 8px;border:1.5px solid #fcd34d;border-radius:5px;font-size:12px;outline:none;font-family:inherit;width:100%}
+.csub input:focus,.csub select:focus{border-color:var(--gold)}
+.csub .ci-amt{font-size:12px;color:var(--gold);font-weight:600;white-space:nowrap;text-align:right}
 </style>
 </head>
 <body>
@@ -185,8 +197,21 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#f0f2f5;color:var(--gray
           </div>
           <div class="card">
             <div class="card-h">Line Items <span>— Cost breakdown hidden in client PDF</span></div>
+            <div class="quick-sections">
+              <span class="qs-label">Quick add:</span>
+              <button class="qs-pill" onclick="addSection('Carpentry Work')">Carpentry Work</button>
+              <button class="qs-pill" onclick="addSection('Ceiling Work')">Ceiling Work</button>
+              <button class="qs-pill" onclick="addSection('Electrical Work')">Electrical Work</button>
+              <button class="qs-pill" onclick="addSection('Painting Work')">Painting Work</button>
+              <button class="qs-pill" onclick="addSection('Masonry Work')">Masonry Work</button>
+              <button class="qs-pill" onclick="addSection('Aluminum Work')">Aluminum Work</button>
+              <button class="qs-pill" onclick="addSection('Cleaning Work')">Cleaning Work</button>
+              <button class="qs-pill" onclick="addSection('Protection Work')">Protection Work</button>
+              <button class="qs-pill" onclick="addSection('Supervising Work')">Supervising Work</button>
+              <button class="qs-pill qs-other" onclick="addSection('')">Other Work</button>
+            </div>
             <div id="sections-container"></div>
-            <button class="btn btn-g btn-sm" onclick="addSection()" style="margin-top:8px">+ Add Section</button>
+            <button class="btn btn-g btn-sm" onclick="addSection()" style="margin-top:8px">+ Add Section (blank)</button>
           </div>
           <div class="card">
             <div class="card-h">Summary</div>

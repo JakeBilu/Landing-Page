@@ -9,7 +9,7 @@ let quotes = [];
 let activeId = null;
 let isDirty = false;
 let autoSaveTimer = null;
-// _data = { items: [{ section: '', items: [{desc,unit,qty,costItems:[{desc,amt}],sell}] }] }
+// _data = [{ section: '', items: [{ desc:'', unit:'nos', qty:1, costItems:[{desc:'',unit:'nos',qty:1,unitPrice:0,amt:0}], sell:0 }] }]
 let _data = { items: [] };
 let _terms = [];
 let _name = '', _qno = '', _addr = '', _proj = '', _date = '', _status = 'Draft', _notes = '';
@@ -73,12 +73,29 @@ function renderList() {
 }
 
 // ─── OPEN / NEW ───────────────────────────────────────────────────────────────
+// Migrate old cost items (desc,amt) → new structure (desc,unit,qty,unitPrice,amt)
+function migrateCi(ci) {
+  if (ci.unit !== undefined) return ci; // already migrated
+  return { desc: ci.desc||'', unit: 'lump sum', qty: 1, unitPrice: parseFloat(ci.amt)||0, amt: parseFloat(ci.amt)||0 };
+}
+function migrateData(data) {
+  if (!data || !data.length) return null;
+  return data.map(sec => ({
+    section: sec.section||'',
+    items: (sec.items||[]).map(it => ({
+      desc: it.desc||'', unit: it.unit||'nos', qty: parseFloat(it.qty)||1,
+      costItems: (it.costItems||[]).map(migrateCi),
+      sell: parseFloat(it.sell)||0
+    }))
+  }));
+}
+
 function openQ(id) {
   if (isDirty && !confirm('Unsaved changes. Discard?')) return;
   activeId = id;
   const q = quotes.find(x => x.id === id);
   if (!q) return;
-  _data = JSON.parse(JSON.stringify(q.items && q.items.length ? q.items : [{section:'',items:[makeItem()]}]));
+  _data = migrateData(q.items && q.items.length ? q.items : null) || [{section:'',items:[makeItem()]}];
   _terms = JSON.parse(JSON.stringify(q.terms && q.terms.length ? q.terms : ['50% deposit upon confirmation','40% upon work commencement','10% upon completion']));
   _name = q.name||''; _qno = q.qno||''; _addr = q.addr||''; _proj = q.project||''; _date = q.date||''; _status = q.status||'Draft'; _notes = q.notes||'';
   document.getElementById('welcome').style.display='none';
@@ -117,7 +134,7 @@ function newQuote() {
   renderList();
 }
 
-function makeItem() { return { desc:'', unit:'nos', qty:1, costItems:[{desc:'',amt:0}], sell:0 }; }
+function makeItem() { return { desc:'', unit:'nos', qty:1, costItems:[{desc:'',unit:'nos',qty:1,unitPrice:0,amt:0}], sell:0 }; }
 
 // ─── SECTIONS ────────────────────────────────────────────────────────────────
 function renderSections() {
@@ -143,7 +160,7 @@ function renderSections() {
   });
 }
 
-function addSection() { _data.push({section:'',items:[makeItem()]}); renderSections(); dirty(); }
+function addSection(name) { _data.push({section:name||'',items:[makeItem()]}); renderSections(); dirty(); }
 function delSection(si) { if (_data.length <= 1) return; _data.splice(si,1); renderSections(); dirty(); }
 function syncSectionName(si, inp) { _data[si].section = inp.value; dirty(); }
 
@@ -170,8 +187,11 @@ function buildItemRow(it, si, ii) {
   const mkStr = mk>0?`<span class="mk ${mkCls}">+${fmt(mk)}%</span>`:'';
   const ciRows = (it.costItems||[]).map((ci, cii) => `
     <div class="csub">
-      <input type="text" placeholder="e.g. Wire 100m" value="${esc(ci.desc)}" oninput="syncCi(${si},${ii},${cii},this)">
-      <input type="number" min="0" placeholder="RM" value="${ci.amt||''}" oninput="syncCi(${si},${ii},${cii},this)">
+      <input type="text" placeholder="e.g. Wire 100m" value="${esc(ci.desc)}" oninput="syncCi(${si},${ii},${cii},this,'desc')">
+      <select class="ci-unit" onchange="syncCi(${si},${ii},${cii},this,'unit')">${UNITS.map(u => `<option value="${u}" ${(ci.unit||'nos')===u?'selected':''}>${u}</option>`).join('')}</select>
+      <input type="number" min="0" class="ci-qty" placeholder="Qty" value="${ci.qty||''}" oninput="syncCi(${si},${ii},${cii},this,'qty')" style="text-align:center">
+      <input type="number" min="0" class="ci-price" placeholder="RM" value="${ci.unitPrice||ci.unitPrice===0?ci.unitPrice:''}" oninput="syncCi(${si},${ii},${cii},this,'price')">
+      <span class="ci-amt">${ci.amt>0?'RM '+fmt(ci.amt):'—'}</span>
       <button class="del" style="font-size:13px" onclick="remCi(${si},${ii},${cii},this)">×</button>
     </div>`).join('');
   el.innerHTML = `
@@ -206,8 +226,6 @@ function syncItemSell(si,ii,inp) { _data[si].items[ii].sell = parseFloat(inp.val
 function autoSell(si,ii) {
   const it = _data[si].items[ii];
   const ct = (it.costItems||[]).reduce((s,c) => s+(parseFloat(c.amt)||0), 0);
-  // Debug: show what we're reading
-  console.log('autoSell called: si='+si+' ii='+ii, 'costItems=', it.costItems, 'ct=', ct);
   if (ct <= 0) { alert('Cost breakdown is empty or 0! Add cost amounts first.'); return; }
   const sell = ct * 1.25;
   it.sell = sell;
@@ -230,12 +248,17 @@ function autoSell(si,ii) {
 }
 
 function addCi(si, ii, btn) {
-  _data[si].items[ii].costItems.push({desc:'',amt:0});
+  _data[si].items[ii].costItems.push({desc:'',unit:'nos',qty:1,unitPrice:0,amt:0});
   const row = btn.closest('.cb');
   const ciRows = row.querySelectorAll('.csub');
   const newRow = document.createElement('div');
   newRow.className = 'csub';
-  newRow.innerHTML = `<input type="text" placeholder="e.g. Wire 100m" value="" oninput="syncCi(${si},${ii},${ciRows.length},this)"><input type="number" min="0" placeholder="RM" value="" oninput="syncCi(${si},${ii},${ciRows.length},this)"><button class="del" style="font-size:13px" onclick="remCi(${si},${ii},${ciRows.length},this)">×</button>`;
+  newRow.innerHTML = `<input type="text" placeholder="e.g. Wire 100m" value="" oninput="syncCi(${si},${ii},${ciRows.length},this,'desc')">
+  <select class="ci-unit" onchange="syncCi(${si},${ii},${ciRows.length},this,'unit')">${UNITS.map(u => `<option value="${u}">${u}</option>`).join('')}</select>
+  <input type="number" min="0" class="ci-qty" placeholder="Qty" value="" oninput="syncCi(${si},${ii},${ciRows.length},this,'qty')" style="text-align:center">
+  <input type="number" min="0" class="ci-price" placeholder="RM" value="" oninput="syncCi(${si},${ii},${ciRows.length},this,'price')">
+  <span class="ci-amt">—</span>
+  <button class="del" style="font-size:13px" onclick="remCi(${si},${ii},${ciRows.length},this)">×</button>`;
   row.insertBefore(newRow, btn);
   dirty();
 }
@@ -247,12 +270,20 @@ function remCi(si, ii, cii, btn) {
   dirty();
 }
 
-function syncCi(si, ii, cii, inp) {
+function syncCi(si, ii, cii, inp, field) {
   const row = inp.closest('.csub');
-  const inputs = row.querySelectorAll('input');
-  _data[si].items[ii].costItems[cii].desc = inputs[0].value;
-  _data[si].items[ii].costItems[cii].amt = parseFloat(inputs[1].value)||0;
-  // Update cost display for this specific item (use correct item index ii, NOT cii)
+  const ci = _data[si].items[ii].costItems[cii];
+  const descInp = row.querySelector('input[type="text"]');
+  const unitSel = row.querySelector('.ci-unit');
+  const qtyInp = row.querySelector('.ci-qty');
+  const priceInp = row.querySelector('.ci-price');
+  ci.desc = descInp ? descInp.value : ci.desc;
+  ci.unit = unitSel ? unitSel.value : ci.unit;
+  ci.qty = qtyInp ? (parseFloat(qtyInp.value)||0) : ci.qty;
+  ci.unitPrice = priceInp ? (parseFloat(priceInp.value)||0) : ci.unitPrice;
+  ci.amt = ci.unitPrice * ci.qty;
+  const amtEl = row.querySelector('.ci-amt');
+  if (amtEl) amtEl.textContent = ci.amt > 0 ? 'RM ' + fmt(ci.amt) : '—';
   const ct = (_data[si].items[ii].costItems||[]).reduce((s,c) => s+(parseFloat(c.amt)||0), 0);
   const itemRow = row.closest('.item');
   const costInput = itemRow.querySelector('.f-cost');
@@ -284,7 +315,8 @@ function recalc() {
   _data.forEach(sec => {
     (sec.items||[]).forEach(it => {
       const ct = (it.costItems||[]).reduce((s,c) => s+(parseFloat(c.amt)||0), 0);
-      totalCost += ct * (parseFloat(it.qty)||0);
+      // cost breakdown amt already includes qty×unitPrice; main qty multiplies sell only
+      totalCost += ct;
       totalSell += (parseFloat(it.sell)||0) * (parseFloat(it.qty)||0);
     });
   });
