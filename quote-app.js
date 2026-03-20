@@ -150,6 +150,7 @@ function renderSections() {
         <button class="btn btn-r btn-sm" onclick="delSection(${si})" title="Delete section">🗑</button>
       </div>
       <div class="sec-items" id="sec-items-${si}"></div>
+      <div class="sec-subtotal" id="sec-subtotal-${si}">Section Total: <strong>RM 0.00</strong></div>
       <button class="btn btn-g btn-sm" onclick="addItem(${si})" style="margin-top:6px">+ Add Item</button>
     `;
     c.appendChild(secEl);
@@ -312,13 +313,18 @@ function syncTerm(i,inp) { _terms[i]=inp.value; dirty(); }
 // ─── RECALC ──────────────────────────────────────────────────────────────────
 function recalc() {
   let totalCost=0, totalSell=0;
-  _data.forEach(sec => {
+  _data.forEach((sec, si) => {
+    let secSell=0;
     (sec.items||[]).forEach(it => {
       const ct = (it.costItems||[]).reduce((s,c) => s+(parseFloat(c.amt)||0), 0);
       // cost breakdown amt already includes qty×unitPrice; main qty multiplies sell only
       totalCost += ct;
-      totalSell += (parseFloat(it.sell)||0) * (parseFloat(it.qty)||0);
+      const lineSell = (parseFloat(it.sell)||0) * (parseFloat(it.qty)||0);
+      secSell += lineSell;
+      totalSell += lineSell;
     });
+    const el = document.getElementById('sec-subtotal-' + si);
+    if (el) el.innerHTML = 'Section Total: <strong>RM ' + fmt(secSell) + '</strong>';
   });
   const profit = totalSell - totalCost;
   const mkPct = totalCost>0 ? (profit/totalCost*100) : 0;
@@ -393,6 +399,7 @@ function openPDF() {
   const rows = [];
   let itemNum = 0;
   _data.forEach((sec,si) => {
+    let secTotal = 0;
     // Section header row
     if (sec.section) {
       rows.push(`<tr class="sec-row"><td colspan="6" style="background:#e8f4f1;font-weight:700;color:#2d5a47;font-size:12px;padding:8px 12px">${esc(sec.section)}</td></tr>`);
@@ -401,6 +408,7 @@ function openPDF() {
       if (!it.desc && !it.sell) return;
       itemNum++;
       const line = (parseFloat(it.sell)||0)*(parseFloat(it.qty)||0);
+      secTotal += line;
       grandTotal += line;
       rows.push(`<tr>
         <td style="width:24px;color:var(--gray-400)">${itemNum}</td>
@@ -411,6 +419,8 @@ function openPDF() {
         <td style="width:90px;text-align:right;font-weight:600">RM ${fmt(line)}</td>
       </tr>`);
     });
+    // Section subtotal row
+    rows.push(`<tr class="sec-subtotal-row"><td colspan="5" style="text-align:right;font-weight:700;background:#f0faf7;color:#2d5a47;font-size:12px;padding:6px 12px">Section Total: RM ${fmt(secTotal)}</td><td style="text-align:right;font-weight:700;background:#f0faf7;color:#2d5a47;font-size:12px;padding:6px 12px">RM ${fmt(secTotal)}</td></tr>`);
   });
   const dateStr = _date ? new Date(_date+'T00:00:00').toLocaleDateString('en-GB',{day:'2-digit',month:'long',year:'numeric'}) : '';
   const termList = terms.length ? `<div class="qp-terms"><h4>Payment Terms</h4><ul>${terms.map(t=>`<li>${esc(t)}</li>`).join('')}</ul></div>` : '';
@@ -447,6 +457,7 @@ function printPDF() {
     .qp-ci p{font-size:13px;font-weight:600;margin-bottom:2px}
     .qp-ci span{font-size:12px;color:#6b7280}
     .sec-row td{background:#e8f4f1!important;font-weight:700!important;color:#2d5a47!important}
+    .sec-subtotal-row td{background:#f0faf7!important;font-weight:700!important;color:#2d5a47!important}
     table{width:100%;border-collapse:collapse;margin-bottom:18px}
     th{background:#2d5a47;color:#fff;padding:9px 10px;text-align:left;font-size:11px;font-weight:600}
     td{padding:8px 10px;border-bottom:1px solid #e8e8e8;font-size:12px}
