@@ -1,15 +1,10 @@
 // ─── CONFIG ─────────────────────────────────────────────────────────────────
-// NOTION_KEY is loaded from localStorage on first use (prompt if not set)
-// Stored under: 'hsdesign_notion_key'
+// API calls go through Netlify proxy (no API key in browser)
+// Proxy: netlify/functions/notion-proxy
 // ─── STATE ────────────────────────────────────────────────────────────────────
-let NOTION_KEY = '';
 const DB = '329538249e7e804bb295f34904902b1a';
 const PASS = 'HSHSHS';
-const NH = () => ({
-  'Authorization': 'Bearer ' + NOTION_KEY,
-  'Notion-Version': '2022-06-28',
-  'Content-Type': 'application/json'
-});
+const PROXY = '/.netlify/functions/notion-proxy';
 const UNITS = ['nos', 'set', 'm', 'm²', 'lot', 'box', 'lump sum', 'day', 'trip', 'ft', 'ft²', 'hour'];
 
 let quotes = [];
@@ -33,26 +28,9 @@ function dirty() {
   autoSaveTimer = setTimeout(saveQuote, 3000);
 }
 
-// ─── API KEY ─────────────────────────────────────────────────────────────────
-function getApiKey() {
-  NOTION_KEY = localStorage.getItem('hsdesign_notion_key') || '';
-  if (!NOTION_KEY) {
-    NOTION_KEY = prompt('Enter your Notion API Key:\n(found in Notion Integrations → HS Design tool → Internal Integration)');
-    if (NOTION_KEY) {
-      localStorage.setItem('hsdesign_notion_key', NOTION_KEY);
-    }
-  }
-  return NOTION_KEY;
-}
-
 // ─── GATE ─────────────────────────────────────────────────────────────────────
 function chkGate() {
   if (document.getElementById('pass').value === PASS) {
-    if (!getApiKey()) {
-      document.getElementById('gerr').textContent = 'Notion API key required';
-      document.getElementById('gerr').style.display = 'block';
-      return;
-    }
     document.getElementById('gate').style.display = 'none';
     const app = document.getElementById('app');
     app.style.display = 'flex';
@@ -68,9 +46,9 @@ function chkGate() {
 async function loadQuotes() {
   setSS('Loading...');
   try {
-    const r = await fetch('https://api.notion.com/v1/databases/' + DB + '/query', {
+    const r = await fetch(PROXY + '/v1/databases/' + DB + '/query', {
       method: 'POST',
-      headers: NH(),
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         sorts: [{ property: 'Date', direction: 'descending' }],
         page_size: 50
@@ -357,12 +335,12 @@ async function saveQuote() {
   try {
     let res, data;
     if (activeId && activeId !== '__new__') {
-      res = await fetch('https://api.notion.com/v1/pages/' + activeId, {
-        method: 'PATCH', headers: NH(), body: JSON.stringify({ properties: body.properties })
+      res = await fetch(PROXY + '/v1/pages/' + activeId, {
+        method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ properties: body.properties })
       });
     } else {
-      res = await fetch('https://api.notion.com/v1/pages', {
-        method: 'POST', headers: NH(), body: JSON.stringify(body)
+      res = await fetch(PROXY + '/v1/pages', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body)
       });
     }
     data = await res.json();
@@ -391,8 +369,8 @@ async function delQuote() {
   if (!confirm('Delete this quotation? This cannot be undone.')) return;
   setSS('Deleting...');
   try {
-    await fetch('https://api.notion.com/v1/pages/' + activeId, {
-      method: 'PATCH', headers: NH(), body: JSON.stringify({ archived: true })
+    await fetch(PROXY + '/v1/pages/' + activeId, {
+      method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ archived: true })
     });
   } catch (e) { /* ignore */ }
   quotes = quotes.filter(q => q.id !== activeId);
