@@ -1,4 +1,8 @@
-<!DOCTYPE html>
+// Node.js script to build the complete HS_Design_Quotation.html
+const fs = require('fs');
+const path = 'D:\\OpenClaw_Home\\.openclaw\\workspace\\projects\\hs-design-landing\\HS_Design_Quotation.html';
+
+let html = `<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -60,7 +64,6 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#f0f2f5;color:var(--gray
 .card{background:#fff;border:1.5px solid var(--gray-200);border-radius:var(--radius);padding:20px;margin-bottom:16px}
 .card-h{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:var(--gray-500);margin-bottom:16px;display:flex;align-items:center;gap:8px}
 .card-h::after{content:'';flex:1;height:1px;background:var(--gray-200)}
-.card-h span{font-weight:400;text-transform:none;letter-spacing:0;font-size:11px}
 .meta-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .f{display:flex;flex-direction:column;gap:4px}
 .f label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.7px;color:var(--gray-500)}
@@ -69,9 +72,9 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#f0f2f5;color:var(--gray
 .f input:focus,.f select:focus{border-color:var(--green)}
 .f textarea{padding:9px 12px;border:1.5px solid var(--gray-200);border-radius:7px;font-size:13px;resize:vertical;line-height:1.6}
 .fl{grid-column:1/-1}
-.items-hdr{display:grid;grid-template-columns:26px 2fr 70px 60px 90px 90px 36px;gap:5px;padding:0 4px 8px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--gray-500);align-items:center}
+.items-hdr{display:grid;grid-template-columns:26px 2fr 70px 60px 80px 80px 36px;gap:5px;padding:0 4px 8px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--gray-500);align-items:center}
 .item{background:#fff;border:1.5px solid var(--gray-200);border-radius:var(--radius);margin-bottom:8px;overflow:hidden}
-.item-main{display:grid;grid-template-columns:26px 2fr 70px 60px 90px 90px 36px;gap:5px;padding:10px 8px;align-items:center}
+.item-main{display:grid;grid-template-columns:26px 2fr 70px 60px 80px 80px 36px;gap:5px;padding:10px 8px;align-items:center}
 .item-main input,.item-main select{padding:7px 9px;border:1.5px solid var(--gray-200);border-radius:6px;font-size:13px;outline:none;transition:border .2s;width:100%;font-family:inherit}
 .item-main input:focus,.item-main select:focus{border-color:var(--green)}
 .item-main input[readonly]{background:var(--gray-50);color:var(--gray-700)}
@@ -103,17 +106,9 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#f0f2f5;color:var(--gray
 .terms-row{display:grid;grid-template-columns:1fr 36px;gap:6px;margin-bottom:6px;align-items:center}
 .terms-row input{padding:8px 11px;border:1.5px solid var(--gray-200);border-radius:6px;font-size:13px;outline:none;font-family:inherit;width:100%;transition:border .2s}
 .terms-row input:focus{border-color:var(--green)}
-.terms-notes-container .terms-row input { border-color: var(--gray-200); }
-.terms-notes-container .terms-row input:focus { border-color: var(--green); }
 .notes-box{background:#fffbeb;border:1.5px solid #fcd34d;border-radius:var(--radius);padding:14px 16px}
 .notes-box h4{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#92400e;margin-bottom:10px}
 .no-items{text-align:center;padding:20px;color:var(--gray-400);font-size:13px;border:2px dashed var(--gray-200);border-radius:var(--radius);margin-bottom:12px;display:none}
-.section-block{background:#fff;border:1.5px solid var(--gray-200);border-radius:var(--radius);padding:14px;margin-bottom:10px}
-.sec-hdr{display:flex;align-items:center;gap:8px;margin-bottom:10px}
-.sec-hdr input{flex:1;padding:8px 12px;border:1.5px solid var(--gray-200);border-radius:7px;font-size:14px;font-weight:700;outline:none;font-family:inherit;background:#f0faf7;color:var(--green-dark)}
-.sec-hdr input:focus{border-color:var(--green)}
-.item-num{font-size:13px;color:var(--gray-400);text-align:center;font-weight:600;min-width:20px}
-.sec-row td{background:#e8f4f1!important;font-weight:700!important;color:#2d5a47!important}
 .mo{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9000;align-items:center;justify-content:center}
 .mo.open{display:flex}
 .mo-in{background:#fff;border-radius:14px;width:92%;max-width:820px;max-height:92vh;overflow:auto;display:flex;flex-direction:column}
@@ -143,22 +138,6 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#f0f2f5;color:var(--gray
 .qp-terms h4{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#2d5a47;margin-bottom:10px}
 .qp-terms li{margin-bottom:4px;font-size:12px;color:#6b7280}
 .qp-footer{margin-top:28px;text-align:center;font-size:11px;color:#9a9ab0;padding-top:14px;border-top:1px solid #e8e8e8}
-/* Quick-add section pills */
-.quick-sections{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:10px;padding:8px 10px;background:#f0faf7;border-radius:7px;border:1px solid #c8e6da}
-.qs-label{font-size:11px;font-weight:600;color:var(--green-dark);margin-right:2px;white-space:nowrap}
-.qs-pill{padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600;cursor:pointer;border:1.5px solid var(--green);background:#fff;color:var(--green-dark);transition:all .15s}
-.qs-pill:hover{background:var(--green);color:#fff}
-.qs-other{border-color:#d1d5db;color:var(--gray-500)}
-.qs-other:hover{background:var(--gray-100);color:var(--gray-700);border-color:var(--gray-300)}
-/* Section subtotals in editor */
-.sec-subtotal{text-align:right;font-size:13px;font-weight:700;color:var(--green);padding:8px 12px 0;border-top:1px solid var(--gray-200);margin-top:8px}
-/* Section subtotal rows in PDF */
-.sec-subtotal-row td{background:#f0faf7!important;font-weight:700!important;color:#2d5a47!important}
-/* Cost breakdown grid: desc | unit | qty | unit price | amt | del */
-.csub{display:grid;grid-template-columns:1fr 70px 60px 80px 80px 32px;gap:5px;margin-bottom:6px;align-items:center}
-.csub input,.csub select{padding:6px 8px;border:1.5px solid #fcd34d;border-radius:5px;font-size:12px;outline:none;font-family:inherit;width:100%}
-.csub input:focus,.csub select:focus{border-color:var(--gold)}
-.csub .ci-amt{font-size:12px;color:var(--gold);font-weight:600;white-space:nowrap;text-align:right}
 </style>
 </head>
 <body>
@@ -176,7 +155,6 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#f0f2f5;color:var(--gray
   <div class="tb">
     <div class="tb-brand"><div class="tb-logo">HS</div><div><h1>Quotation Tool</h1><span>HS Design Internal</span></div></div>
     <div class="tb-actions"><span class="ss" id="ss">—</span>
-      <button class="btn btn-g" onclick="window.open('https://hsdesign.biz','_blank')">🏠 Home</button>
       <button class="btn btn-g" onclick="saveQuote()">💾 Save</button>
       <button class="btn btn-gold" onclick="openPDF()">📄 Export PDF</button>
     </div>
@@ -202,22 +180,11 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#f0f2f5;color:var(--gray
             </div>
           </div>
           <div class="card">
-            <div class="card-h">Line Items <span>— Cost breakdown hidden in client PDF</span></div>
-            <div class="quick-sections">
-              <span class="qs-label">Quick add:</span>
-              <button class="qs-pill" onclick="addSection('Carpentry Work')">Carpentry Work</button>
-              <button class="qs-pill" onclick="addSection('Ceiling Work')">Ceiling Work</button>
-              <button class="qs-pill" onclick="addSection('Electrical Work')">Electrical Work</button>
-              <button class="qs-pill" onclick="addSection('Painting Work')">Painting Work</button>
-              <button class="qs-pill" onclick="addSection('Masonry Work')">Masonry Work</button>
-              <button class="qs-pill" onclick="addSection('Aluminum Work')">Aluminum Work</button>
-              <button class="qs-pill" onclick="addSection('Cleaning Work')">Cleaning Work</button>
-              <button class="qs-pill" onclick="addSection('Protection Work')">Protection Work</button>
-              <button class="qs-pill" onclick="addSection('Supervising Work')">Supervising Work</button>
-              <button class="qs-pill qs-other" onclick="addSection('')">Other Work</button>
-            </div>
-            <div id="sections-container"></div>
-            <button class="btn btn-g btn-sm" onclick="addSection()" style="margin-top:8px">+ Add Section (blank)</button>
+            <div class="card-h">Line Items <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:11px;color:var(--gray-400)">— Cost breakdown hidden in client PDF</span></div>
+            <div class="items-hdr"><span>#</span><span>Description</span><span>Unit</span><span>Qty</span><span>Cost (RM)</span><span>Sell (RM)</span><span></span></div>
+            <div id="items-container"></div>
+            <div class="no-items" id="no-items">No items — click "+ Add Item" below</div>
+            <button class="btn btn-g btn-sm" onclick="addItem()" style="margin-top:4px">+ Add Item</button>
           </div>
           <div class="card">
             <div class="card-h">Summary</div>
@@ -232,20 +199,13 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#f0f2f5;color:var(--gray
             <div id="terms-container"></div>
             <button class="btn btn-g btn-sm" onclick="addTerm()" style="margin-top:4px">+ Add Term</button>
           </div>
-          <div class="card">
-            <div class="card-h">Standard Terms &amp; Conditions</div>
-            <div id="terms-notes-container"></div>
-            <button class="btn btn-g btn-sm" onclick="addNote()" style="margin-top:4px">+ Add Term / Note</button>
-          </div>
           <div class="card notes-box">
-            <h4>Internal Notes (Hidden from PDF)</h4>
+            <h4>🔒 Internal Notes (Hidden from PDF)</h4>
             <textarea id="f-notes" rows="3" placeholder="e.g. Remember to add transport cost, markup notes..." oninput="dirty()" style="width:100%;border:1.5px solid #fcd34d;border-radius:7px;padding:9px 12px;font-size:13px;font-family:inherit;resize:vertical;outline:none"></textarea>
           </div>
-          <div style="display:flex;gap:10px;margin-top:8px;flex-wrap:wrap">
-            <button class="btn btn-r" onclick="delQuote()">Delete</button>
-            <button class="btn btn-s" onclick="duplicateQuote()">Duplicate</button>
-            <button class="btn btn-g" onclick="exportJSON()">📤 Export JSON</button>
-            <button class="btn btn-g" onclick="importJSON()">📥 Import JSON</button>
+          <div style="display:flex;gap:10px;margin-top:8px">
+            <button class="btn btn-r" onclick="delQuote()">🗑 Delete</button>
+            <button class="btn btn-s" onclick="duplicateQuote()">📋 Duplicate</button>
           </div>
         </div>
       </div>
@@ -254,12 +214,58 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#f0f2f5;color:var(--gray
 </div>
 <div class="mo" id="pdfmo">
   <div class="mo-in">
-    <div class="mo-hdr"><h3>PDF Preview — Client Version (Cost Hidden)</h3>
-      <div style="display:flex;gap:8px"><button class="btn btn-p" onclick="printPDF()">Print / Save PDF</button><button class="btn btn-g" onclick="closePDF()">Close</button></div>
+    <div class="mo-hdr"><h3>📄 PDF Preview — Client Version (Cost Hidden)</h3>
+      <div style="display:flex;gap:8px"><button class="btn btn-p" onclick="printPDF()">🖨 Print / Save PDF</button><button class="btn btn-g" onclick="closePDF()">Close</button></div>
     </div>
     <div class="mo-body" id="pdfbody"></div>
   </div>
 </div>
-<script src="quote-app.js?v=1"></script>
-</body>
-</html>
+<script>
+const NK='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';
+const DB='329538249e7e804bb295f34904902b1a';
+const PASSE='HSHSHS';
+const NH={'Authorization':'Bearer '+NK,'Notion-Version':'2022-06-28','Content-Type':'application/json'};
+const UNITS=['nos','set','m','m²','lot','box','lump sum','day','trip','ft','ft²','hour'];
+let quotes=[];
+let activeId=null;
+let isDirty=false;
+let autoSaveT=null;
+let _items=[]; // working copy of items in editor
+
+function chkGate(){if(document.getElementById('pass').value===PASSE){document.getElementById('gate').style.display='none';document.getElementById('app').style.display='flex';document.getElementById('app').style.flexDirection='column';loadQuotes();}else{document.getElementById('gerr').style.display='block';}}
+
+async function loadQuotes(){setSS('Loading...');try{const r=await fetch('https://api.notion.com/v1/databases/'+DB+'/query',{method:'POST',headers:NH,body:JSON.stringify({sorts:[{property:'Date',direction:'descending'}],page_size:50})});const d=await r.json();quotes=(d.results||[]).map(p=>{const g=k=>{const v=p.properties[k];if(!v)return'';if(v.type==='title')return v.title?.[0]?.plain_text||'';if(v.type==='rich_text')return v.rich_text?.[0]?.plain_text||'';if(v.type==='date')return v.date?.start||'';if(v.type==='select')return v.select?.name||'';if(v.type==='status')return v.status?.name||'';return'';};let items=[],terms=[],notes='',qno='',addr='';try{const j=JSON.parse(g('Notes')||'{}');items=j.items||[];terms=j.terms||[];notes=j.notes||'';qno=j.qno||'';addr=j.addr||'';}catch(e){}return {id:p.id,name:g('Name'),project:g('Project'),date:g('Date'),status:g('Status')||'Draft',qno,addr,items,terms,notes};});renderList();setSS(quotes.length?'Loaded '+quotes.length+' quotes':'No quotes yet');}catch(e){setSS('Offline');renderList();}}
+
+function setSS(m){document.getElementById('ss').textContent=m;}
+
+function renderList(){const el=document.getElementById('ql');if(!quotes.length){el.innerHTML='<div class="el"><div class="e">📋</div><p>No quotations yet</p></div>';return;}el.innerHTML=quotes.map(q=>{const tot=q.items.reduce((s,it)=>s+(parseFloat(it.sell)||0)*(parseFloat(it.qty)||0),0);const bdg=q.status==='Sent'?'bdg-se':q.status==='Paid'?'bdg-pa':'bdg-dr';return '<div class="qc '+(q.id===activeId?'active':'')+'" onclick="openQ(\''+q.id+'\')"><div class="qc-t">'+esc(q.name||'Unnamed')+'</div><div class="qc-p">'+esc(q.project||'—')+'</div><div class="qc-b"><span class="qc-tot">RM '+fmt(tot)+'</span><span class="bdg '+bdg+'">'+q.status+'</span></div></div>';}).join('');}
+
+function openQ(id){if(isDirty&&!confirm('Unsaved changes. Discard?'))return;activeId=id;const q=quotes.find(x=>x.id===id);if(!q)return;_items=JSON.parse(JSON.stringify(q.items));document.getElementById('welcome').style.display='none';document.getElementById('editor').style.display='block';document.getElementById('f-name').value=q.name||'';document.getElementById('f-qno').value=q.qno||'';document.getElementById('f-addr').value=q.addr||'';document.getElementById('f-proj').value=q.project||'';document.getElementById('f-date').value=q.date||'';document.getElementById('f-status').value=q.status||'Draft';document.getElementById('f-notes').value=q.notes||'';renderItems();renderTerms(q.terms||[]);recalc();isDirty=false;setSS('Loaded');renderList();}
+
+function newQuote(){if(isDirty&&!confirm('Unsaved changes. Discard?'))return;activeId='__new__';_items=[makeItem()];document.getElementById('welcome').style.display='none';document.getElementById('editor').style.display='block';document.getElementById('f-name').value='';document.getElementById('f-qno').value='QUO-HS-'+String(quotes.length+1).padStart(3,'0');document.getElementById('f-addr').value='';document.getElementById('f-proj').value='';document.getElementById('f-date').value=ISO();document.getElementById('f-status').value='Draft';document.getElementById('f-notes').value='';renderItems();renderTerms(['50% deposit upon confirmation','40% upon work commencement','10% upon completion']);recalc();isDirty=false;setSS('New quotation');renderList();}
+
+function makeItem(){return {desc:'',unit:'nos',qty:1,costItems:[{desc:'',amt:0}],sell:0};}
+
+function ISO(){return new Date().toISOString().slice(0,10);}
+
+function fmt(n){return parseFloat(n||0).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,',');}
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+// ITEMS RENDERING
+function renderItems(){const c=document.getElementById('items-container');document.getElementById('no-items').style.display=_items.length?'none':'block';c.innerHTML='';_items.forEach((it,i)=>c.appendChild(buildItemRow(it,i)));recalc();}
+
+function buildItemRow(it,i){const el=document.createElement('div');el.className='item';const ct=(it.costItems||[]).reduce((s,c)=>s+(parseFloat(c.amt)||0),0);const mk=ct>0&&it.sell>0?((it.sell-ct)/ct*100):0;const mkCls=mk>=30?'mk-g':mk>=15?'mk-y':'mk-r';const ctStr=ct>0?'<span style="font-size:11px;color:var(--gold)">RM '+fmt(ct)+'</span>':'';const mkStr=mk>0?'<span class="mk '+mkCls+'">+'+fmt(mk)+'% markup</span>':'';const ciRows=(it.costItems||[]).map((ci,cii)=>'<div class="csub"><input type="text" placeholder="e.g. Wire 100m" value="'+esc(ci.desc)+'" oninput="syncCi('+i+','+cii+',this)"><input type="number" min="0" placeholder="RM" value="'+(ci.amt||'')+'" oninput="syncCi('+i+','+cii+',this)"><button class="del" style="font-size:13px" onclick="remCi('+i+','+cii+',this)">×</button></div>').join('');el.innerHTML='<div class="item-main"><span style="font-size:13px;color:var(--gray-400);text-align:center;font-weight:600">'+(i+1)+'</span><input type="text" placeholder="e.g. Supply & install lighting point" value="'+esc(it.desc)+'" oninput="syncMain('+i+',this)"><select onchange="syncMain('+i+',this)">'+UNITS.map(u=>'<option value="'+u+'" '+(it.unit===u?'selected':'')+'>'+u+'</option>').join('')+'</select><input type="number" min="0" placeholder="1" value="'+it.qty+'" oninput="syncMain('+i+',this)" style="text-align:center"><input type="number" class="cost-in" min="0" placeholder="0.00" value="'+(ct>0?fmt(ct):'')+'" readonly title="Total cost — click 🔽 to edit"><input type="number" class="sell-in" min="0" placeholder="0.00" value="'+(it.sell?fmt(it.sell):'')+'" oninput="syncMain('+i+',this)"><button class="del" onclick="remItem('+i+')">×</button></div><div class="exp-h" onclick="toggleCost(this)">💰 Cost breakdown (internal) '+ctStr+' '+mkStr+'<span class="tog">▶</span></div><div class="cb">'+ciRows+'<button class="btn btn-g btn-sm" onclick="addCi('+i+',this)">+ Add cost item</button><div class="csub-row">Total cost: <span>RM '+fmt(ct)+'</span></div></div>';return el;}
+
+function toggleCost(el){const cb=el.nextElementSibling;cb.classList.toggle('open');el.querySelector('.tog').textContent=cb.classList.contains('open')?'▼':'▶';}
+
+function addItem(){_items.push(makeItem());renderItems();isDirty=true;dirty();}
+
+function remItem(i){_items.splice(i,1);renderItems();isDirty=true;dirty();}
+
+function syncMain(i,inp){const row=inp.closest('.item');const sel=row.querySelectorAll('input,select');_items[i].desc=sel[1].value;_items[i].unit=sel[2].value;_items[i].qty=parseFloat(sel[3].value)||0;_items[i].sell=parseFloat(sel[5].value)||0;recalc();isDirty=true;dirty();}
+
+function addCi(i,btn){_items[i].costItems.push({desc:'',amt:0});const row=btn.closest('.cb');const ciRows=row.querySelectorAll('.csub');const newRow=document.createElement('div');newRow.className='csub';newRow.innerHTML='<input type="text" placeholder="e.g. Wire 100m" value="" oninput="syncCi('+i+','+ciRows.length+',this)"><input type="number" min="0" placeholder="RM" value="" oninput="syncCi('+i+','+ciRows.length+',this)"><button class="del" style="font-size:13px" onclick="remCi('+i+','+ciRows.length+',this)">×</button>';row.insertBefore(newRow,btn);recalc();isDirty=true;dirty();}
+
+function remCi(i,cii,btn){_items[i].costItems.splice(cii,1);btn.closest('.csub').remove();recalc();isDirty=true;dirty();}
+
+function syncCi(i,cii,inp){const row=inp.closest('.csub');const inputs=row.querySelectorAll('input');_items[i].costItems[cii].desc=inputs[0].value;_items[i].costItems[cii].amt=parseFloat(inputs

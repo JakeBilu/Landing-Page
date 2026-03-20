@@ -32,7 +32,50 @@ const ISO = () => new Date().toISOString().slice(0, 10);
 const fmt = n => parseFloat(n || 0).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 const esc = s => String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 const setSS = m => { document.getElementById('ss').textContent = m; };
-const dirty = () => { isDirty = true; setSS('Unsaved...'); clearTimeout(autoSaveTimer); autoSaveTimer = setTimeout(saveQuote, 3000); };
+const dirty = () => { isDirty = true; setSS('Unsaved...'); clearTimeout(autoSaveTimer); autoSaveTimer = setTimeout(saveQuote, 3000); clearTimeout(_draftTimer); _draftTimer = setTimeout(saveDraft, 1000); };
+let _draftTimer = null;
+const DRAFT_KEY = 'hsdesign_quote_draft';
+
+function saveDraft() {
+  gatherForm();
+  try {
+    localStorage.setItem(DRAFT_KEY, JSON.stringify({
+      activeId, _data, _terms, _name, _qno, _addr, _proj, _date, _status, _notes, _notesTxt, _items: _data
+    }));
+  } catch(e) {}
+}
+
+function clearDraft() { try { localStorage.removeItem(DRAFT_KEY); } catch(e) {} }
+
+function restoreDraft(draft) {
+  activeId = draft.activeId || '__new__';
+  _data = draft._data || draft._items || [{section:'',items:[makeItem()]}];
+  _terms = draft._terms || [];
+  _notes = draft._notes || [];
+  _name = draft._name || '';
+  _qno = draft._qno || '';
+  _addr = draft._addr || '';
+  _proj = draft._proj || '';
+  _date = draft._date || '';
+  _status = draft._status || 'Draft';
+  _notesTxt = draft._notesTxt || '';
+  document.getElementById('f-name').value = _name;
+  document.getElementById('f-qno').value = _qno;
+  document.getElementById('f-addr').value = _addr;
+  document.getElementById('f-proj').value = _proj;
+  document.getElementById('f-date').value = _date;
+  document.getElementById('f-status').value = _status;
+  document.getElementById('f-notes').value = _notesTxt;
+  document.getElementById('welcome').style.display='none';
+  document.getElementById('editor').style.display='block';
+  renderSections();
+  renderTerms();
+  renderNotes();
+  recalc();
+  isDirty = false;
+  setSS('Draft restored');
+  renderList();
+}
 
 // ─── GATE ─────────────────────────────────────────────────────────────────────
 function chkGate() {
@@ -42,6 +85,18 @@ function chkGate() {
     app.style.display = 'flex';
     app.style.flexDirection = 'column';
     loadQuotes();
+    // Check for unsaved draft after loading quotes list
+    setTimeout(() => {
+      try {
+        const raw = localStorage.getItem(DRAFT_KEY);
+        if (raw) {
+          const draft = JSON.parse(raw);
+          if (confirm('You have an unsaved draft. Restore it?')) {
+            restoreDraft(draft);
+          }
+        }
+      } catch(e) {}
+    }, 200);
   } else {
     document.getElementById('gerr').textContent = 'Incorrect password';
     document.getElementById('gerr').style.display = 'block';
@@ -105,6 +160,7 @@ function migrateData(data) {
 
 function openQ(id) {
   if (isDirty && !confirm('Unsaved changes. Discard?')) return;
+  clearDraft();
   activeId = id;
   const q = quotes.find(x => x.id === id);
   if (!q) return;
@@ -132,6 +188,7 @@ function openQ(id) {
 
 function newQuote() {
   if (isDirty && !confirm('Unsaved changes. Discard?')) return;
+  clearDraft();
   activeId = '__new__';
   _data = [{ section: '', items: [makeItem()] }];
   _terms = ['50% deposit upon confirmation','40% upon work commencement','10% upon completion'];
@@ -408,6 +465,7 @@ async function saveQuote() {
     isDirty = false;
     setSS('Saved ✓');
     renderList();
+    clearDraft();
   } catch(e) { setSS('Network error'); }
 }
 
@@ -489,6 +547,70 @@ function openPDF() {
 }
 
 function closePDF() { document.getElementById('pdfmo').classList.remove('open'); }
+
+// ─── EXPORT / IMPORT JSON ─────────────────────────────────────────────────────
+function exportJSON() {
+  gatherForm();
+  const data = {
+    name: _name, qno: _qno, addr: _addr, proj: _proj, date: _date, status: _status,
+    items: _data, terms: _terms, notes: _notes, notesTxt: _notesTxt
+  };
+  const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'HS_Quote_' + (_qno || ISO()) + '.json';
+  a.click();
+  URL.revokeObjectURL(url);
+  setSS('Exported ✓');
+}
+
+function importJSON() {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = '.json';
+  input.onchange = e => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+      try {
+        const data = JSON.parse(ev.target.result);
+        if (!data.items) { alert('Invalid file format: missing items array'); return; }
+        if (!confirm('Import this quotation? Current unsaved changes will be lost.')) return;
+        _data = data.items;
+        _terms = data.terms || [];
+        _notes = data.notes || [];
+        _notesTxt = data.notesTxt || '';
+        _name = data.name || '';
+        _qno = data.qno || '';
+        _addr = data.addr || '';
+        _proj = data.proj || '';
+        _date = data.date || '';
+        _status = data.status || 'Draft';
+        document.getElementById('f-name').value = _name;
+        document.getElementById('f-qno').value = _qno;
+        document.getElementById('f-addr').value = _addr;
+        document.getElementById('f-proj').value = _proj;
+        document.getElementById('f-date').value = _date;
+        document.getElementById('f-status').value = _status;
+        document.getElementById('f-notes').value = _notesTxt;
+        activeId = '__new__';
+        isDirty = true;
+        renderSections();
+        renderTerms();
+        renderNotes();
+        recalc();
+        clearDraft();
+        setSS('Imported — save to Notion when online');
+      } catch(err) {
+        alert('Failed to import: ' + err.message);
+      }
+    };
+    reader.readAsText(file);
+  };
+  input.click();
+}
 
 function printPDF() {
   const content = document.getElementById('pdfbody').innerHTML;
