@@ -103,6 +103,8 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#f0f2f5;color:var(--gray
 .terms-row{display:grid;grid-template-columns:1fr 36px;gap:6px;margin-bottom:6px;align-items:center}
 .terms-row input{padding:8px 11px;border:1.5px solid var(--gray-200);border-radius:6px;font-size:13px;outline:none;font-family:inherit;width:100%;transition:border .2s}
 .terms-row input:focus{border-color:var(--green)}
+.terms-notes-container .terms-row input { border-color: var(--gray-200); }
+.terms-notes-container .terms-row input:focus { border-color: var(--green); }
 .notes-box{background:#fffbeb;border:1.5px solid #fcd34d;border-radius:var(--radius);padding:14px 16px}
 .notes-box h4{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#92400e;margin-bottom:10px}
 .no-items{text-align:center;padding:20px;color:var(--gray-400);font-size:13px;border:2px dashed var(--gray-200);border-radius:var(--radius);margin-bottom:12px;display:none}
@@ -229,6 +231,11 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#f0f2f5;color:var(--gray
             <div class="card-h">Payment Terms</div>
             <div id="terms-container"></div>
             <button class="btn btn-g btn-sm" onclick="addTerm()" style="margin-top:4px">+ Add Term</button>
+          </div>
+          <div class="card">
+            <div class="card-h">Standard Terms &amp; Conditions</div>
+            <div id="terms-notes-container"></div>
+            <button class="btn btn-g btn-sm" onclick="addNote()" style="margin-top:4px">+ Add Term / Note</button>
           </div>
           <div class="card notes-box">
             <h4>Internal Notes (Hidden from PDF)</h4>

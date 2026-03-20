@@ -12,7 +12,20 @@ let autoSaveTimer = null;
 // _data = [{ section: '', items: [{ desc:'', unit:'nos', qty:1, costItems:[{desc:'',unit:'nos',qty:1,unitPrice:0,amt:0}], sell:0 }] }]
 let _data = { items: [] };
 let _terms = [];
-let _name = '', _qno = '', _addr = '', _proj = '', _date = '', _status = 'Draft', _notes = '';
+let _notes = [];
+let _name = '', _qno = '', _addr = '', _proj = '', _date = '', _status = 'Draft', _notesTxt = '';
+
+// Default Standard Terms & Conditions (used for new quotes)
+const DEFAULT_NOTES = [
+  'Completion of works refers to fulfilling works as listed in the agreement, or the owner taking occupancy of the premises, whichever is earlier. Any variation or modification of works shall not be taken as extension of completion date.',
+  'Claims whatsoever will not be entertained after receipt. Please ensure all works are received in good condition.',
+  'Deposit paid is non-refundable.',
+  '2% monthly interest will be charged if payment is delayed.',
+  'Price may vary if owner changes design during production.',
+  'Payment must be fully settled within 14 days after completion.',
+  'Installation fees will be charged for unincluded products and products purchased from other sources.',
+  'No retention amount after project completion.'
+];
 
 // ─── UTILS ───────────────────────────────────────────────────────────────────
 const ISO = () => new Date().toISOString().slice(0, 10);
@@ -52,9 +65,9 @@ async function loadQuotes() {
 
 function parsePage(p) {
   const g = k => { const v = p.properties[k]; if (!v) return ''; if (v.type==='title') return v.title?.[0]?.plain_text||''; if (v.type==='rich_text') return v.rich_text?.[0]?.plain_text||''; if (v.type==='date') return v.date?.start||''; if (v.type==='select') return v.select?.name||''; if (v.type==='status') return v.status?.name||''; return ''; };
-  let items=[],terms=[],notes='',qno='',addr='';
-  try { const j=JSON.parse(g('Notes')||'{}'); items=j.items||[]; terms=j.terms||[]; notes=j.notes||''; qno=j.qno||''; addr=j.addr||''; } catch(e) {}
-  return { id:p.id, name:g('Name'), project:g('Project'), date:g('Date'), status:g('Status')||'Draft', qno, addr, items, terms, notes };
+  let items=[],terms=[],notes='',notes2=[],qno='',addr='';
+  try { const j=JSON.parse(g('Notes')||'{}'); items=j.items||[]; terms=j.terms||[]; notes=j.notes||''; notes2=j.notes2||[]; qno=j.qno||''; addr=j.addr||''; } catch(e) {}
+  return { id:p.id, name:g('Name'), project:g('Project'), date:g('Date'), status:g('Status')||'Draft', qno, addr, items, terms, notes, notes2 };
 }
 
 // ─── LIST ─────────────────────────────────────────────────────────────────────
@@ -97,7 +110,8 @@ function openQ(id) {
   if (!q) return;
   _data = migrateData(q.items && q.items.length ? q.items : null) || [{section:'',items:[makeItem()]}];
   _terms = JSON.parse(JSON.stringify(q.terms && q.terms.length ? q.terms : ['50% deposit upon confirmation','40% upon work commencement','10% upon completion']));
-  _name = q.name||''; _qno = q.qno||''; _addr = q.addr||''; _proj = q.project||''; _date = q.date||''; _status = q.status||'Draft'; _notes = q.notes||'';
+  _notes = JSON.parse(JSON.stringify(q.notes2 && q.notes2.length ? q.notes2 : DEFAULT_NOTES));
+  _name = q.name||''; _qno = q.qno||''; _addr = q.addr||''; _proj = q.project||''; _date = q.date||''; _status = q.status||'Draft'; _notesTxt = q.notes||'';
   document.getElementById('welcome').style.display='none';
   document.getElementById('editor').style.display='block';
   document.getElementById('f-name').value = _name;
@@ -106,9 +120,10 @@ function openQ(id) {
   document.getElementById('f-proj').value = _proj;
   document.getElementById('f-date').value = _date;
   document.getElementById('f-status').value = _status;
-  document.getElementById('f-notes').value = _notes;
+  document.getElementById('f-notes').value = _notesTxt;
   renderSections();
   renderTerms();
+  renderNotes();
   recalc();
   isDirty = false;
   setSS('Loaded');
@@ -120,14 +135,16 @@ function newQuote() {
   activeId = '__new__';
   _data = [{ section: '', items: [makeItem()] }];
   _terms = ['50% deposit upon confirmation','40% upon work commencement','10% upon completion'];
-  _name=''; _qno='QUO-HS-'+String(quotes.length+1).padStart(3,'0'); _addr=''; _proj=''; _date=ISO(); _status='Draft'; _notes='';
+  _notes = JSON.parse(JSON.stringify(DEFAULT_NOTES));
+  _name=''; _qno='QUO-HS-'+String(quotes.length+1).padStart(3,'0'); _addr=''; _proj=''; _date=ISO(); _status='Draft'; _notesTxt='';
   document.getElementById('welcome').style.display='none';
   document.getElementById('editor').style.display='block';
   document.getElementById('f-name').value=_name; document.getElementById('f-qno').value=_qno; document.getElementById('f-addr').value=_addr;
   document.getElementById('f-proj').value=_proj; document.getElementById('f-date').value=_date; document.getElementById('f-status').value=_status;
-  document.getElementById('f-notes').value=_notes;
+  document.getElementById('f-notes').value=_notesTxt;
   renderSections();
   renderTerms();
+  renderNotes();
   recalc();
   isDirty = false;
   setSS('New quotation');
@@ -310,6 +327,22 @@ function addTerm() { _terms.push(''); renderTerms(); dirty(); }
 function remTerm(i) { _terms.splice(i,1); renderTerms(); dirty(); }
 function syncTerm(i,inp) { _terms[i]=inp.value; dirty(); }
 
+// ─── NOTES / STANDARD T&C ─────────────────────────────────────────────────────
+function renderNotes() {
+  const c = document.getElementById('terms-notes-container');
+  if (!c) return;
+  c.innerHTML = '';
+  _notes.forEach((t,i) => {
+    const row = document.createElement('div');
+    row.className = 'terms-row';
+    row.innerHTML = `<input type="text" placeholder="Enter term or note..." value="${esc(t)}" oninput="syncNote(${i},this)"><button class="del" onclick="remNote(${i})">×</button>`;
+    c.appendChild(row);
+  });
+}
+function addNote() { _notes.push(''); renderNotes(); dirty(); }
+function remNote(i) { _notes.splice(i,1); renderNotes(); dirty(); }
+function syncNote(i,inp) { _notes[i]=inp.value; dirty(); }
+
 // ─── RECALC ──────────────────────────────────────────────────────────────────
 function recalc() {
   let totalCost=0, totalSell=0;
@@ -343,13 +376,13 @@ function gatherForm() {
   _proj = document.getElementById('f-proj').value;
   _date = document.getElementById('f-date').value;
   _status = document.getElementById('f-status').value;
-  _notes = document.getElementById('f-notes').value;
+  _notesTxt = document.getElementById('f-notes').value;
 }
 
 async function saveQuote() {
   if (!isDirty) return;
   gatherForm();
-  const payload = JSON.stringify({items:_data, terms:_terms, qno:_qno, addr:_addr, notes:_notes}).slice(0,2000);
+  const payload = JSON.stringify({items:_data, terms:_terms, notes2:_notes, qno:_qno, addr:_addr, notes:_notesTxt}).slice(0,2000);
   const body = {
     parent: {database_id: DB},
     properties: {
@@ -370,8 +403,8 @@ async function saveQuote() {
     }
     data = await res.json();
     if (data.object==='error') { setSS('Error: '+(data.message||'')); return; }
-    if (activeId==='__new__') { activeId=data.id; quotes.unshift({id:data.id,name:_name,project:_proj,date:_date,status:_status,qno:_qno,addr:_addr,items:_data,terms:_terms,notes:_notes}); }
-    else { const idx=quotes.findIndex(q=>q.id===activeId); if(idx!==-1) quotes[idx]={...quotes[idx],name:_name,project:_proj,date:_date,status:_status,qno:_qno,addr:_addr,items:_data,terms:_terms,notes:_notes}; }
+    if (activeId==='__new__') { activeId=data.id; quotes.unshift({id:data.id,name:_name,project:_proj,date:_date,status:_status,qno:_qno,addr:_addr,items:_data,terms:_terms,notes2:_notes,notes:_notesTxt}); }
+    else { const idx=quotes.findIndex(q=>q.id===activeId); if(idx!==-1) quotes[idx]={...quotes[idx],name:_name,project:_proj,date:_date,status:_status,qno:_qno,addr:_addr,items:_data,terms:_terms,notes2:_notes,notes:_notesTxt}; }
     isDirty = false;
     setSS('Saved ✓');
     renderList();
@@ -437,6 +470,8 @@ function openPDF() {
   });
   const dateStr = _date ? new Date(_date+'T00:00:00').toLocaleDateString('en-GB',{day:'2-digit',month:'long',year:'numeric'}) : '';
   const termList = terms.length ? `<div class="qp-terms"><h4>Payment Terms</h4><ul>${terms.map(t=>`<li>${esc(t)}</li>`).join('')}</ul></div>` : '';
+  const stdTerms = _notes.filter(t=>t.trim());
+  const stdTermsList = stdTerms.length ? `<div class="qp-terms"><h4>Terms &amp; Conditions</h4><ol style="padding-left:18px;margin:0">${stdTerms.map(t=>`<li>${esc(t)}</li>`).join('')}</ol></div>` : '';
   const html = `<div class="qp">
     <div class="qp-hdr">
       <div class="qp-logo"><h2>Health Space Interior</h2><p>HS Design (SSM: 202603001610)</p><p>24-1, Jalan Rosmerah 2/17, Taman Johor Jaya</p><p>81100 Johor Bahru, Johor</p><p>011-1688 0145 | hsdesign.biz</p></div>
@@ -446,6 +481,7 @@ function openPDF() {
     <table class="qp-table"><thead><tr><th style="width:24px">#</th><th>Description</th><th style="width:60px;text-align:center">Unit</th><th style="width:40px;text-align:right">Qty</th><th style="width:80px;text-align:right">Unit Price</th><th style="width:90px;text-align:right">Amount</th></tr></thead><tbody>${rows.join('')}</tbody></table>
     <div class="qp-totals"><div class="qp-tbox"><div class="qp-tr gd"><span>Grand Total</span><span>RM ${fmt(grandTotal)}</span></div></div></div>
     ${termList}
+    ${stdTermsList}
     <div class="qp-footer">Thank you for considering Health Space Interior<br>This quotation is valid for 30 days from the date above.</div>
   </div>`;
   document.getElementById('pdfbody').innerHTML = html;
@@ -482,6 +518,8 @@ function printPDF() {
     .qp-terms{margin-top:20px;background:#fafafa;border-radius:8px;padding:14px 18px}
     .qp-terms h4{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#2d5a47;margin-bottom:10px}
     .qp-terms li{margin-bottom:4px;font-size:12px;color:#6b7280}
+    .qp-terms ol{margin:0;padding-left:20px}
+    .qp-terms ol li{margin-bottom:4px;font-size:12px;color:#6b7280}
     .qp-footer{margin-top:28px;text-align:center;font-size:11px;color:#9a9ab0;padding-top:14px;border-top:1px solid #e8e8e8}
     @media print{body{padding:20px}}
   </style></head><body>${content}</body></html>`);
