@@ -1,11 +1,10 @@
 // Netlify Function: notion-proxy
-// Proxies Notion API calls to avoid CORS. API key is set as Netlify env variable.
-// Browser only calls this proxy — key never exposed to client.
+// Proxies Notion API calls to avoid CORS. API key set as Netlify env variable.
 exports.handler = async (event) => {
   const API_KEY = process.env.NOTION_API_KEY;
   const HEADERS = {
     'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+    'Access-Control-Allow-Headers': 'Content-Type',
     'Access-Control-Allow-Methods': 'GET, POST, PATCH, DELETE, OPTIONS',
     'Content-Type': 'application/json'
   };
@@ -19,13 +18,13 @@ exports.handler = async (event) => {
     return {
       statusCode: 500,
       headers: HEADERS,
-      body: JSON.stringify({ object: 'error', message: 'NOTION_API_KEY environment variable not set' })
+      body: JSON.stringify({ object: 'error', message: 'NOTION_API_KEY not set in Netlify env' })
     };
   }
 
-  // Remove leading /v1 from path since we append it
-  const path = event.path.replace('/.netlify/functions/notion-proxy', '') || event.path;
-  const notionUrl = 'https://api.notion.com/v1' + path;
+  // Netlify passes path as e.g. "/v1/databases/xxx/query"
+  // The full path we want to forward is exactly event.path
+  const notionUrl = 'https://api.notion.com' + event.path;
 
   try {
     const res = await fetch(notionUrl, {
