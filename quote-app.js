@@ -40,7 +40,7 @@ function saveDraft() {
   gatherForm();
   try {
     localStorage.setItem(DRAFT_KEY, JSON.stringify({
-      activeId, _data, _terms, _name, _qno, _addr, _proj, _date, _status, _notes, _notesTxt, _items: _data
+      activeId, _data, _terms, _name, _code, _qno, _addr, _proj, _date, _status, _notes, _notesTxt, _items: _data
     }));
   } catch(e) {}
 }
@@ -53,6 +53,7 @@ function restoreDraft(draft) {
   _terms = draft._terms || [];
   _notes = draft._notes || [];
   _name = draft._name || '';
+  _code = draft._code || '';
   _qno = draft._qno || '';
   _addr = draft._addr || '';
   _proj = draft._proj || '';
@@ -60,6 +61,7 @@ function restoreDraft(draft) {
   _status = draft._status || 'Draft';
   _notesTxt = draft._notesTxt || '';
   document.getElementById('f-name').value = _name;
+  document.getElementById('f-code').value = _code;
   document.getElementById('f-qno').value = _qno;
   document.getElementById('f-addr').value = _addr;
   document.getElementById('f-proj').value = _proj;
@@ -428,6 +430,7 @@ function recalc() {
 // ─── SAVE ────────────────────────────────────────────────────────────────────
 function gatherForm() {
   _name = document.getElementById('f-name').value||'Unnamed';
+  _code = document.getElementById('f-code').value;
   _qno = document.getElementById('f-qno').value;
   _addr = document.getElementById('f-addr').value;
   _proj = document.getElementById('f-proj').value;
@@ -439,7 +442,7 @@ function gatherForm() {
 async function saveQuote() {
   if (!isDirty) return;
   gatherForm();
-  const payload = JSON.stringify({items:_data, terms:_terms, notes2:_notes, qno:_qno, addr:_addr, notes:_notesTxt}).slice(0,2000);
+  const payload = JSON.stringify({items:_data, terms:_terms, notes2:_notes, qno:_qno, code:_code, addr:_addr, notes:_notesTxt}).slice(0,2000);
   const body = {
     parent: {database_id: DB},
     properties: {
