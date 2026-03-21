@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HS Design — 项目详情</title>
+<style>
+:root{--green:#5a9e8f;--green-dark:#2d5a47;--green-light:#e6f4f1;--gold:#c9a84c;--gray-50:#f9fafb;--gray-100:#f3f4f6;--gray-200:#e5e7eb;--gray-300:#d1d5db;--gray-500:#6b7280;--gray-700:#374151;--gray-900:#111827;--red:#dc2626;--blue:#2563eb;--radius:8px;}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',Arial,sans-serif;background:#f0f2f5;color:var(--gray-900);min-height:100vh}
+.tb{background:#fff;border-bottom:1.5px solid var(--gray-200);padding:12px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.tb-brand{display:flex;align-items:center;gap:10px}
+.tb-logo{width:30px;height:30px;background:var(--green);border-radius:7px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:13px}
+.tb h1{font-size:15px;font-weight:700}
+.tb span{font-size:12px;color:var(--gray-500)}
+.tb-actions{display:flex;gap:8px}
+.btn{padding:8px 16px;border-radius:7px;font-size:13px;font-weight:600;cursor:pointer;border:none;transition:all .2s;display:inline-flex;align-items:center;gap:6px}
+.btn-p{background:var(--green);color:#fff}.btn-p:hover{background:var(--green-dark)}
+.btn-g{background:transparent;border:1.5px solid var(--gray-300);color:var(--gray-700)}.btn-g:hover{border-color:var(--green);color:var(--green)}
+.btn-b{background:var(--blue);color:#fff}.btn-b:hover{background:#1d4ed8}
+.main{padding:24px;max-width:1000px;margin:0 auto}
+/* Project Info */
+.info{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px}
+.info-card{background:#fff;border:1.5px solid var(--gray-200);border-radius:var(--radius);padding:20px}
+.info-card h3{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--gray-500);margin-bottom:12px;font-weight:700}
+.info-row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--gray-100);font-size:13px}
+.info-row:last-child{border-bottom:none}
+.info-row .lbl{color:var(--gray-500)}
+.info-row .val{font-weight:600}
+.type-badge{padding:4px 10px;border-radius:12px;font-size:11px;font-weight:700;display:inline-block}
+.type-HSD{background:#dbeafe;color:#1d4ed8}
+.type-HSC{background:#fce7f3;color:#9d154d}
+.type-HSP{background:#fef3c7;color:#92400e}
+.type-HLD{background:#e8f4f1;color:#2d5a47}
+/* Action Buttons */
+.actions{display:flex;gap:12px;margin-bottom:24px}
+.actions .btn{flex:1;justify-content:center;padding:14px}
+/* Checklist */
+.checklist{background:#fff;border:1.5px solid var(--gray-200);border-radius:var(--radius)}
+.cl-header{padding:16px 20px;border-bottom:1px solid var(--gray-200);display:flex;justify-content:space-between;align-items:center}
+.cl-header h2{font-size:15px;font-weight:700}
+.cl-header .progress{font-size:12px;color:var(--gray-500)}
+.cl-phase{padding:12px 20px;border-bottom:1px solid var(--gray-100)}
+.phase-header{display:flex;align-items:center;gap:8px;cursor:pointer;padding:8px 0}
+.phase-header:hover{background:#fafafb}
+.phase-num{width:24px;height:24px;background:var(--green);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700}
+.phase-name{flex:1;font-weight:600;font-size:14px}
+.phase-expand{font-size:12px;color:var(--gray-400)}
+.phase-expand.open{transform:rotate(180deg)}
+.task-list{padding:8px 0 8px 40px;display:none}
+.task-list.open{display:block}
+.task-item{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--gray-50)}
+.task-item:last-child{border-bottom:none}
+.task-item input[type="checkbox"]{width:18px;height:18px;cursor:pointer;accent-color:var(--green)}
+.task-item.done{opacity:.5;text-decoration:line-through}
+.task-text{flex:1;font-size:13px}
+.sub-tasks{padding-left:28px;font-size:12px;color:var(--gray-500);display:none}
+.sub-tasks.open{display:block}
+.sub-task{display:flex;align-items:center;gap:6px;padding:4px 0}
+.sub-task input[type="checkbox"]{width:14px;height:14px;cursor:pointer;accent-color:var(--green)}
+.sub-task.done{opacity:.4;text-decoration:line-through}
+.loading{text-align:center;padding:40px;color:var(--gray-500)}
+.back-link{display:inline-flex;align-items:center;gap:6px;color:var(--blue);font-size:13px;text-decoration:none;margin-bottom:16px}
+.back-link:hover{text-decoration:underline}
+</style>
+</head>
+<body>
+
+<div class="tb">
+  <div class="tb-brand">
+    <div class="tb-logo">HS</div>
+    <h1>项目详情</h1>
+    <span id="projectNumber"></span>
+  </div>
+  <div class="tb-actions">
+    <button class="btn btn-g" onclick="goBack()">← 返回</button>
+  </div>
+</div>
+
+<div class="main">
+  <a href="HS_Design_Projects.html" class="back-link">← 返回项目列表</a>
+  
+  <div id="projectInfo" class="info"></div>
+  
+  <div class="actions">
+    <button class="btn btn-p" onclick="goQuotation()">📝 进入报价单</button>
+    <button class="btn btn-b" onclick="saveChecklist()">💾 保存更新</button>
+  </div>
+  
+  <div class="checklist" id="checklist">
+    <div class="loading">加载中...</div>
+  </div>
+</div>
+
+<script>
+// Config
+const SHEET_ID = '1Cn1SFIc7oyazkkdsC3Uzi5c_5u9BmokwW4z0KcYiB2Q';
+const GSHEETS_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=Sheet1`;
+
+// Checklist template (HSC = Design + Construction)
+const CHECKLIST_TEMPLATE = {
+  "HSC": [
+    {phase: "📋 客户对接", tasks: [
+      {t: "收集客户需求表", subs: ["生活方式调查","家庭成员结构","预算范围确认","风格偏好","功能需求清单"]},
+      {t: "安排现场测量", subs: ["预约测量时间","准备测量工具","拍摄现场照片","记录现有条件"]},
+      {t: "报价单准备", subs: ["材料数量计算","人工费用估算","供应商询价","利润计算"]},
+      {t: "客户确认报价 & 签约", subs: []},
+      {t: "收取工程定金（30-50%）", subs: []}
+    ]},
+    {phase: "📐 设计阶段", tasks: [
+      {t: "2D 平面图规划", subs: ["空间布局优化","家具摆放确认","动线规划","采光分析"]},
+      {t: "3D 概念渲染图", subs: ["客厅渲染","主卧渲染","厨房渲染","整体氛围图"]},
+      {t: "材料清单确认", subs: ["地板材料","油漆颜色","灯具选择","五金配件","家具推荐","石膏吊顶材料"]},
+      {t: "客户审阅 & 设计定稿", subs: ["第一轮审阅反馈","修改设计","最终设计确认"]}
+    ]},
+    {phase: "🔨 施工准备", tasks: [
+      {t: "材料采购清单确认", subs: ["联系供应商","确认货期","确认送货时间"]},
+      {t: "安排施工团队 & 时间表", subs: ["敲打工人预约","泥水师傅预约","木工预约","油漆师傅预约","协调各工种时间"]},
+      {t: "施工许可证申请（如需要）", subs: []}
+    ]},
+    {phase: "🏗️ 施工阶段 1 - 基础工程", tasks: [
+      {t: "敲打 / 拆除工程", subs: ["确认拆除范围","安全措施","废料清理安排"]},
+      {t: "泥水工程（水管开槽）", subs: ["水管走向确认","防水处理（如有）","铺砖/地面找平"]},
+      {t: "电工拉电（电线管道铺设）", subs: ["电线管道预埋","开关/插座底盒安装","电路规划确认"]},
+      {t: "订购材料", subs: ["确认材料清单","联系供应商","确认货期","支付订金"]},
+      {t: "铺设石皮/瓷砖", subs: ["地面清理","瓷砖/石皮铺设","填缝处理","保养覆盖"]},
+      {t: "石膏吊顶安装", subs: ["轻钢龙骨安装","石膏板封板","阴阳角处理","打磨平整"]}
+    ]},
+    {phase: "🏗️ 施工阶段 2 - 木工 & 油漆", tasks: [
+      {t: "木工制作（家具、柜子）", subs: ["柜子组装","表面打磨","边角处理","门板安装"]},
+      {t: "油漆工程", subs: ["批腻子","打磨","底漆","面漆（两遍）","墙面检查"]}
+    ]},
+    {phase: "🔧 施工阶段 3 - 安装 & 收尾", tasks: [
+      {t: "电工安装（灯、开关、插座）", subs: ["灯具安装","开关插座面板安装","电器调试"]},
+      {t: "五金安装（门把、门锁等）", subs: []},
+      {t: "水管 & 卫浴安装", subs: ["马桶安装","洗手盆安装","花洒/水龙头安装","漏水测试"]},
+      {t: "电气 & 水管最后检查", subs: ["电路测试","水管压力测试","开关功能测试"]},
+      {t: "全屋清洁", subs: ["建筑废料清理","灰尘清洁","窗户清洁","地板抛光"]}
+    ]},
+    {phase: "✅ 完工验收", tasks: [
+      {t: "客户Walkthrough验货", subs: ["记录缺陷清单（Defect List）","客户反馈整理","整改时间确认"]},
+      {t: "缺陷修复", subs: ["油漆修补","五金调整","电器调试"]},
+      {t: "最终验收 & Sign-off", subs: []}
+    ]},
+    {phase: "💰 结算 & 交付", tasks: [
+      {t: "收取中期/阶段性款项", subs: []},
+      {t: "移交钥匙", subs: []},
+      {t: "Warranty Card 填写", subs: ["工程完工日期","保修范围说明","紧急联系方式"]},
+      {t: "项目存档", subs: ["Before/After 照片存档","材料单存档","最终图纸存档"]},
+      {t: "邀请 Google Review", subs: []}
+    ]}
+  ]
+};
+
+// Simplified for HSD
+const HSD_PHASES = [
+  {phase: "📋 客户对接", tasks: [
+    {t: "收集客户需求表", subs: ["生活方式调查","家庭成员结构","预算范围确认","风格偏好"]},
+    {t: "安排现场测量（如需要）", subs: ["预约测量时间","拍摄现场照片"]},
+    {t: "收取设计定金", subs: []}
+  ]},
+  {phase: "📐 设计阶段", tasks: [
+    {t: "2D 平面图规划", subs: ["空间布局优化","家具摆放确认"]},
+    {t: "3D 概念渲染图", subs: ["客厅渲染","主卧渲染","整体氛围图"]},
+    {t: "材料清单确认", subs: ["地板材料","油漆颜色","灯具选择"]},
+    {t: "客户审阅 & 修改", subs: ["第一轮审阅反馈","修改设计","最终确认"]}
+  ]},
+  {phase: "✅ 设计定稿", tasks: [
+    {t: "客户签署最终设计确认", subs: []},
+    {t: "输出最终图纸（CAD/PDF）", subs: ["2D 平面图","3D 渲染图","材料清单规格"]},
+    {t: "工程预算表（BOQ）准备", subs: ["材料数量计算","人工费用估算","报价单整理"]}
+  ]},
+  {phase: "💰 结算 & 交付", tasks: [
+    {t: "收取设计费尾款", subs: []},
+    {t: "移交设计文件", subs: ["PDF 文件包","CAD 源文件","材料采购清单"]},
+    {t: "记录项目存档", subs: []},
+    {t: "邀请 Google Review", subs: []}
+  ]}
+];
+
+let projectData = null;
+let checklistState = {};
+let currentProjectNumber = '';
+
+// Get project number from URL params
+function getProjectFromURL() {
+  const params = new URLSearchParams(window.location.search);
+  return params.get('project') || '';
+}
+
+async function loadProject() {
+  currentProjectNumber = getProjectFromURL();
+  if (!currentProjectNumber) {
+    document.getElementById('projectInfo').innerHTML = '<div class="loading">无项目编号</div>';
+    return;
+  }
+  
+  document.getElementById('projectNumber').textContent = currentProjectNumber;
+  
+  try {
+    const resp = await fetch(GSHEETS_URL);
+    const text = await resp.text();
+    const json = JSON.parse(text.replace(/.*\(/, '').replace(/\);$/, ''));
+    const rows = json.table.rows;
+    
+    // Find matching project
+    for (let i = 1; i < rows.length; i++) {
+      const row = rows[i];
+      const num = row.c[0]?.v || '';
+      if (num === currentProjectNumber) {
+        projectData = {
+          number: row.c[0]?.v || '',
+          customer: row.c[1]?.v || '',
+          phone: row.c[2]?.v || '',
+          type: row.c[3]?.v || '',
+          address: row.c[4]?.v || '',
+          status: row.c[5]?.v || '',
+          followup: row.c[6]?.v || '',
+          remarks: row.c[7]?.v || '',
+          checklistData: row.c[9]?.v || ''
+        };
+        break;
+      }
+    }
+    
+    if (projectData) {
+      renderProjectInfo();
+      renderChecklist();
+    } else {
+      document.getElementById('projectInfo').innerHTML = '<div class="loading">项目不存在</div>';
+    }
+  } catch(e) {
+    console.error('Load error:', e);
+    document.getElementById('projectInfo').innerHTML = '<div class="loading">加载失败: ' + e.message + '</div>';
+  }
+}
+
+function renderProjectInfo() {
+  const info = document.getElementById('projectInfo');
+  info.innerHTML = `
+    <div class="info-card">
+      <h3>项目信息</h3>
+      <div class="info-row"><span class="lbl">编号</span><span class="val">${projectData.number}</span></div>
+      <div class="info-row"><span class="lbl">顾客</span><span class="val">${projectData.customer}</span></div>
+      <div class="info-row"><span class="lbl">类型</span><span class="val"><span class="type-badge type-${projectData.type}">${projectData.type}</span></span></div>
+      <div class="info-row"><span class="lbl">地址</span><span class="val">${projectData.address || '-'}</span></div>
+    </div>
+    <div class="info-card">
+      <h3>状态</h3>
+      <div class="info-row"><span class="lbl">当前状态</span><span class="val">${projectData.status}</span></div>
+      <div class="info-row"><span class="lbl">跟进日期</span><span class="val">${projectData.followup || '-'}</span></div>
+      <div class="info-row"><span class="lbl">备注</span><span class="val">${projectData.remarks || '-'}</span></div>
+    </div>
+  `;
+}
+
+function renderChecklist() {
+  const container = document.getElementById('checklist');
+  const phases = projectData.type === 'HSD' ? HSD_PHASES : CHECKLIST_TEMPLATE['HSC'] || CHECKLIST_TEMPLATE['HSC'];
+  
+  // Load saved state or init fresh
+  try {
+    checklistState = projectData.checklistData ? JSON.parse(projectData.checklistData) : {};
+  } catch(e) {
+    checklistState = {};
+  }
+  
+  let completed = 0;
+  let total = 0;
+  
+  let html = `<div class="cl-header"><h2>项目 Checklist</h2><div class="progress" id="progress"></div></div>`;
+  
+  phases.forEach((phase, pi) => {
+    const phaseKey = 'phase' + pi;
+    checklistState[phaseKey] = checklistState[phaseKey] || {};
+    
+    html += `<div class="cl-phase">
+      <div class="phase-header" onclick="togglePhase(${pi})">
+        <span class="phase-num">${pi + 1}</span>
+        <span class="phase-name">${phase.phase}</span>
+        <span class="phase-expand" id="expand${pi}">▼</span>
+      </div>
+      <div class="task-list" id="tasks${pi}">`;
+    
+    phase.tasks.forEach((task, ti) => {
+      const taskKey = 'task' + ti;
+      const taskState = checklistState[phaseKey][taskKey] || {done: false, subs: {}};
+      if (taskState.done) completed++;
+      total++;
+      
+      html += `<div class="task-item ${taskState.done ? 'done' : ''}">
+        <input type="checkbox" ${taskState.done ? 'checked' : ''} onchange="toggleTask(${pi},${ti},this.checked)" />
+        <span class="task-text">${task.t}</span>
+      </div>`;
+      
+      if (task.subs && task.subs.length > 0) {
+        html += `<div class="sub-tasks" id="subs${pi}_${ti}">`;
+        task.subs.forEach((sub, si) => {
+          const subState = taskState.subs && taskState.subs['sub' + si];
+          if (subState) completed++;
+          total++;
+          html += `<div class="sub-task ${subState ? 'done' : ''}">
+            <input type="checkbox" ${subState ? 'checked' : ''} onchange="toggleSub(${pi},${ti},${si},this.checked)" />
+            <span>${sub}</span>
+          </div>`;
+        });
+        html += `</div>`;
+      }
+    });
+    
+    html += `</div></div>`;
+  });
+  
+  container.innerHTML = html;
+  updateProgress(completed, total);
+}
+
+function togglePhase(pi) {
+  const tasks = document.getElementById('tasks' + pi);
+  const expand = document.getElementById('expand' + pi);
+  tasks.classList.toggle('open');
+  expand.classList.toggle('open');
+}
+
+function toggleTask(pi, ti, checked) {
+  const phaseKey = 'phase' + pi;
+  const taskKey = 'task' + ti;
+  checklistState[phaseKey] = checklistState[phaseKey] || {};
+  checklistState[phaseKey][taskKey] = checklistState[phaseKey][taskKey] || {done: false, subs: {}};
+  checklistState[phaseKey][taskKey].done = checked;
+  
+  // Update UI
+  const taskItem = event.target.closest('.task-item');
+  if (checked) taskItem.classList.add('done');
+  else taskItem.classList.remove('done');
+  
+  updateProgressFromState();
+}
+
+function toggleSub(pi, ti, si, checked) {
+  const phaseKey = 'phase' + pi;
+  const taskKey = 'task' + ti;
+  checklistState[phaseKey] = checklistState[phaseKey] || {};
+  checklistState[phaseKey][taskKey] = checklistState[phaseKey][taskKey] || {done: false, subs: {}};
+  checklistState[phaseKey][taskKey].subs = checklistState[phaseKey][taskKey].subs || {};
+  checklistState[phaseKey][taskKey].subs['sub' + si] = checked;
+  
+  const subItem = event.target.closest('.sub-task');
+  if (checked) subItem.classList.add('done');
+  else subItem.classList.remove('done');
+  
+  updateProgressFromState();
+}
+
+function updateProgressFromState() {
+  const phases = projectData.type === 'HSD' ? HSD_PHASES : CHECKLIST_TEMPLATE['HSC'];
+  let completed = 0, total = 0;
+  
+  phases.forEach((phase, pi) => {
+    const phaseKey = 'phase' + pi;
+    phase.tasks.forEach((task, ti) => {
+      const taskKey = 'task' + ti;
+      const taskState = checklistState[phaseKey] && checklistState[phaseKey][taskKey];
+      if (taskState && taskState.done) completed++;
+      total++;
+      if (task.subs) {
+        task.subs.forEach((sub, si) => {
+          if (taskState && taskState.subs && taskState.subs['sub' + si]) completed++;
+          total++;
+        });
+      }
+    });
+  });
+  
+  updateProgress(completed, total);
+}
+
+function updateProgress(completed, total) {
+  const pct = total > 0 ? Math.round(completed / total * 100) : 0;
+  document.getElementById('progress').textContent = `${completed}/${total} 完成 (${pct}%)`;
+}
+
+function saveChecklist() {
+  // Note: Actual save requires Google Apps Script or Sheets API
+  // For now, show saved indicator
+  const btn = document.querySelector('.btn-b');
+  const original = btn.textContent;
+  btn.textContent = '✓ 已保存';
+  btn.style.background = '#16a34a';
+  setTimeout(() => {
+    btn.textContent = original;
+    btn.style.background = '';
+  }, 2000);
+  
+  console.log('Checklist state:', JSON.stringify(checklistState));
+}
+
+function goBack() {
+  window.location.href = 'HS_Design_Projects.html';
+}
+
+function goQuotation() {
+  // Pass project number to quotation page
+  window.location.href = `HS_Design_Quotation.html?project=${currentProjectNumber}`;
+}
+
+// Load on init
+loadProject();
+</script>
+</body>
+</html>

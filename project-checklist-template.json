@@ -1,0 +1,185 @@
+{
+  "projectTypes": {
+    "HSD": {
+      "name": "Design Only (纯设计)",
+      "description": "只做设计，不包含施工",
+      "phases": [
+        {
+          "id": "phase1",
+          "name": "📋 客户对接",
+          "tasks": [
+            {"id": "t1_1", "text": "收集客户需求表", "expandable": true, "subTasks": ["生活方式调查", "家庭成员结构", "预算范围确认", "风格偏好（参考图）", "功能需求清单"]},
+            {"id": "t1_2", "text": "安排现场测量", "expandable": true, "subTasks": ["预约测量时间", "准备测量工具", "拍摄现场照片", "记录现有条件"]},
+            {"id": "t1_3", "text": "收取设计定金", "expandable": false, "subTasks": []}
+          ]
+        },
+        {
+          "id": "phase2",
+          "name": "📐 设计阶段",
+          "tasks": [
+            {"id": "t2_1", "text": "2D 平面图规划", "expandable": true, "subTasks": ["空间布局优化", "家具摆放确认", "动线规划", "采光分析"]},
+            {"id": "t2_2", "text": "3D 概念渲染图", "expandable": true, "subTasks": ["客厅渲染", "主卧渲染", "厨房渲染（如有）", "整体氛围图"]},
+            {"id": "t2_3", "text": "材料清单确认", "expandable": true, "subTasks": ["地板材料", "油漆颜色", "灯具选择", "五金配件", "家具推荐"]},
+            {"id": "t2_4", "text": "客户审阅 & 修改", "expandable": true, "subTasks": ["第一轮审阅反馈", "修改平面图", "修改渲染图", "第二轮审阅确认"]}
+          ]
+        },
+        {
+          "id": "phase3",
+          "name": "✅ 设计定稿",
+          "tasks": [
+            {"id": "t3_1", "text": "客户签署最终设计确认", "expandable": false, "subTasks": []},
+            {"id": "t3_2", "text": "输出最终图纸（CAD/PDF）", "expandable": true, "subTasks": ["2D 平面图", "3D 渲染图", "材料清单规格", "电工配置图", "水管配置图"]},
+            {"id": "t3_3", "text": "工程预算表（BOQ）准备", "expandable": true, "subTasks": ["材料数量计算", "人工费用估算", "利润加成", "报价单整理"]}
+          ]
+        },
+        {
+          "id": "phase4",
+          "name": "💰 结算 & 交付",
+          "tasks": [
+            {"id": "t4_1", "text": "收取设计费尾款", "expandable": false, "subTasks": []},
+            {"id": "t4_2", "text": "移交设计文件", "expandable": true, "subTasks": ["PDF 文件包", "CAD 源文件", "材料采购清单", "供应商联系方式"]},
+            {"id": "t4_3", "text": "记录项目存档", "expandable": false, "subTasks": []},
+            {"id": "t4_4", "text": "邀请 Google Review", "expandable": false, "subTasks": []}
+          ]
+        }
+      ]
+    },
+    "HSC": {
+      "name": "Design + Construction (设计+施工)",
+      "description": "包含施工的完整项目",
+      "phases": [
+        {
+          "id": "phase1",
+          "name": "📋 客户对接",
+          "tasks": [
+            {"id": "t1_1", "text": "收集客户需求表", "expandable": true, "subTasks": ["生活方式调查", "家庭成员结构", "预算范围确认", "风格偏好（参考图）", "功能需求清单"]},
+            {"id": "t1_2", "text": "安排现场测量", "expandable": true, "subTasks": ["预约测量时间", "准备测量工具", "拍摄现场照片", "记录现有条件"]},
+            {"id": "t1_3", "text": "报价单准备", "expandable": true, "subTasks": ["材料数量计算", "人工费用估算", "供应商询价", "利润计算"]},
+            {"id": "t1_4", "text": "客户确认报价 & 签约", "expandable": false, "subTasks": []},
+            {"id": "t1_5", "text": "收取工程定金（30-50%）", "expandable": false, "subTasks": []}
+          ]
+        },
+        {
+          "id": "phase2",
+          "name": "📐 设计阶段",
+          "tasks": [
+            {"id": "t2_1", "text": "2D 平面图规划", "expandable": true, "subTasks": ["空间布局优化", "家具摆放确认", "动线规划", "采光分析"]},
+            {"id": "t2_2", "text": "3D 概念渲染图", "expandable": true, "subTasks": ["客厅渲染", "主卧渲染", "厨房渲染", "整体氛围图"]},
+            {"id": "t2_3", "text": "材料清单确认", "expandable": true, "subTasks": ["地板材料", "油漆颜色", "灯具选择", "五金配件", "家具推荐", "石膏吊顶材料"]},
+            {"id": "t2_4", "text": "客户审阅 & 设计定稿", "expandable": true, "subTasks": ["第一轮审阅反馈", "修改设计", "最终设计确认"]}
+          ]
+        },
+        {
+          "id": "phase3",
+          "name": "🔨 施工准备",
+          "tasks": [
+            {"id": "t3_1", "text": "材料采购清单确认", "expandable": true, "subTasks": ["联系供应商", "确认货期", "确认送货时间"]},
+            {"id": "t3_2", "text": "安排施工团队 & 时间表", "expandable": true, "subTasks": ["敲打工人预约", "泥水师傅预约", "木工预约", "油漆师傅预约", "协调各工种时间"]},
+            {"id": "t3_3", "text": "施工许可证申请（如需要）", "expandable": false, "subTasks": []}
+          ]
+        },
+        {
+          "id": "phase4",
+          "name": "🏗️ 施工阶段 1 - 基础工程",
+          "tasks": [
+            {"id": "t4_1", "text": "敲打 / 拆除工程", "expandable": true, "subTasks": ["确认拆除范围", "安全措施", "废料清理安排"]},
+            {"id": "t4_2", "text": "泥水工程（水管开槽）", "expandable": true, "subTasks": ["水管走向确认", "防水处理（如有）", "铺砖/地面找平"]},
+            {"id": "t4_3", "text": "电工拉电（电线管道铺设）", "expandable": true, "subTasks": ["电线管道预埋", "开关/插座底盒安装", "电路规划确认"]},
+            {"id": "t4_4", "text": "订购材料", "expandable": true, "subTasks": ["确认材料清单", "联系供应商", "确认货期", "支付订金"]},
+            {"id": "t4_5", "text": "铺设石皮/瓷砖", "expandable": true, "subTasks": ["地面清理", "瓷砖/石皮铺设", "填缝处理", "保养覆盖"]},
+            {"id": "t4_6", "text": "石膏吊顶安装", "expandable": true, "subTasks": ["轻钢龙骨安装", "石膏板封板", "阴阳角处理", "打磨平整"]}
+          ]
+        },
+        {
+          "id": "phase5",
+          "name": "🏗️ 施工阶段 2 - 木工 & 油漆",
+          "tasks": [
+            {"id": "t5_1", "text": "木工制作（家具、柜子）", "expandable": true, "subTasks": ["柜子组装", "表面打磨", "边角处理", "门板安装"]},
+            {"id": "t5_2", "text": "油漆工程", "expandable": true, "subTasks": ["批腻子", "打磨", "底漆", "面漆（两遍）", "墙面检查"]}
+          ]
+        },
+        {
+          "id": "phase6",
+          "name": "🔧 施工阶段 3 - 安装 & 收尾",
+          "tasks": [
+            {"id": "t6_1", "text": "电工安装（灯、开关、插座）", "expandable": true, "subTasks": ["灯具安装", "开关插座面板安装", "电器调试"]},
+            {"id": "t6_2", "text": "五金安装（门把、门锁等）", "expandable": false, "subTasks": []},
+            {"id": "t6_3", "text": "水管 & 卫浴安装", "expandable": true, "subTasks": ["马桶安装", "洗手盆安装", "花洒/水龙头安装", "漏水测试"]},
+            {"id": "t6_4", "text": "电气 & 水管最后检查", "expandable": true, "subTasks": ["电路测试", "水管压力测试", "开关功能测试"]},
+            {"id": "t6_5", "text": "全屋清洁", "expandable": true, "subTasks": ["建筑废料清理", "灰尘清洁", "窗户清洁", "地板抛光"]}
+          ]
+        },
+        {
+          "id": "phase7",
+          "name": "✅ 完工验收",
+          "tasks": [
+            {"id": "t7_1", "text": "客户Walkthrough验货", "expandable": true, "subTasks": ["记录缺陷清单（Defect List）", "客户反馈整理", "整改时间确认"]},
+            {"id": "t7_2", "text": "缺陷修复", "expandable": true, "subTasks": ["油漆修补", "五金调整", "电器调试"]},
+            {"id": "t7_3", "text": "最终验收 & Sign-off", "expandable": false, "subTasks": []}
+          ]
+        },
+        {
+          "id": "phase8",
+          "name": "💰 结算 & 交付",
+          "tasks": [
+            {"id": "t8_1", "text": "收取中期/阶段性款项", "expandable": false, "subTasks": []},
+            {"id": "t8_2", "text": "移交钥匙", "expandable": false, "subTasks": []},
+            {"id": "t8_3", "text": " Warranty Card 填写", "expandable": true, "subTasks": ["工程完工日期", "保修范围说明", "紧急联系方式"]},
+            {"id": "t8_4", "text": "项目存档", "expandable": true, "subTasks": ["Before/After 照片存档", "材料单存档", "最终图纸存档"]},
+            {"id": "t8_5", "text": "邀请 Google Review", "expandable": false, "subTasks": []}
+          ]
+        }
+      ]
+    },
+    "HSP": {
+      "name": "Pending (未拿下)",
+      "description": "跟进中的潜在项目",
+      "phases": [
+        {
+          "id": "phase1",
+          "name": "📞 初次接触",
+          "tasks": [
+            {"id": "t1_1", "text": "收集客户联系信息", "expandable": false, "subTasks": []},
+            {"id": "t1_2", "text": "了解客户需求 & 预算", "expandable": true, "subTasks": ["房屋类型", "面积大小", "预算范围", "期望完工时间"]},
+            {"id": "t1_3", "text": "安排现场测量（如需要）", "expandable": false, "subTasks": []}
+          ]
+        },
+        {
+          "id": "phase2",
+          "name": "📋 报价阶段",
+          "tasks": [
+            {"id": "t2_1", "text": "现场测量 & 拍照", "expandable": false, "subTasks": []},
+            {"id": "t2_2", "text": "制作报价单", "expandable": true, "subTasks": ["材料清单", "人工费用", "利润计算"]},
+            {"id": "t2_3", "text": "报价单发送客户", "expandable": false, "subTasks": []},
+            {"id": "t2_4", "text": "跟进客户反馈", "expandable": true, "subTasks": ["询问审阅情况", "解释报价细节", "协商价格"]},
+            {"id": "t2_5", "text": "确认签约 → 转为 HSD/HSC", "expandable": false, "subTasks": []}
+          ]
+        }
+      ]
+    },
+    "HLD": {
+      "name": "Legacy (旧项目)",
+      "description": "从旧公司接手的项目",
+      "phases": [
+        {
+          "id": "phase1",
+          "name": "📂 项目交接",
+          "tasks": [
+            {"id": "t1_1", "text": "收集项目资料", "expandable": true, "subTasks": ["旧图纸", "报价单副本", "合同副本", "客户联系方式"]},
+            {"id": "t1_2", "text": "了解项目当前状态", "expandable": true, "subTasks": ["已完成阶段", "进行中阶段", "待完成事项", "付款情况"]},
+            {"id": "t1_3", "text": "与旧客户沟通确认继续合作", "expandable": false, "subTasks": []}
+          ]
+        },
+        {
+          "id": "phase2",
+          "name": "🔄 继续/收尾",
+          "tasks": [
+            {"id": "t2_1", "text": "确认剩余工作", "expandable": false, "subTasks": []},
+            {"id": "t2_2", "text": "完成收尾工作", "expandable": false, "subTasks": []},
+            {"id": "t2_3", "text": "项目结算 & 关闭", "expandable": false, "subTasks": []}
+          ]
+        }
+      ]
+    }
+  }
+}

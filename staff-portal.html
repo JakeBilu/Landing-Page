@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HS Design — 员工入口</title>
+<style>
+:root{--green:#5a9e8f;--green-dark:#2d5a47;--green-light:#e6f4f1;--gold:#c9a84c;--gray-50:#f9fafb;--gray-100:#f3f4f6;--gray-200:#e5e7eb;--gray-300:#d1d5db;--gray-500:#6b7280;--gray-700:#374151;--gray-900:#111827;--red:#dc2626;--blue:#2563eb;--radius:8px;}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',Arial,sans-serif;background:linear-gradient(135deg,#1a3a2d,#2d5a47);min-height:100vh;display:flex;align-items:center;justify-content:center}
+.card{background:#fff;border-radius:20px;padding:48px;width:400px;text-align:center;box-shadow:0 24px 64px rgba(0,0,0,.3)}
+.logo{width:60px;height:60px;background:var(--green);border-radius:14px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:24px;margin:0 auto 20px}
+h1{font-size:22px;font-weight:800;color:var(--gray-900);margin-bottom:6px}
+.sub{font-size:13px;color:var(--gray-500);margin-bottom:32px}
+.cards{display:flex;flex-direction:column;gap:12px}
+.big-btn{display:flex;align-items:center;gap:14px;padding:18px 20px;background:var(--green-light);border:2px solid var(--green);border-radius:12px;cursor:pointer;transition:all .2s;text-decoration:none;color:var(--gray-900)}
+.big-btn:hover{background:var(--green);color:#fff;transform:translateY(-2px)}
+.big-btn .icon{font-size:28px}
+.big-btn .text{text-align:left}
+.big-btn .text span{display:block;font-size:15px;font-weight:700}
+.big-btn .text small{font-size:11px;opacity:.7}
+.ver{font-size:10px;color:var(--gray-300);margin-top:24px}
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="logo">HS</div>
+  <h1>HS Design</h1>
+  <p class="sub">员工工具中心</p>
+  
+  <div class="cards">
+    <a href="HS_Design_Projects.html" class="big-btn">
+      <div class="icon">📋</div>
+      <div class="text">
+        <span>项目管理</span>
+        <small>查看项目状态、Checklist、Google Drive</small>
+      </div>
+    </a>
+    
+    <a href="HS_Design_Quotation.html" class="big-btn">
+      <div class="icon">📝</div>
+      <div class="text">
+        <span>报价系统</span>
+        <small>创建 & 编辑报价单</small>
+      </div>
+    </a>
+  </div>
+  
+  <div class="ver">v1.0 — Staff Portal</div>
+</div>
+</body>
+</html>

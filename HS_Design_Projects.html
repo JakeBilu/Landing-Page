@@ -192,7 +192,7 @@ function render() {
   filtered.forEach((p, i) => {
     const rowIndex = projects.indexOf(p) + 2; // +2 because header is row 1, data starts row 2
     html += `
-      <div class="t-row">
+      <div class="t-row" style="cursor:pointer" onclick="goToProject('${p.number}')">
         <div class="num">${p.number}</div>
         <div class="cust">${p.customer}</div>
         <div><span class="type type-${p.type}">${p.type}</span></div>
@@ -264,6 +264,10 @@ function checkPw() {
   } else {
     document.getElementById('err').style.display = 'block';
   }
+}
+
+function goToProject(number) {
+  window.location.href = `project-detail.html?project=${number}`;
 }
 
 function logout() {
