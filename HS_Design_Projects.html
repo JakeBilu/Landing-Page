@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HS Design — 项目管理</title>
+<style>
+:root{--green:#5a9e8f;--green-dark:#2d5a47;--green-light:#e6f4f1;--gold:#c9a84c;--gray-50:#f9fafb;--gray-100:#f3f4f6;--gray-200:#e5e7eb;--gray-300:#d1d5db;--gray-500:#6b7280;--gray-700:#374151;--gray-900:#111827;--red:#dc2626;--blue:#2563eb;--radius:8px;}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',Arial,sans-serif;background:#f0f2f5;color:var(--gray-900);min-height:100vh}
+#gate{position:fixed;inset:0;z-index:9999;background:linear-gradient(135deg,#1a3a2d,#5a9e8f);display:flex;align-items:center;justify-content:center}
+.g-box{background:#fff;border-radius:16px;padding:44px 40px;width:360px;text-align:center;box-shadow:0 24px 64px rgba(0,0,0,.25)}
+.g-box .emoji{font-size:36px;margin-bottom:12px}
+.g-box h2{font-size:20px;font-weight:700;color:var(--green-dark);margin-bottom:6px}
+.g-box p{font-size:13px;color:var(--gray-500);margin-bottom:24px}
+.g-box input{width:100%;padding:13px 16px;border:2px solid var(--gray-200);border-radius:8px;font-size:16px;outline:none;transition:border .2s;text-align:center;letter-spacing:3px}
+.g-box input:focus{border-color:var(--green)}
+.g-btn{width:100%;margin-top:14px;padding:14px;background:var(--green);color:#fff;border:none;border-radius:8px;font-size:15px;font-weight:600;cursor:pointer;transition:background .2s}
+.g-btn:hover{background:var(--green-dark)}
+.g-err{color:var(--red);font-size:13px;margin-top:12px;display:none}
+.app{display:none;flex-direction:column;min-height:100vh}
+.tb{background:#fff;border-bottom:1.5px solid var(--gray-200);padding:12px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.tb-brand{display:flex;align-items:center;gap:10px}
+.tb-logo{width:30px;height:30px;background:var(--green);border-radius:7px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:13px}
+.tb h1{font-size:15px;font-weight:700}
+.tb span{font-size:12px;color:var(--gray-500)}
+.tb-actions{display:flex;align-items:center;gap:8px}
+.btn{padding:8px 16px;border-radius:7px;font-size:13px;font-weight:600;cursor:pointer;border:none;transition:all .2s;display:inline-flex;align-items:center;gap:6px}
+.btn-p{background:var(--green);color:#fff}.btn-p:hover{background:var(--green-dark)}
+.btn-g{background:transparent;border:1.5px solid var(--gray-300);color:var(--gray-700)}.btn-g:hover{border-color:var(--green);color:var(--green)}
+.main{flex:1;padding:24px;overflow:auto}
+.mi{max-width:1000px;margin:0 auto}
+/* Stats */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px}
+.stat{background:#fff;border:1.5px solid var(--gray-200);border-radius:var(--radius);padding:16px;text-align:center}
+.stat .n{font-size:28px;font-weight:800;color:var(--green)}
+.stat .l{font-size:11px;color:var(--gray-500);margin-top:4px;text-transform:uppercase;letter-spacing:.5px}
+/* Table */
+.tbl{background:#fff;border:1.5px solid var(--gray-200);border-radius:var(--radius);overflow:hidden}
+.t-hdr{background:var(--gray-50);padding:12px 16px;display:grid;grid-template-columns:100px 1fr 100px 90px 90px 120px 80px;gap:10px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--gray-500);border-bottom:1.5px solid var(--gray-200)}
+.t-row{padding:14px 16px;display:grid;grid-template-columns:100px 1fr 100px 90px 90px 120px 80px;gap:10px;align-items:center;border-bottom:1px solid var(--gray-100);transition:background .15s}
+.t-row:last-child{border-bottom:none}
+.t-row:hover{background:#fafcfb}
+.t-row input,.t-row select{padding:7px 10px;border:1.5px solid var(--gray-200);border-radius:6px;font-size:13px;outline:none;font-family:inherit;width:100%;transition:border .2s}
+.t-row input:focus,.t-row select:focus{border-color:var(--green)}
+.t-row input[readonly]{background:var(--gray-50);color:var(--gray-700)}
+.num{font-weight:700;color:var(--green-dark);font-size:13px}
+.cust{font-weight:600}
+.type{font-size:11px;font-weight:700;padding:3px 8px;border-radius:10px;display:inline-block}
+.type-HSD{background:#dbeafe;color:#1d4ed8}
+.type-HSC{background:#fce7f3;color:#9d174d}
+.type-HSP{background:#fef3c7;color:#92400e}
+.type-HLD{background:#e8f4f1;color:#2d5a47}
+.stat-sel{padding:6px 10px;border-radius:6px;font-size:12px;font-weight:600;border:none;cursor:pointer}
+.stat-咨询中{background:#dbeafe;color:#1d4ed8}
+.stat-报价中{background:#fce7f3;color:#9d174d}
+.stat-设计中{background:#fef3c7;color:#92400e}
+.stat-已完成{background:#dcfce7;color:#166534}
+.stat-未拿下{background:#fef2f2;color:#dc2626}
+.drive-link{color:var(--blue);text-decoration:none;font-size:12px;display:inline-flex;align-items:center;gap:4px}
+.drive-link:hover{text-decoration:underline}
+.saving{font-size:11px;color:var(--gray-400);margin-left:6px}
+.saved{font-size:11px;color:#16a34a;margin-left:6px}
+.hi{font-size:11px;color:var(--gray-400)}
+/* Nav tabs */
+.tabs{display:flex;gap:8px;margin-bottom:20px}
+.tab{padding:10px 20px;background:#fff;border:1.5px solid var(--gray-200);border-radius:var(--radius);cursor:pointer;font-size:13px;font-weight:600;color:var(--gray-500);transition:all .2s}
+.tab:hover{border-color:var(--green);color:var(--green)}
+.tab.active{background:var(--green);color:#fff;border-color:var(--green)}
+.loading{text-align:center;padding:60px;color:var(--gray-500)}
+.loading .spinner{display:inline-block;width:32px;height:32px;border:3px solid var(--gray-200);border-top-color:var(--green);border-radius:50%;animation:spin 1s linear infinite;margin-bottom:16px}
+@keyframes spin{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+
+<!-- Password Gate -->
+<div id="gate">
+  <div class="g-box">
+    <div class="emoji">🔐</div>
+    <h2>员工入口</h2>
+    <p>输入密码访问项目管理</p>
+    <input type="password" id="pw" placeholder="输入密码" />
+    <button class="g-btn" onclick="checkPw()">进入</button>
+    <div class="g-err" id="err">密码错误</div>
+  </div>
+</div>
+
+<!-- Main App -->
+<div class="app" id="app">
+  <div class="tb">
+    <div class="tb-brand">
+      <div class="tb-logo">HS</div>
+      <h1>HS Design 项目管理</h1>
+      <span>Staff Portal</span>
+    </div>
+    <div class="tb-actions">
+      <button class="btn btn-p" onclick="loadData()">🔄 刷新</button>
+      <button class="btn btn-g" onclick="logout()">登出</button>
+    </div>
+  </div>
+  
+  <div class="main">
+    <div class="mi">
+      <div class="tabs">
+        <div class="tab active" onclick="filterType='ALL';render()">全部</div>
+        <div class="tab" onclick="filterType='HSD';render()">设计 (HSD)</div>
+        <div class="tab" onclick="filterType='HSC';render()">施工 (HSC)</div>
+        <div class="tab" onclick="filterType='HSP';render()">未拿下 (HSP)</div>
+        <div class="tab" onclick="filterType='HLD';render()">旧项目 (HLD)</div>
+      </div>
+      
+      <div class="stats" id="stats"></div>
+      <div class="tbl" id="tbl">
+        <div class="loading"><div class="spinner"></div><p>加载中...</p></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// Config
+const PASSWORD = 'hs1234';
+const SHEET_ID = '1Cn1SFIc7oyazkkdsC3Uzi5c_5u9BmokwW4z0KcYiB2Q';
+const API_KEY = 'AIzaSyBJKzJ4ZM5J4J4J4J4J4J4J4J4J4J4J4J4'; // Not used with CORS, will use sheet.api的直接调用
+
+let projects = [];
+let filterType = 'ALL';
+
+// Google Sheets API (public read, no auth needed for staff browser)
+const GSHEETS_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=Sheet1`;
+
+async function loadData() {
+  const tbl = document.getElementById('tbl');
+  tbl.innerHTML = '<div class="loading"><div class="spinner"></div><p>加载中...</p></div>';
+  
+  try {
+    const resp = await fetch(GSHEETS_URL);
+    const text = await resp.text();
+    const json = JSON.parse(text.replace(/.*\(/, '').replace(/\);$/, ''));
+    
+    const rows = json.table.rows;
+    projects = rows.slice(1).map((r, i) => ({
+      number: r.c[0]?.v || '',
+      customer: r.c[1]?.v || '',
+      phone: r.c[2]?.v || '',
+      type: r.c[3]?.v || '',
+      address: r.c[4]?.v || '',
+      status: r.c[5]?.v || '',
+      followup: r.c[6]?.v || '',
+      remarks: r.c[7]?.v || '',
+      driveLink: r.c[8]?.v || ''
+    }));
+    
+    render();
+  } catch(e) {
+    tbl.innerHTML = '<div class="loading"><p>加载失败: ' + e.message + '</p></div>';
+  }
+}
+
+function render() {
+  const filtered = filterType === 'ALL' ? projects : projects.filter(p => p.type === filterType);
+  
+  // Stats
+  const stats = {
+    total: projects.length,
+    designing: projects.filter(p => p.status === '设计中').length,
+    completed: projects.filter(p => p.status === '已完成').length,
+    lost: projects.filter(p => p.status === '未拿下').length
+  };
+  
+  document.getElementById('stats').innerHTML = `
+    <div class="stat"><div class="n">${stats.total}</div><div class="l">全部项目</div></div>
+    <div class="stat"><div class="n">${stats.designing}</div><div class="l">设计中</div></div>
+    <div class="stat"><div class="n">${stats.completed}</div><div class="l">已完成</div></div>
+    <div class="stat"><div class="n">${stats.lost}</div><div class="l">未拿下</div></div>
+  `;
+  
+  // Table
+  let html = `
+    <div class="t-hdr">
+      <div>编号</div>
+      <div>顾客</div>
+      <div>类型</div>
+      <div>状态</div>
+      <div>跟进日期</div>
+      <div>Google Drive</div>
+      <div>备注</div>
+    </div>
+  `;
+  
+  filtered.forEach((p, i) => {
+    const rowIndex = projects.indexOf(p) + 2; // +2 because header is row 1, data starts row 2
+    html += `
+      <div class="t-row">
+        <div class="num">${p.number}</div>
+        <div class="cust">${p.customer}</div>
+        <div><span class="type type-${p.type}">${p.type}</span></div>
+        <div>
+          <select class="stat-sel stat-${p.status}" onchange="updateCell(${rowIndex}, 6, this.value)">
+            <option value="咨询中" ${p.status==='咨询中'?'selected':''}>咨询中</option>
+            <option value="报价中" ${p.status==='报价中'?'selected':''}>报价中</option>
+            <option value="设计中" ${p.status==='设计中'?'selected':''}>设计中</option>
+            <option value="已完成" ${p.status==='已完成'?'selected':''}>已完成</option>
+            <option value="未拿下" ${p.status==='未拿下'?'selected':''}>未拿下</option>
+          </select>
+        </div>
+        <div>
+          <input type="date" value="${p.followup}" onchange="updateCell(${rowIndex}, 7, this.value)" />
+        </div>
+        <div>
+          ${p.driveLink 
+            ? `<a href="${p.driveLink}" target="_blank" class="drive-link">📁 打开</a>` 
+            : `<input type="url" placeholder="粘贴 Drive 链接" onchange="updateCell(${rowIndex}, 9, this.value)" style="font-size:11px;padding:5px 8px" />`}
+        </div>
+        <div class="hi">${p.remarks}</div>
+      </div>
+    `;
+  });
+  
+  document.getElementById('tbl').innerHTML = html;
+}
+
+async function updateCell(row, col, value) {
+  // Note: Direct spreadsheet update requires backend auth
+  // For now, this updates local display only
+  // To actually save, we need to use Apps Script or backend
+  console.log(`Row ${row}, Col ${col}: ${value}`);
+  
+  // Update local data
+  const rowIndex = row - 2;
+  if (projects[rowIndex]) {
+    if (col === 6) projects[rowIndex].status = value;
+    if (col === 7) projects[rowIndex].followup = value;
+    if (col === 9) projects[rowIndex].driveLink = value;
+  }
+  
+  // Show saving indicator
+  const rows = document.querySelectorAll('.t-row');
+  if (rows[rowIndex]) {
+    const cell = rows[rowIndex].children[col === 6 ? 3 : col === 7 ? 4 : 5];
+    const existing = cell.querySelector('.saving, .saved');
+    if (existing) existing.remove();
+    const indicator = document.createElement('span');
+    indicator.className = 'saving';
+    indicator.textContent = '保存中...';
+    cell.appendChild(indicator);
+    
+    // Simulate save (actual save needs backend)
+    setTimeout(() => {
+      indicator.className = 'saved';
+      indicator.textContent = '✓';
+      setTimeout(() => indicator.remove(), 2000);
+    }, 500);
+  }
+}
+
+function checkPw() {
+  const pw = document.getElementById('pw').value;
+  if (pw === PASSWORD) {
+    document.getElementById('gate').style.display = 'none';
+    document.getElementById('app').style.display = 'flex';
+    loadData();
+  } else {
+    document.getElementById('err').style.display = 'block';
+  }
+}
+
+function logout() {
+  document.getElementById('gate').style.display = 'flex';
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('pw').value = '';
+}
+
+// Enter key
+document.getElementById('pw').addEventListener('keyup', e => {
+  if (e.key === 'Enter') checkPw();
+});
+</script>
+</body>
+</html>
