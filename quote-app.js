@@ -245,8 +245,16 @@ function renderSections() {
   _data.forEach((sec, si) => {
     const secEl = document.createElement('div');
     secEl.className = 'section-block';
+    secEl.setAttribute('draggable','true');
+    secEl.setAttribute('data-si', si);
+    secEl.ondragstart = function(ev) { window._dragSec=si; ev.dataTransfer.effectAllowed='move'; this.style.opacity='0.5'; };
+    secEl.ondragend = function(ev) { this.style.opacity='1'; };
+    secEl.ondragover = function(ev) { ev.preventDefault(); this.classList.add('drag-over'); };
+    secEl.ondragleave = function(ev) { this.classList.remove('drag-over'); };
+    secEl.ondrop = function(ev) { ev.preventDefault(); this.classList.remove('drag-over'); if(window._dragSec==null||window._dragSec===si) return; const tmp=_data.splice(window._dragSec,1)[0]; _data.splice(si,0,tmp); window._dragSec=null; renderSections(); dirty(); };
     secEl.innerHTML = `
       <div class="sec-hdr">
+        <span class="drag-handle" title="Drag to reorder">☰</span>
         <input type="text" class="sec-name" placeholder="Section name, e.g. Electrical Work" value="${esc(sec.section)}" oninput="syncSectionName(${si},this)">
         <button class="btn btn-r btn-sm" onclick="delSection(${si})" title="Delete section">🗑</button>
       </div>
@@ -262,6 +270,8 @@ function renderSections() {
   });
 }
 
+function moveSectionUp(si) { if(si<=0)return; const tmp=_data.splice(si,1)[0]; _data.splice(si-1,0,tmp); renderSections(); dirty(); }
+function moveSectionDown(si) { if(si>=_data.length-1)return; const tmp=_data.splice(si,1)[0]; _data.splice(si+1,0,tmp); renderSections(); dirty(); }
 function addSection(name) { _data.push({section:name||'',items:[makeItem()]}); renderSections(); dirty(); }
 function delSection(si) { if (_data.length <= 1) return; _data.splice(si,1); renderSections(); dirty(); }
 function syncSectionName(si, inp) { _data[si].section = inp.value; dirty(); }
