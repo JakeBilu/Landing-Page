@@ -1,1 +1,8 @@
 ﻿google-sheets-credentials.json\nservice-account-key.json\nsetup-sheets.js\nwrite-sheets.js\nsheets-token.json
+
+# wrangler files
+.wrangler
+.dev.vars*
+!.dev.vars.example
+.env*
+!.env.example
