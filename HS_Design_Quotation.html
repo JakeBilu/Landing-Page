@@ -46,6 +46,16 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#f0f2f5;color:var(--gray
 .qc-p{font-size:11px;color:var(--gray-500);margin-bottom:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .qc-b{display:flex;justify-content:space-between;align-items:center}
 .qc-tot{font-size:13px;font-weight:700;color:var(--green)}
+/* Collapsible quote card */
+.qc-head{display:flex;align-items:flex-start;gap:8px;cursor:pointer}
+.qc-mini{flex:1;min-width:0}
+.qc-chevron{background:none;border:none;cursor:pointer;font-size:16px;color:var(--gray-400);padding:2px 4px;flex-shrink:0;margin-top:2px;transition:color .2s,transform .2s}
+.qc-chevron:hover{color:var(--green)}
+.qc-chevron.open{color:var(--green);transform:rotate(180deg)}
+.qc-body{display:none;padding-top:10px;margin-top:10px;border-top:1px solid var(--gray-200)}
+.qc-body.open{display:block}
+.qc-detail{display:flex;gap:8px;font-size:12px;padding:3px 0;color:var(--gray-700)}
+.qc-detail .qc-dl{min-width:52px;color:var(--gray-500);font-weight:600;flex-shrink:0}
 .bdg{padding:2px 7px;border-radius:12px;font-size:10px;font-weight:700;text-transform:uppercase}
 .bdg-dr{background:var(--gray-200);color:var(--gray-700)}
 .bdg-se{background:#dbeafe;color:#1d4ed8}

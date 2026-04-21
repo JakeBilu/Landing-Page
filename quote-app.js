@@ -7,6 +7,7 @@ const UNITS = ['nos', 'set', 'm', 'm²', 'lot', 'box', 'lump sum', 'day', 'trip'
 // ─── STATE ────────────────────────────────────────────────────────────────────
 let quotes = [];
 let activeId = null;
+let expandedId = null;
 let isDirty = false;
 let autoSaveTimer = null;
 // _data = [{ section: '', items: [{ desc:'', unit:'nos', qty:1, costItems:[{desc:'',unit:'nos',qty:1,unitPrice:0,amt:0}], sell:0 }] }]
@@ -134,12 +135,36 @@ function renderList() {
   el.innerHTML = quotes.map(q => {
     const tot = (q.items||[]).reduce((s,sec) => s + (sec.items||[]).reduce((a,it) => a + (parseFloat(it.sell)||0)*(parseFloat(it.qty)||0), 0), 0);
     const bdg = q.status==='Sent'?'bdg-se':q.status==='Paid'?'bdg-pa':'bdg-dr';
-    return `<div class="qc ${q.id===activeId?'active':''}" onclick="openQ('${q.id}')">
-      <div class="qc-t">${esc(q.name)||'Unnamed'}</div>
-      <div class="qc-p">${esc(q.project)||'—'}</div>
-      <div class="qc-b"><span class="qc-tot">RM ${fmt(tot)}</span><span class="bdg ${bdg}">${q.status}</span></div>
+    const secNames = (q.items||[]).map(s=>s.section||'Untitled').filter(Boolean).join(', ') || 'No sections';
+    const itemCount = (q.items||[]).reduce((a,sec)=>a+(sec.items||[]).length,0);
+    const isOpen = q.id===activeId;
+    const isExp = expandedId===q.id;
+    return `<div class="qc ${isOpen?'active':''}" id="qc-${q.id}">
+      <div class="qc-head" onclick="handleQClick('${q.id}',event)">
+        <div class="qc-mini">
+          <div class="qc-t">${esc(q.name)||'Unnamed'}</div>
+          <div class="qc-p">${esc(q.project)||'—'}</div>
+          <div class="qc-b"><span class="qc-tot">RM ${fmt(tot)}</span><span class="bdg ${bdg}">${q.status}</span></div>
+        </div>
+        <button class="qc-chevron ${isExp?'open':''}" onclick="toggleQ('${q.id}',event)" title="Expand">${isExp?'▴':'▾'}</button>
+      </div>
+      <div class="qc-body ${isExp?'open':''}" onclick="event.stopPropagation()">
+        <div class="qc-detail"><span class="qc-dl">No</span><span>${esc(q.qno)||'—'}</span></div>
+        <div class="qc-detail"><span class="qc-dl">Date</span><span>${q.date||'—'}</span></div>
+        <div class="qc-detail"><span class="qc-dl">Sections</span><span>${secNames}</span></div>
+        <div class="qc-detail"><span class="qc-dl">Items</span><span>${itemCount} item${itemCount!==1?'s':''}</span></div>
+      </div>
     </div>`;
   }).join('');
+}
+function handleQClick(id, event) {
+  event.stopPropagation();
+  openQ(id);
+}
+function toggleQ(id, event) {
+  event.stopPropagation();
+  expandedId = expandedId === id ? null : id;
+  renderList();
 }
 
 // ─── OPEN / NEW ───────────────────────────────────────────────────────────────
