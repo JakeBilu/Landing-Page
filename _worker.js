@@ -1,0 +1,1 @@
+import { onRequest } from './functions/notion-proxy.js';
