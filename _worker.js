@@ -11,7 +11,7 @@ export default {
       const method = request.method;
       const headers = {
         'Authorization': 'Bearer ' + NOTION_API_KEY,
-        'Notion-Version': '2022-06-30',
+        'Notion-Version': '2022-06-28',
         'Content-Type': 'application\/json',
         'Access-Control-Allow-Origin': '*',
         'Access-Control-Allow-Headers': 'Content-Type, Authorization',
