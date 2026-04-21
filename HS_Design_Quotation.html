@@ -122,6 +122,9 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#f0f2f5;color:var(--gray
 .sec-hdr{display:flex;align-items:center;gap:8px;margin-bottom:10px}
 .sec-hdr input{flex:1;padding:8px 12px;border:1.5px solid var(--gray-200);border-radius:7px;font-size:14px;font-weight:700;outline:none;font-family:inherit;background:#f0faf7;color:var(--green-dark)}
 .sec-hdr input:focus{border-color:var(--green)}
+.drag-handle{cursor:grab;font-size:16px;color:var(--gray-400);padding:4px 6px;user-select:none;flex-shrink:0;line-height:1}
+.drag-handle:active{cursor:grabbing}
+.section-block.drag-over{border-color:var(--green);background:#f0fff5;box-shadow:0 0 0 2px var(--green)}
 .item-num{font-size:13px;color:var(--gray-400);text-align:center;font-weight:600;min-width:20px}
 .sec-row td{background:#e8f4f1!important;font-weight:700!important;color:#2d5a47!important}
 .mo{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9000;align-items:center;justify-content:center}
