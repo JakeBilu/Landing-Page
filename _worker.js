@@ -1,3 +1,7 @@
+const ACCOUNT_ID = 'f6b7326e471bbe3d1b0a0e2ba770f47d';
+const DATABASE_ID = '8d776216-e135-4c9f-b1bb-9669cb10bd85';
+const CF_API_KEY = 'cfk_kes1eXKw2GMrY9zJset9Jr9PsI7QVpiHU7yPNhub180fb23e';
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
@@ -13,36 +17,30 @@ export default {
       return new Response(null, { status: 204, headers: corsHeaders });
     }
 
-    // ── D1 API ────────────────────────────────────────────────────────────────
+    const jsonHeaders = { 'Content-Type': 'application/json', ...corsHeaders };
+
+    // ── D1 API (via Cloudflare REST API, no binding needed) ──────────────────
     if (pathname.startsWith('/d1-api')) {
-      const d1 = env.DB;
-      if (!d1) {
-        return new Response(JSON.stringify({ object: 'error', message: 'D1 binding not found' }), {
-          status: 500, headers: { 'Content-Type': 'application/json', ...corsHeaders },
+      const d1Url = `https://api.cloudflare.com/client/v4/accounts/${ACCOUNT_ID}/d1/database/${DATABASE_ID}/query`;
+
+      async function d1query(sql, params = []) {
+        const body = JSON.stringify({ sql, params });
+        const res = await fetch(d1Url, {
+          method: 'POST',
+          headers: {
+            'X-Auth-Email': 'ida.czia@gmail.com',
+            'X-Auth-Key': CF_API_KEY,
+            'Content-Type': 'application/json',
+          },
+          body,
         });
-      }
-
-      const jsonHeaders = { 'Content-Type': 'application/json', ...corsHeaders };
-
-      async function d1all(sql, params = []) {
-        try {
-          const r = await d1.prepare(sql).bind(...params).all();
-          return { results: r.results || [] };
-        } catch (e) {
-          return { object: 'error', message: e.message };
-        }
-      }
-
-      async function d1first(sql, params = []) {
-        try {
-          return await d1.prepare(sql).bind(...params).first();
-        } catch (e) {
-          return null;
-        }
+        const d = await res.json();
+        if (!d.success) throw new Error(d.errors?.[0]?.message || 'D1 error');
+        return d.result?.[0]?.results || [];
       }
 
       // POST /d1-api/v1/databases/{db}/query — list quotes
-      const dbMatch = pathname.match(/^\/d1-api\/v1\/databases\/([^/]+)\/query$/);
+      const dbMatch = pathname.match(/^\/d1-api\/v1\/databases\/([^\/]+)\/query$/);
       if (dbMatch && request.method === 'POST') {
         const body = await request.json().catch(() => ({}));
         const limit = Math.min(body.page_size || 50, 100);
@@ -54,14 +52,13 @@ export default {
           if (s.property === 'Date') order = `date ${s.direction === 'ascending' ? 'ASC' : 'DESC'}`;
           else if (s.property === 'Name') order = `name ${s.direction === 'ascending' ? 'ASC' : 'DESC'}`;
         }
-        const rows = await d1all(`SELECT id, name, project, date, status, data FROM quotes ORDER BY ${order} LIMIT ? OFFSET ?`, [limit, offset]);
-        if (rows.object === 'error') {
-          return new Response(JSON.stringify(rows), { status: 500, headers: jsonHeaders });
-        }
-        const countRow = await d1first(`SELECT COUNT(*) as cnt FROM quotes`);
-        const total = countRow ? countRow.cnt : 0;
+
+        const rows = await d1query(`SELECT id, name, project, date, status, data FROM quotes ORDER BY ${order} LIMIT ? OFFSET ?`, [limit, offset]);
+        const countRow = await d1query(`SELECT COUNT(*) as cnt FROM quotes`);
+        const total = countRow[0]?.cnt || 0;
         const hasMore = offset + limit < total;
-        const results = rows.results.map(r => {
+
+        const results = rows.map(r => {
           let items = [], terms = [], notes = '', notes2 = [], qno = '', addr = '';
           try { const j = JSON.parse(r.data || '{}'); items = j.items || []; terms = j.terms || []; notes = j.notes || ''; notes2 = j.notes2 || []; qno = j.qno || ''; addr = j.addr || ''; } catch (e) {}
           return {
@@ -75,7 +72,11 @@ export default {
             }
           };
         });
-        return new Response(JSON.stringify({ object: 'list', results, has_more: hasMore, next_cursor: hasMore ? String(offset + limit) : null }), { status: 200, headers: jsonHeaders });
+
+        return new Response(JSON.stringify({
+          object: 'list', results, has_more: hasMore,
+          next_cursor: hasMore ? String(offset + limit) : null
+        }), { status: 200, headers: jsonHeaders });
       }
 
       // POST /d1-api/v1/pages — create quote
@@ -91,33 +92,30 @@ export default {
         const status = props.Status?.status?.name || 'Draft';
         const notesJson = props.Notes?.rich_text?.[0]?.plain_text || '{}';
         const id = crypto.randomUUID();
-        const data = notesJson;
-        await d1all(`INSERT INTO quotes (id, name, project, date, status, qno, addr, data, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, datetime('now'))`, [id, name, project, date, status, '', '', data]);
+        await d1query(`INSERT INTO quotes (id, name, project, date, status, qno, addr, data, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, datetime('now'))`,
+          [id, name, project, date, status, '', '', notesJson]);
         return new Response(JSON.stringify({ object: 'page', id, properties: props }), { status: 200, headers: jsonHeaders });
       }
 
       // PATCH /d1-api/v1/pages/{id} — update or archive
-      const pageMatch = pathname.match(/^\/d1-api\/v1\/pages\/([^/]+)$/);
+      const pageMatch = pathname.match(/^\/d1-api\/v1\/pages\/([^\/]+)$/);
       if (pageMatch && request.method === 'PATCH') {
         const id = pageMatch[1];
         const body = await request.json().catch(() => null);
         if (!body) {
           return new Response(JSON.stringify({ object: 'error', message: 'Invalid body' }), { status: 400, headers: jsonHeaders });
         }
-        // Archive = delete
         if (body.archived) {
-          await d1all(`DELETE FROM quotes WHERE id = ?`, [id]);
+          await d1query(`DELETE FROM quotes WHERE id = ?`, [id]);
           return new Response(JSON.stringify({ object: 'page', id, archived: true }), { status: 200, headers: jsonHeaders });
         }
-        // Update properties
         if (body.properties) {
           const props = body.properties;
-          const existing = await d1first(`SELECT data FROM quotes WHERE id = ?`, [id]);
+          const existing = await d1query(`SELECT data FROM quotes WHERE id = ?`, [id]);
           let items = [], terms = [], notes = '', notes2 = [], qno = '', addr = '';
-          if (existing && existing.data) {
-            try { const j = JSON.parse(existing.data); items = j.items || []; terms = j.terms || []; notes = j.notes || ''; notes2 = j.notes2 || []; qno = j.qno || ''; addr = j.addr || ''; } catch (e) {}
+          if (existing[0]?.data) {
+            try { const j = JSON.parse(existing[0].data); items = j.items || []; terms = j.terms || []; notes = j.notes || ''; notes2 = j.notes2 || []; qno = j.qno || ''; addr = j.addr || ''; } catch (e) {}
           }
-          // Merge new Notes JSON if provided
           if (props.Notes?.rich_text?.[0]?.plain_text) {
             try { const j = JSON.parse(props.Notes.rich_text[0].plain_text); items = j.items || items; terms = j.terms || terms; notes = j.notes || notes; notes2 = j.notes2 || notes2; qno = j.qno || qno; addr = j.addr || addr; } catch (e) {}
           }
@@ -126,7 +124,8 @@ export default {
           const newProject = props.Project?.rich_text?.[0]?.plain_text;
           const newDate = props.Date?.date?.start;
           const newStatus = props.Status?.status?.name;
-          await d1all(`UPDATE quotes SET name=COALESCE(?,name), project=COALESCE(?,project), date=COALESCE(?,date), status=COALESCE(?,status), data=? WHERE id=?`, [newName, newProject, newDate, newStatus, data, id]);
+          await d1query(`UPDATE quotes SET name=COALESCE(?,name), project=COALESCE(?,project), date=COALESCE(?,date), status=COALESCE(?,status), data=? WHERE id=?`,
+            [newName, newProject, newDate, newStatus, data, id]);
           return new Response(JSON.stringify({ object: 'page', id, properties: props }), { status: 200, headers: jsonHeaders });
         }
       }
@@ -134,7 +133,7 @@ export default {
       return new Response(JSON.stringify({ object: 'error', message: 'Not found' }), { status: 404, headers: jsonHeaders });
     }
 
-    // ── Notion proxy ─────────────────────────────────────────────────────────
+    // ── Notion proxy (keep for backward compat) ─────────────────────────────
     if (pathname.startsWith('/notion-proxy')) {
       const path = pathname.replace('/notion-proxy', '') || '/';
       const notionUrl = 'https://api.notion.com' + path;
