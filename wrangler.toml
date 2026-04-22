@@ -4,3 +4,7 @@ compatibility_date = "2026-04-21"
 # Functions directory - Cloudflare Pages will auto-detect functions here
 functions_dir = "functions"
 
+[[d1_databases]]
+binding = "DB"
+database_name = "hs-design-quotes"
+database_id = "8d776216-e135-4c9f-b1bb-9669cb10bd85"
