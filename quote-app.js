@@ -88,6 +88,7 @@ function chkGate() {
     app.style.display = 'flex';
     app.style.flexDirection = 'column';
     loadQuotes();
+    initSidebar();
     // Check for unsaved draft after loading quotes list
     setTimeout(() => {
       try {
@@ -326,6 +327,14 @@ function buildItemRow(it, si, ii) {
       <button class="btn btn-g btn-sm" onclick="addCi(${si},${ii},this)" style="margin-top:4px">+ Add cost line</button>
       <div class="csub-row">Subtotal cost: <span>RM ${fmt(ct)}</span></div>
     </div>`;
+  el.setAttribute('draggable', 'true');
+  el.dataset.si = si;
+  el.dataset.ii = ii;
+  el.ondragstart = function(e) { window._dragItem = {si,ii}; e.dataTransfer.effectAllowed = 'move'; this.style.opacity = '0.5'; };
+  el.ondragend = function(e) { this.style.opacity = '1'; window._dragItem = null; };
+  el.ondragover = function(e) { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; this.classList.add('drag-over'); };
+  el.ondragleave = function(e) { this.classList.remove('drag-over'); };
+  el.ondrop = function(e) { e.preventDefault(); this.classList.remove('drag-over'); if(!window._dragItem) return; const {si:fsi,ii:fii}=window._dragItem; if(fsi===si&&fii===ii) return; const [moved]=_data[fsi].items.splice(fii,1); _data[si].items.splice(ii,0,moved); renderSections(); dirty(); };
   return el;
 }
 
@@ -691,4 +700,25 @@ function printPDF() {
 }
 
 // ─── INIT ─────────────────────────────────────────────────────────────────────
+
+// ─── SIDEBAR COLLAPSE ──────────────────────────────────────────────────────────
+function toggleSidebar() {
+  const sb = document.querySelector('.sidebar');
+  const body = document.querySelector('.body');
+  const collapsed = sb.classList.toggle('collapsed');
+  body.classList.toggle('sidebar-collapsed', collapsed);
+  const btn = document.getElementById('sidebar-toggle');
+  if (btn) btn.textContent = collapsed ? '\u25ba' : '\u2630';
+  localStorage.setItem('sidebarCollapsed', collapsed);
+}
+function initSidebar() {
+  const sb = document.querySelector('.sidebar');
+  const body = document.querySelector('.body');
+  const collapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+  sb.classList.toggle('collapsed', collapsed);
+  body.classList.toggle('sidebar-collapsed', collapsed);
+  const btn = document.getElementById('sidebar-toggle');
+  if (btn) btn.textContent = collapsed ? '\u25ba' : '\u2630';
+}
+
 document.getElementById('pass').focus();

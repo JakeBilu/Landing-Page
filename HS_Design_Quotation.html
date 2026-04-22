@@ -172,6 +172,15 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#f0f2f5;color:var(--gray
 .csub input,.csub select{padding:6px 8px;border:1.5px solid #fcd34d;border-radius:5px;font-size:12px;outline:none;font-family:inherit;width:100%}
 .csub input:focus,.csub select:focus{border-color:var(--gold)}
 .csub .ci-amt{font-size:12px;color:var(--gold);font-weight:600;white-space:nowrap;text-align:right}
+
+/* ─── SIDEBAR COLLAPSE ─── */
+.sidebar.collapsed { width: 0; overflow: hidden; transition: width .25s ease; }
+.body { transition: grid-template-columns .25s ease; }
+.body.sidebar-collapsed { grid-template-columns: 0 1fr; }
+/* ─── DRAG & DROP ─── */
+.drag-over { outline: 2px dashed var(--gold, #c9a84c); outline-offset: -2px; }
+.item.dragging { opacity: 0.5; }
+
 </style>
 </head>
 <body>
@@ -197,6 +206,7 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#f0f2f5;color:var(--gray
   <div class="body">
     <div class="sidebar">
       <div class="sh"><h3>Quotations</h3><button class="btn btn-p btn-sm" onclick="newQuote()">+ New</button></div>
+      <button class="btn btn-g btn-sm" onclick="toggleSidebar()" id="sidebar-toggle" title="Toggle sidebar">☰</button>\n
       <div class="ql" id="ql"><div class="el"><div class="e">📋</div><p>Loading...</p></div></div>
     </div>
     <div class="main">
