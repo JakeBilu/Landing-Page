@@ -1,11 +1,12 @@
 const ACCOUNT_ID = 'f6b7326e471bbe3d1b0a0e2ba770f47d';
 const DATABASE_ID = '8d776216-e135-4c9f-b1bb-9669cb10bd85';
-const CF_API_KEY = 'cfk_kes1eXKw2GMrY9zJset9Jr9PsI7QVpiHU7yPNhub180fb23e';
+// CF_API_KEY set via: wrangler pages secret put CF_API_KEY --project hsdesign
 
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
     const pathname = url.pathname;
+    const CF_API_KEY = env.CF_API_KEY;
 
     const corsHeaders = {
       'Access-Control-Allow-Origin': '*',
@@ -19,8 +20,11 @@ export default {
 
     const jsonHeaders = { 'Content-Type': 'application/json', ...corsHeaders };
 
-    // ── D1 API (via Cloudflare REST API, no binding needed) ──────────────────
+    // ── D1 API (via Cloudflare REST API) ─────────────────────────────────────
     if (pathname.startsWith('/d1-api')) {
+      if (!CF_API_KEY) {
+        return new Response(JSON.stringify({ object: 'error', message: 'CF_API_KEY not configured' }), { status: 500, headers: jsonHeaders });
+      }
       const d1Url = `https://api.cloudflare.com/client/v4/accounts/${ACCOUNT_ID}/d1/database/${DATABASE_ID}/query`;
 
       async function d1query(sql, params = []) {
