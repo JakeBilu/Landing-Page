@@ -255,6 +255,8 @@ function renderSections() {
     secEl.innerHTML = `
       <div class="sec-hdr">
         <span class="drag-handle" title="Drag to reorder">☰</span>
+        <button class="btn btn-sm" onclick="moveSectionUp(${si})" title="Move up" style="padding:4px 8px;background:none;border:1px solid var(--gray-200)">↑</button>
+        <button class="btn btn-sm" onclick="moveSectionDown(${si})" title="Move down" style="padding:4px 8px;background:none;border:1px solid var(--gray-200)">↓</button>
         <input type="text" class="sec-name" placeholder="Section name, e.g. Electrical Work" value="${esc(sec.section)}" oninput="syncSectionName(${si},this)">
         <button class="btn btn-r btn-sm" onclick="delSection(${si})" title="Delete section">🗑</button>
       </div>
