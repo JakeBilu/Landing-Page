@@ -53,22 +53,189 @@ nav{position:sticky;top:0;z-index:100;background:rgba(250,250,248,.92);backdrop-
 .lang-toggle{background:transparent;border:1.5px solid var(--border);color:var(--grey);padding:6px 14px;border-radius:20px;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;}
 .lang-toggle:hover{border-color:var(--green);color:var(--green);}
 
-/* HERO */
-.hero{background:var(--white);padding:80px 24px 0;overflow:hidden;}
-.hero-inner{max-width:var(--max-w);margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;}
-.hero-content{padding-bottom:80px;}
-.hero-tag{margin-bottom:28px;}
-.hero-h1{font-size:clamp(34px,5vw,52px);font-weight:900;line-height:1.15;letter-spacing:-1px;margin-bottom:22px;}
-.hero-h1 em{color:var(--green);font-style:normal;}
-.hero-sub{font-size:17px;color:var(--grey);line-height:1.75;margin-bottom:36px;max-width:460px;}
-.hero-actions{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:48px;}
-.hero-trust{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--grey);}
-.hero-trust-dot{width:6px;height:6px;background:var(--green);border-radius:50%;}
-.hero-img-wrap{position:relative;align-self:stretch;border-radius:var(--radius) var(--radius) 0 0;overflow:hidden;min-height:480px;}
-.hero-img-wrap img{width:100%;height:100%;object-fit:cover;}
-.hero-img-badge{position:absolute;bottom:24px;left:24px;background:rgba(255,255,255,.95);backdrop-filter:blur(8px);border-radius:var(--radius-sm);padding:14px 18px;box-shadow:var(--shadow);}
+/* HERO 内容入场动画 */
+.hero-content > *{opacity:0;transform:translateY(20px);}
+.hero-tag{animation:fadeSlideUp .6s ease-out .2s forwards;}
+.hero-h1{animation:fadeSlideUp .6s ease-out .35s forwards;}
+.hero-sub{animation:fadeSlideUp .6s ease-out .5s forwards;}
+.hero-actions{animation:fadeSlideUp .6s ease-out .65s forwards;}
+.hero-trust{animation:fadeSlideUp .6s ease-out .8s forwards;}
+@keyframes fadeSlideUp{to{opacity:1;transform:translateY(0);}}
+
+/* 图片入场动画 */
+.hero-img-wrap img,
+.hero-img-wrap .gold-shimmer{animation:fadeScale .8s ease-out .3s forwards;opacity:0;}
+@keyframes fadeScale{to{opacity:1;transform:scale(1);}}
+
+/* 鼠标悬停 - 图片轻微放大 */
+.hero-img-wrap:hover img{transform:scale(1.03);transition:transform .5s ease;}
+.hero-img-wrap img{transition:transform .4s ease;}
+
+/* 滚动指示器 */
+.hero-scroll{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:8px;
+  margin-top:32px;
+  padding-bottom:16px;
+  opacity:0;
+  animation:fadeSlideUp .6s ease-out 1s forwards;
+}
+.hero-scroll-icon{
+  width:26px;height:40px;
+  border:2px solid #c9a84c50;
+  border-radius:13px;
+  position:relative;
+}
+.hero-scroll-icon::before{
+  content:'';
+  position:absolute;
+  top:8px;left:50%;
+  transform:translateX(-50%);
+  width:4px;height:8px;
+  background:var(--gold);
+  border-radius:2px;
+  animation:scrollBounce 1.8s ease-in-out infinite;
+}
+@keyframes scrollBounce{
+  0%,100%{top:8px;opacity:1;}
+  50%{top:18px;opacity:.3;}
+}
+@media(max-width:768px){.hero-scroll{display:none;}}
+
+/* 品牌装饰线 - 标题下划线动画 */
+.hero-h1::after{
+  content:'';
+  display:block;
+  width:60px;height:3px;
+  background:linear-gradient(90deg,var(--gold),var(--green));
+  margin-top:16px;
+  border-radius:2px;
+  transform:scaleX(0);
+  transform-origin:left;
+  animation:lineExpand .6s ease-out .9s forwards;
+}
+@keyframes lineExpand{to{transform:scaleX(1);}}
+
+/* 浮动金尘粒子 */
+.hero-particles{
+  position:absolute;
+  inset:0;
+  z-index:1;
+  pointer-events:none;
+  overflow:hidden;
+}
+.particle{
+  position:absolute;
+  width:4px;height:4px;
+  background:var(--gold);
+  border-radius:50%;
+  opacity:0;
+}
+.particle:nth-child(1){left:15%;top:20%;animation:floatParticle 6s ease-in-out 1s infinite;}
+.particle:nth-child(2){left:75%;top:35%;animation:floatParticle 7s ease-in-out 2s infinite;}
+.particle:nth-child(3){left:45%;top:70%;animation:floatParticle 5s ease-in-out 1.5s infinite;}
+.particle:nth-child(4){left:85%;top:75%;animation:floatParticle 8s ease-in-out 3s infinite;}
+.particle:nth-child(5){left:30%;top:55%;animation:floatParticle 6.5s ease-in-out 2.5s infinite;}
+@keyframes floatParticle{
+  0%{opacity:0;transform:translateY(0) scale(0);}
+  20%{opacity:.5;transform:translateY(-10px) scale(1);}
+  80%{opacity:.3;transform:translateY(-40px) scale(.8);}
+  100%{opacity:0;transform:translateY(-60px) scale(0);}
+}
+.hero-img-wrap{
+  position:relative;
+  align-self:stretch;
+  border-radius:var(--radius) var(--radius) 0 0;
+  overflow:hidden;
+  min-height:480px;
+}
+/* 健康自然渐变背景 + 金边几何图案 */
+.hero-img-wrap::before{
+  content:'';
+  position:absolute;
+  inset:0;
+  background:
+    /* 微妙金边光晕 左上 */
+    radial-gradient(ellipse at 20% 20%, #c9a84c18 0%, transparent 50%),
+    /* 健康绿光晕 右下 */
+    radial-gradient(ellipse at 80% 80%, #5a9e8f12 0%, transparent 45%),
+    /* 自然暖色基底 */
+    linear-gradient(165deg, #f8f7f4 0%, #e8f0eb 40%, #e5ede8 100%);
+  /* 几何格线图案 */
+  background-image:
+    repeating-linear-gradient(0deg, transparent, transparent 48px, #c9a84c06 48px, #c9a84c06 49px),
+    repeating-linear-gradient(90deg, transparent, transparent 48px, #c9a84c06 48px, #c9a84c06 49px);
+  z-index:1;
+  pointer-events:none;
+}
+/* 动态浮动元素 */
+.hero-img-wrap::after{
+  content:'';
+  position:absolute;
+  inset:0;
+  background:
+    /* 漂浮圆 1 - 顶部金圈 */
+    radial-gradient(circle at 75% 15%, #c9a84c20 0%, transparent 8%),
+    /* 漂浮圆 2 - 中间绿圈 */
+    radial-gradient(circle at 25% 60%, #5a9e8f15 0%, transparent 6%),
+    /* 漂浮圆 3 - 底部装饰 */
+    radial-gradient(circle at 60% 85%, #c9a84c12 0%, transparent 10%);
+  z-index:1;
+  pointer-events:none;
+  animation:heroFloat 8s ease-in-out infinite;
+}
+@keyframes heroFloat{
+  0%,100%{transform:translateY(0) scale(1);}
+  50%{transform:translateY(-8px) scale(1.02);}
+}
+/* 主图 */
+.hero-img-wrap img{width:100%;height:100%;object-fit:cover;position:relative;z-index:2;}
+/* 金边光泽叠加层（图片加载失败时显露） */
+.hero-img-wrap .gold-shimmer{
+  position:absolute;
+  inset:0;
+  background:linear-gradient(135deg, transparent 40%, #c9a84c08 50%, transparent 60%);
+  background-size:200% 200%;
+  animation:shimmer 3s ease-in-out infinite;
+  z-index:3;
+  pointer-events:none;
+}
+@keyframes shimmer{0%,100%{background-position:200% 200%;}50%{background-position:0% 0%;}}
+/* 徽章升级 - 带金边 */
+.hero-img-badge{
+  position:absolute;
+  bottom:24px;
+  left:24px;
+  background:rgba(255,255,255,.96);
+  backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);
+  border-radius:var(--radius-sm);
+  padding:14px 18px;
+  box-shadow:var(--shadow),0 0 0 1px #c9a84c15;
+  z-index:10;
+  border:1px solid rgba(201,168,76,.2);
+}
 .badge-num{font-size:22px;font-weight:800;color:var(--green);}
 .badge-label{font-size:12px;color:var(--grey);margin-top:2px;}
+/* 悬浮金点动画 */
+.hero-img-badge::before{
+  content:'';
+  position:absolute;
+  top:-4px;right:-4px;
+  width:10px;height:10px;
+  background:var(--gold);
+  border-radius:50%;
+  opacity:.6;
+  animation:badgePulse 2s ease-in-out infinite;
+}
+@keyframes badgePulse{0%,100%{transform:scale(1);opacity:.6;}50%{transform:scale(1.3);opacity:.3;}}
+/* 图片加载失败 fallback */
+.hero-img-wrap.img-error{background:linear-gradient(165deg,#f8f7f4,#e8f0eb);}
+.hero-img-wrap.img-error::before{z-index:0;}
+.hero-img-wrap.img-error img{display:none;}
+.hero-img-wrap.img-error .gold-shimmer{display:block;}
 
 /* STATS */
 .stats-bar{background:var(--black);color:var(--white);padding:36px 24px;}
@@ -174,6 +341,7 @@ footer{background:#111;color:#555;padding:32px 24px;}
   .hero-inner{grid-template-columns:1fr;gap:40px;}
   .hero-content{padding-bottom:0;}
   .hero-img-wrap{min-height:320px;border-radius:var(--radius);}
+  .hero-img-wrap::after{animation-duration:6s;}
   .stats-inner{grid-template-columns:repeat(2,1fr);gap:20px;}
   .pain-grid{grid-template-columns:1fr;}
   .protocol-grid{grid-template-columns:1fr;}
@@ -244,12 +412,23 @@ footer{background:#111;color:#555;padding:32px 24px;}
       </div>
     </div>
     <div class="hero-img-wrap">
-      <img src="images/hero-main.jpg" alt="健康空间设计" loading="eager" onerror="this.style.background='#e8f0eb';this.style.minHeight='480px';">
+      <div class="hero-particles">
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+      </div>
+      <img src="images/hero-main.jpg" alt="健康空间设计" loading="eager" onerror="this.style.display='none';this.parentElement.classList.add('img-error')">
+      <div class="gold-shimmer"></div>
       <div class="hero-img-badge">
         <div class="badge-num">50+</div>
         <div class="badge-label" data-zh="已优化空间" data-en="Spaces Optimised">已优化空间</div>
       </div>
     </div>
+  </div>
+  <div class="hero-scroll">
+    <span class="hero-scroll-icon"></span>
   </div>
 </section>
 
