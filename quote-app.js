@@ -1,7 +1,7 @@
 ﻿// ─── CONFIG ─────────────────────────────────────────────────────────────────
 const DB = '329538249e7e804bb295f34904902b1a';
 const PASS = 'HSHSHS';
-const PROXY = '/d1-api';
+const PROXY = '/notion-proxy';
 const UNITS = ['nos', 'set', 'm', 'm²', 'lot', 'box', 'lump sum', 'day', 'trip', 'ft', 'ft²', 'hour'];
 
 // ─── STATE ────────────────────────────────────────────────────────────────────
