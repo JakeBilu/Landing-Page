@@ -59,7 +59,7 @@ body{font-family:'Plus Jakarta Sans','Segoe UI',Arial,sans-serif;background:#ece
 .body.sidebar-collapsed{grid-template-columns:0 1fr}
 .sh{padding:14px 16px;border-bottom:1px solid var(--gray-200);display:flex;justify-content:space-between;align-items:center;gap:8px}
 .sh h3{font-size:10.5px;text-transform:uppercase;letter-spacing:1.5px;color:var(--gray-400);font-weight:700;flex:1}
-#sidebar-toggle{margin-left:auto;padding:5px 8px;font-size:13px;flex-shrink:0}
+#sidebar-toggle{position:fixed;top:50%;left:0;z-index:9999;padding:6px 10px;font-size:16px;background:var(--green);color:#fff;border:none;border-radius:0 6px 6px 0;cursor:pointer;box-shadow:2px 2px 8px rgba(0,0,0,.15);transform:translateY(-50%);display:block}#sidebar-toggle:hover{background:var(--green-dark)}.body.sidebar-collapsed .sidebar{width:0!important}
 .ql{flex:1;overflow-y:auto;padding:10px}
 /* Quote card */
 .qc{border:1.5px solid var(--gray-200);border-radius:var(--radius);padding:12px;margin-bottom:8px;cursor:pointer;transition:all .2s cubic-bezier(.4,0,.2,1)}
@@ -200,8 +200,10 @@ body{font-family:'Plus Jakarta Sans','Segoe UI',Arial,sans-serif;background:#ece
   <div class="body">
     <div class="sidebar">
       <div class="sh"><h3>Quotations</h3><button class="btn btn-p btn-sm" onclick="newQuote()">+ New</button></div>
-      <button class="btn btn-g btn-sm" onclick="toggleSidebar()" id="sidebar-toggle" title="Toggle sidebar">☰</button>\n
+      \n
       <div class="ql" id="ql"><div class="el"><div class="e">📋</div><p>Loading...</p></div></div>
+<button class="btn btn-g btn-sm" onclick="toggleSidebar()" id="sidebar-toggle" title="Toggle sidebar">☰</button>
+
     </div>
     <div class="main">
       <div class="mi">
