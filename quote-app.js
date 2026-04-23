@@ -1,4 +1,4 @@
-﻿// ─── CONFIG ─────────────────────────────────────────────────────────────────
+// ─── CONFIG ─────────────────────────────────────────────────────────────────
 const DB = '8d776216-e135-4c9f-b1bb-9669cb10bd85';
 const escSql = s => String(s==null?'':s).replace(/'/g, "''"); // SQL string escape
 const PASS = 'HSHSHS';
@@ -113,7 +113,7 @@ async function loadQuotes() {
   setSS('Loading...');
   console.log('loadQuotes: starting...');
   try {
-    const r = await fetch(PROXY + '/v1/databases/' + DB + '/query', {
+    const r = await fetch(PROXY, {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ sql: "SELECT id, name, project, date, status, qno, addr, data, created_at FROM quotes ORDER BY date DESC LIMIT 50", params: [] })
     });
@@ -512,12 +512,12 @@ async function saveQuote() {
     if (activeId && activeId!=='__new__') {
       const sql = `UPDATE quotes SET name='${escSql(_name)}', project='${escSql(_proj)}', date='${escSql(_date)}', status='${escSql(_status)}', qno='${escSql(_qno)}', addr='${escSql(_addr)}', data='${escSql(payload)}' WHERE id='${escSql(activeId)}'`;
       console.log('saveQuote: UPDATE sql=', sql);
-      res = await fetch(PROXY+'/v1/databases/'+DB+'/query', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({sql, params:[]})});
+      res = await fetch(PROXY, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({sql})});
     } else {
       const newId = crypto.randomUUID();
       const sql = `INSERT INTO quotes (id, name, project, date, status, qno, addr, data) VALUES ('${escSql(newId)}', '${escSql(_name)}', '${escSql(_proj)}', '${escSql(_date)}', '${escSql(_status)}', '${escSql(_qno)}', '${escSql(_addr)}', '${escSql(payload)}')`;
       console.log('saveQuote: INSERT sql=', sql);
-      res = await fetch(PROXY+'/v1/databases/'+DB+'/query', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({sql, params:[]})});
+      res = await fetch(PROXY, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({sql})});
       data = { id: newId };
     }
     console.log('saveQuote: response status=' + res.status);
@@ -539,7 +539,7 @@ async function saveQuote() {
 async function delQuote() {
   if (!activeId||activeId==='__new__') { alert('Nothing to delete'); return; }
   if (!confirm('Delete this quotation?')) return;
-  try { const res = await fetch(PROXY+'/v1/databases/'+DB+'/query', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({sql:`DELETE FROM quotes WHERE id='${escSql(activeId)}'`, params:[]})}); } catch(e){}
+  try { const res = await fetch(PROXY, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({sql:`DELETE FROM quotes WHERE id='${escSql(activeId)}'`})}); } catch(e){}
   quotes = quotes.filter(q=>q.id!==activeId);
   activeId = null; isDirty = false;
   document.getElementById('welcome').style.display='block';
