@@ -111,16 +111,20 @@ function chkGate() {
 // ─── NOTION ───────────────────────────────────────────────────────────────────
 async function loadQuotes() {
   setSS('Loading...');
+  console.log('loadQuotes: starting...');
   try {
     const r = await fetch(PROXY + '/v1/databases/' + DB + '/query', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ sql: "SELECT id, name, project, date, status, qno, addr, data, created_at FROM quotes ORDER BY date DESC LIMIT 50", params: [] })
     });
+    console.log('loadQuotes: response status=' + r.status);
     const d = await r.json();
-    if (!d.success) { setSS('D1 error: ' + (d.errors && d.errors[0] || '')); quotes = []; }
-    else { const rows = (d.result && d.result[0] && d.result[0].results) || []; quotes = rows.map(parseD1Row); setSS(quotes.length ? `Loaded ${quotes.length} quotes` : 'No quotes yet'); }
+    console.log('loadQuotes: d.success=' + d.success + ' result=' + JSON.stringify(d.result));
+    if (!d.success) { console.log('loadQuotes D1 error:', d.errors); setSS('D1 error: ' + (d.errors && d.errors[0] || '')); quotes = []; }
+    else { const rows = (d.result && d.result[0] && d.result[0].results) || []; quotes = rows.map(parseD1Row); console.log('loadQuotes success: quotes.length=' + quotes.length + ' ids=' + quotes.map(q=>q.id).join(',')); setSS(quotes.length ? `Loaded ${quotes.length} quotes` : 'No quotes yet'); }
+    console.log('loadQuotes: calling renderList, quotes.length=' + quotes.length);
     renderList();
-  } catch (e) { setSS('Offline'); quotes = []; renderList(); }
+  } catch (e) { console.log('loadQuotes network error:', e.message); setSS('Offline'); quotes = []; renderList(); }
 }
 
 function parseD1Row(r) {
@@ -158,7 +162,7 @@ function renderList() {
     </div>`;
   }).join('');
 }
-function handleQClick(id, event) {
+function handleQClick(id, event) { console.log('handleQClick: id=' + id + ' isDirty=' + isDirty);
   event.stopPropagation();
   openQ(id);
 }
@@ -187,11 +191,14 @@ function migrateData(data) {
 }
 
 function openQ(id) {
-  if (isDirty && !confirm('Unsaved changes. Discard?')) return;
+  console.log('openQ: ENTER id=' + id + ' isDirty=' + isDirty + ' quotes.length=' + quotes.length);
+  if (isDirty && !confirm('Unsaved changes. Discard?')) { console.log('openQ: ABORTED (isDirty)'); return; }
   clearDraft();
   activeId = id;
+  console.log('openQ: activeId set to ' + activeId + ', searching quotes array...');
   const q = quotes.find(x => x.id === id);
-  if (!q) return;
+  console.log('openQ: quotes.find result=', q ? 'FOUND name=' + q.name : 'NOT FOUND');
+  if (!q) { console.log('openQ: ABORT - quote not found. Available ids=' + quotes.map(q=>q.id).join(',')); return; }
   _data = migrateData(q.items && q.items.length ? q.items : null) || [{section:'',items:[makeItem()]}];
   _terms = JSON.parse(JSON.stringify(q.terms && q.terms.length ? q.terms : ['50% deposit upon confirmation','40% upon work commencement','10% upon completion']));
   _notes = JSON.parse(JSON.stringify(q.notes2 && q.notes2.length ? q.notes2 : DEFAULT_NOTES));
@@ -211,7 +218,9 @@ function openQ(id) {
   recalc();
   isDirty = false;
   setSS('Loaded');
+  console.log('openQ: calling renderList with activeId=' + activeId);
   renderList();
+  console.log('openQ: DONE');
 }
 
 function newQuote() {
