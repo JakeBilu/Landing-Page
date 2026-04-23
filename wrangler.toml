@@ -1,10 +1,7 @@
-name = "hsdesign"
-compatibility_date = "2026-04-21"
+name = "hsdesign-d1-api"
+main = "d1-api-worker.js"
+account_id = "f6b7326e471bbe3d1b0a0e2ba770f47d"
+compatibility_date = "2024-01-01"
 
-# Functions directory - Cloudflare Pages will auto-detect functions here
-functions_dir = "functions"
-
-[[d1_databases]]
-binding = "DB"
-database_name = "hs-design-quotes"
-database_id = "8d776216-e135-4c9f-b1bb-9669cb10bd85"
+# Prevent wrangler from treating this as Pages project
+# (the functions/ dir is for Pages, not Workers)
