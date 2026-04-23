@@ -331,7 +331,7 @@ function buildItemRow(it, si, ii) {
       <input type="text" class="f-desc" placeholder="e.g. Install lighting point" value="${escHtml(it.desc)}" oninput="syncItemDesc(${si},${ii},this)">
       <select class="f-unit" onchange="syncItemUnit(${si},${ii},this)">${UNITS.map(u => `<option value="${u}" ${it.unit===u?'selected':''}>${u}</option>`).join('')}</select>
       <input type="number" class="f-qty" min="0" placeholder="1" value="${it.qty}" oninput="syncItemQty(${si},${ii},this)" style="text-align:center">
-      <input type="number" class="f-cost" min="0" placeholder="0.00" value="${ct>0?fmt(ct):''}" readonly>
+      <input type="text" class="f-cost" readonly placeholder="0.00" value="${ct>0?fmt(ct):''}">
       <input type="number" class="f-sell" min="0" placeholder="0.00" value="${it.sell||it.sell===0?fmt(it.sell):''}" oninput="syncItemSell(${si},${ii},this)">
       <button class="btn btn-g btn-sm" style="padding:4px 8px;font-size:11px;white-space:nowrap" onclick="autoSell(${si},${ii})">+25%</button>
       <button class="del" onclick="remItem(${si},${ii})">×</button>
@@ -373,9 +373,9 @@ function autoSell(si,ii) {
   const row = secItems[si] ? secItems[si].children[ii] : null;
   if (row) {
     const sellInput = row.querySelector('.f-sell');
-    if (sellInput) sellInput.value = fmt(sell);
+    if (sellInput) sellInput.value = sell;
     const costInput = row.querySelector('.f-cost');
-    if (costInput) costInput.value = fmt(ct);
+    if (costInput) costInput.value = ct > 0 ? ct : '';
     const subRow = row.querySelector('.csub-row span');
     if (subRow) subRow.textContent = 'RM ' + fmt(ct);
     recalc();
@@ -423,10 +423,10 @@ function syncCi(si, ii, cii, inp, field) {
   ci.amt = ci.unitPrice * ci.qty;
   const amtEl = row.querySelector('.ci-amt');
   if (amtEl) amtEl.textContent = ci.amt > 0 ? 'RM ' + fmt(ci.amt) : '—';
-  const ct = (_data[si].items[ii].costItems||[]).reduce((s,c) => s+(parseFloat(c.amt)||0), 0); console.log("syncCi si="+si+" ii="+ii+" ct="+ct+" amts="+((_data[si].items[ii].costItems||[]).map(c=>c.amt).join(",")));
+  const ct = (_data[si].items[ii].costItems||[]).reduce((s,c) => s+(parseFloat(c.amt)||0), 0);
   const itemRow = row.closest('.item');
   const costInput = itemRow.querySelector('.f-cost');
-  if (costInput) costInput.value = ct>0?fmt(ct):'';
+  if (costInput) costInput.value = ct > 0 ? ct : '';
   const subRow = itemRow.querySelector('.csub-row span');
   if (subRow) subRow.textContent = 'RM '+fmt(ct);
   recalc();
