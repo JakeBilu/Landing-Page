@@ -113,20 +113,19 @@ async function loadQuotes() {
   try {
     const r = await fetch(PROXY + '/v1/databases/' + DB + '/query', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ sorts: [{ property: 'Date', direction: 'descending' }], page_size: 50 })
+      body: JSON.stringify({ sql: "SELECT id, name, project, date, status, qno, addr, data, created_at FROM quotes ORDER BY date DESC LIMIT 50", params: [] })
     });
     const d = await r.json();
-    if (d.object === 'error') { setSS('Notion error: ' + (d.message || '')); quotes = []; }
-    else { quotes = (d.results || []).map(parsePage); setSS(quotes.length ? `Loaded ${quotes.length} quotes` : 'No quotes yet'); }
+    if (!d.success) { setSS('D1 error: ' + (d.errors && d.errors[0] || '')); quotes = []; }
+    else { const rows = (d.result && d.result[0] && d.result[0].results) || []; quotes = rows.map(parseD1Row); setSS(quotes.length ? `Loaded ${quotes.length} quotes` : 'No quotes yet'); }
     renderList();
   } catch (e) { setSS('Offline'); quotes = []; renderList(); }
 }
 
-function parsePage(p) {
-  const g = k => { const v = p.properties[k]; if (!v) return ''; if (v.type==='title') return v.title?.[0]?.plain_text||''; if (v.type==='rich_text') return v.rich_text?.[0]?.plain_text||''; if (v.type==='date') return v.date?.start||''; if (v.type==='select') return v.select?.name||''; if (v.type==='status') return v.status?.name||''; return ''; };
+function parseD1Row(r) {
   let items=[],terms=[],notes='',notes2=[],qno='',addr='';
-  try { const j=JSON.parse(g('Notes')||'{}'); items=j.items||[]; terms=j.terms||[]; notes=j.notes||''; notes2=j.notes2||[]; qno=j.qno||''; addr=j.addr||''; } catch(e) {}
-  return { id:p.id, name:g('Name'), project:g('Project'), date:g('Date'), status:g('Status')||'Draft', qno, addr, items, terms, notes, notes2 };
+  try { const j=JSON.parse(r.data||'{}'); items=j.items||[]; terms=j.terms||[]; notes=j.notes||''; notes2=j.notes2||[]; qno=j.qno||''; addr=j.addr||''; } catch(e) {}
+  return { id:r.id, name:r.name||'', project:r.project||'', date:r.date||'', status:r.status||'Draft', qno:r.qno||'', addr:r.addr||'', items, terms, notes, notes2 };
 }
 
 // ─── LIST ─────────────────────────────────────────────────────────────────────
@@ -488,27 +487,22 @@ function gatherForm() {
 async function saveQuote() {
   if (!isDirty) return;
   gatherForm();
-  const payload = JSON.stringify({items:_data, terms:_terms, notes2:_notes, qno:_qno, code:_code, addr:_addr, notes:_notesTxt}).slice(0,2000);
-  const body = {
-    parent: {database_id: DB},
-    properties: {
-      Name: {title:[{text:{content:_name}}]},
-      Project: {rich_text:[{text:{content:_proj}}]},
-      Date: _date ? {date:{start:_date}} : {date:null},
-      Status: {status:{name:_status}},
-      Notes: {rich_text:[{text:{content:payload}}]}
-    }
-  };
+  const payload = JSON.stringify({items:_data, terms:_terms, notes2:_notes, qno:_qno, code:_code, addr:_addr, notes:_notesTxt});
   setSS('Saving...');
   try {
     let res, data;
     if (activeId && activeId!=='__new__') {
-      res = await fetch(PROXY+'/v1/pages/'+activeId, {method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({properties:body.properties})});
+      const sql = "UPDATE quotes SET name=?, project=?, date=?, status=?, qno=?, addr=?, data=? WHERE id=?";
+      res = await fetch(PROXY+'/v1/databases/'+DB+'/query', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({sql, params:[_name, _proj, _date, _status, _qno, _addr, payload, activeId]})});
     } else {
-      res = await fetch(PROXY+'/v1/pages', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+      const newId = crypto.randomUUID();
+      const sql = "INSERT INTO quotes (id, name, project, date, status, qno, addr, data) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+      res = await fetch(PROXY+'/v1/databases/'+DB+'/query', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({sql, params:[newId, _name, _proj, _date, _status, _qno, _addr, payload]})});
+      data = { id: newId };
     }
+    if (!res.ok) { setSS('Network error'); return; }
     data = await res.json();
-    if (data.object==='error') { setSS('Error: '+(data.message||'')); return; }
+    if (!data.success) { setSS('D1 error: '+(data.errors&&data.errors[0]||'')); return; }
     if (activeId==='__new__') { activeId=data.id; quotes.unshift({id:data.id,name:_name,project:_proj,date:_date,status:_status,qno:_qno,addr:_addr,items:_data,terms:_terms,notes2:_notes,notes:_notesTxt}); }
     else { const idx=quotes.findIndex(q=>q.id===activeId); if(idx!==-1) quotes[idx]={...quotes[idx],name:_name,project:_proj,date:_date,status:_status,qno:_qno,addr:_addr,items:_data,terms:_terms,notes2:_notes,notes:_notesTxt}; }
     isDirty = false;
@@ -522,7 +516,7 @@ async function saveQuote() {
 async function delQuote() {
   if (!activeId||activeId==='__new__') { alert('Nothing to delete'); return; }
   if (!confirm('Delete this quotation?')) return;
-  try { await fetch(PROXY+'/v1/pages/'+activeId, {method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({archived:true})}); } catch(e){}
+  try { const res = await fetch(PROXY+'/v1/databases/'+DB+'/query', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({sql:'DELETE FROM quotes WHERE id=?', params:[activeId]})}); } catch(e){}
   quotes = quotes.filter(q=>q.id!==activeId);
   activeId = null; isDirty = false;
   document.getElementById('welcome').style.display='block';
