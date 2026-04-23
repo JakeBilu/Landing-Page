@@ -118,6 +118,13 @@ async function loadQuotes() {
       body: JSON.stringify({ sql: "SELECT id, name, project, date, status, qno, addr, data, created_at FROM quotes ORDER BY date DESC LIMIT 50", params: [] })
     });
     console.log('loadQuotes: response status=' + r.status);
+    if (!r.ok) {
+      r.text().then(t => console.log('loadQuotes: HTTP error body:', t));
+      console.log('loadQuotes: HTTP error, status=' + r.status);
+      /* Try localStorage cache as fallback */
+      try { const cached = localStorage.getItem('hsdesign_quotes_cache'); if (cached) { quotes = JSON.parse(cached); console.log('loadQuotes: restored', quotes.length, 'quotes from localStorage cache'); renderList(); return; } } catch(e2) {}
+      setSS('Network error'); quotes = []; renderList(); return;
+    }
     const d = await r.json();
     console.log('loadQuotes: d.success=' + d.success + ' result=' + JSON.stringify(d.result));
     if (!d.success) { console.log('loadQuotes D1 error:', d.errors); setSS('D1 error: ' + (d.errors && d.errors[0] || '')); quotes = []; }
