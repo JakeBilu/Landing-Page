@@ -1,6 +1,6 @@
 ﻿// ─── CONFIG ─────────────────────────────────────────────────────────────────
 const DB = '8d776216-e135-4c9f-b1bb-9669cb10bd85';
-const esc = s => String(s==null?'':s).replace(/'/g, "''"); // SQL string escape
+const escSql = s => String(s==null?'':s).replace(/'/g, "''"); // SQL string escape
 const PASS = 'HSHSHS';
 const PROXY = 'https://hsdesign-d1-api.ida-czia.workers.dev/d1-api';
 const UNITS = ['nos', 'set', 'm', 'm²', 'lot', 'box', 'lump sum', 'day', 'trip', 'ft', 'ft²', 'hour'];
@@ -32,7 +32,7 @@ const DEFAULT_NOTES = [
 // ─── UTILS ───────────────────────────────────────────────────────────────────
 const ISO = () => new Date().toISOString().slice(0, 10);
 const fmt = n => parseFloat(n || 0).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-const esc = s => String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const escHtml = s => String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 const setSS = m => { document.getElementById('ss').textContent = m; };
 const dirty = () => { isDirty = true; setSS('Unsaved...'); clearTimeout(autoSaveTimer); autoSaveTimer = setTimeout(saveQuote, 3000); clearTimeout(_draftTimer); _draftTimer = setTimeout(saveDraft, 1000); };
 let _draftTimer = null;
@@ -147,14 +147,14 @@ function renderList() {
     return `<div class="qc ${isOpen?'active':''}" id="qc-${q.id}">
       <div class="qc-head" onclick="handleQClick('${q.id}',event)">
         <div class="qc-mini">
-          <div class="qc-t">${esc(q.name)||'Unnamed'}</div>
-          <div class="qc-p">${esc(q.project)||'—'}</div>
+          <div class="qc-t">${escHtml(q.name)||'Unnamed'}</div>
+          <div class="qc-p">${escHtml(q.project)||'—'}</div>
           <div class="qc-b"><span class="qc-tot">RM ${fmt(tot)}</span><span class="bdg ${bdg}">${q.status}</span></div>
         </div>
         <button class="qc-chevron ${isExp?'open':''}" onclick="toggleQ('${q.id}',event)" title="Expand">${isExp?'▾':'▾'}</button>
       </div>
       <div class="qc-body ${isExp?'open':''}" onclick="event.stopPropagation()">
-        <div class="qc-detail"><span class="qc-dl">No</span><span>${esc(q.qno)||'—'}</span></div>
+        <div class="qc-detail"><span class="qc-dl">No</span><span>${escHtml(q.qno)||'—'}</span></div>
         <div class="qc-detail"><span class="qc-dl">Date</span><span>${q.date||'—'}</span></div>
         <div class="qc-detail"><span class="qc-dl">Sections</span><span>${secNames}</span></div>
         <div class="qc-detail"><span class="qc-dl">Items</span><span>${itemCount} item${itemCount!==1?'s':''}</span></div>
@@ -267,7 +267,7 @@ function renderSections() {
         <span class="drag-handle" title="Drag to reorder">☰</span>
         <button class="btn btn-sm" onclick="moveSectionUp(${si})" title="Move up" style="padding:4px 8px;background:none;border:1px solid var(--gray-200)">↑</button>
         <button class="btn btn-sm" onclick="moveSectionDown(${si})" title="Move down" style="padding:4px 8px;background:none;border:1px solid var(--gray-200)">↓</button>
-        <input type="text" class="sec-name" placeholder="Section name, e.g. Electrical Work" value="${esc(sec.section)}" oninput="syncSectionName(${si},this)">
+        <input type="text" class="sec-name" placeholder="Section name, e.g. Electrical Work" value="${escHtml(sec.section)}" oninput="syncSectionName(${si},this)">
         <button class="btn btn-r btn-sm" onclick="delSection(${si})" title="Delete section">🗑</button>
       </div>
       <div class="sec-items" id="sec-items-${si}"></div>
@@ -311,7 +311,7 @@ function buildItemRow(it, si, ii) {
   const mkStr = mk>0?`<span class="mk ${mkCls}">+${fmt(mk)}%</span>`:'';
   const ciRows = (it.costItems||[]).map((ci, cii) => `
     <div class="csub">
-      <input type="text" placeholder="e.g. Wire 100m" value="${esc(ci.desc)}" oninput="syncCi(${si},${ii},${cii},this,'desc')">
+      <input type="text" placeholder="e.g. Wire 100m" value="${escHtml(ci.desc)}" oninput="syncCi(${si},${ii},${cii},this,'desc')">
       <select class="ci-unit" onchange="syncCi(${si},${ii},${cii},this,'unit')">${UNITS.map(u => `<option value="${u}" ${(ci.unit||'nos')===u?'selected':''}>${u}</option>`).join('')}</select>
       <input type="number" min="0" class="ci-qty" placeholder="Qty" value="${ci.qty||''}" oninput="syncCi(${si},${ii},${cii},this,'qty')" style="text-align:center">
       <input type="number" min="0" class="ci-price" placeholder="RM" value="${ci.unitPrice||ci.unitPrice===0?ci.unitPrice:''}" oninput="syncCi(${si},${ii},${cii},this,'price')">
@@ -321,7 +321,7 @@ function buildItemRow(it, si, ii) {
   el.innerHTML = `
     <div class="item-main">
       <span class="item-num">${ii+1}</span>
-      <input type="text" class="f-desc" placeholder="e.g. Install lighting point" value="${esc(it.desc)}" oninput="syncItemDesc(${si},${ii},this)">
+      <input type="text" class="f-desc" placeholder="e.g. Install lighting point" value="${escHtml(it.desc)}" oninput="syncItemDesc(${si},${ii},this)">
       <select class="f-unit" onchange="syncItemUnit(${si},${ii},this)">${UNITS.map(u => `<option value="${u}" ${it.unit===u?'selected':''}>${u}</option>`).join('')}</select>
       <input type="number" class="f-qty" min="0" placeholder="1" value="${it.qty}" oninput="syncItemQty(${si},${ii},this)" style="text-align:center">
       <input type="number" class="f-cost" min="0" placeholder="0.00" value="${ct>0?fmt(ct):''}" readonly>
@@ -433,7 +433,7 @@ function renderTerms() {
   _terms.forEach((t,i) => {
     const row = document.createElement('div');
     row.className = 'terms-row';
-    row.innerHTML = `<input type="text" placeholder="e.g. 50% deposit upon confirmation" value="${esc(t)}" oninput="syncTerm(${i},this)"><button class="del" onclick="remTerm(${i})">×</button>`;
+    row.innerHTML = `<input type="text" placeholder="e.g. 50% deposit upon confirmation" value="${escHtml(t)}" oninput="syncTerm(${i},this)"><button class="del" onclick="remTerm(${i})">×</button>`;
     c.appendChild(row);
   });
 }
@@ -449,7 +449,7 @@ function renderNotes() {
   _notes.forEach((t,i) => {
     const row = document.createElement('div');
     row.className = 'terms-row';
-    row.innerHTML = `<input type="text" placeholder="Enter term or note..." value="${esc(t)}" oninput="syncNote(${i},this)"><button class="del" onclick="remNote(${i})">×</button>`;
+    row.innerHTML = `<input type="text" placeholder="Enter term or note..." value="${escHtml(t)}" oninput="syncNote(${i},this)"><button class="del" onclick="remNote(${i})">×</button>`;
     c.appendChild(row);
   });
 }
@@ -502,11 +502,11 @@ async function saveQuote() {
   try {
     let res, data;
     if (activeId && activeId!=='__new__') {
-      const sql = `UPDATE quotes SET name='${esc(_name)}', project='${esc(_proj)}', date='${esc(_date)}', status='${esc(_status)}', qno='${esc(_qno)}', addr='${esc(_addr)}', data='${esc(payload)}' WHERE id='${esc(activeId)}'`;
+      const sql = `UPDATE quotes SET name='${escSql(_name)}', project='${escSql(_proj)}', date='${escSql(_date)}', status='${escSql(_status)}', qno='${escSql(_qno)}', addr='${escSql(_addr)}', data='${escSql(payload)}' WHERE id='${escSql(activeId)}'`;
       res = await fetch(PROXY+'/v1/databases/'+DB+'/query', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({sql, params:[]})});
     } else {
       const newId = crypto.randomUUID();
-      const sql = `INSERT INTO quotes (id, name, project, date, status, qno, addr, data) VALUES ('${esc(newId)}', '${esc(_name)}', '${esc(_proj)}', '${esc(_date)}', '${esc(_status)}', '${esc(_qno)}', '${esc(_addr)}', '${esc(payload)}')`;
+      const sql = `INSERT INTO quotes (id, name, project, date, status, qno, addr, data) VALUES ('${escSql(newId)}', '${escSql(_name)}', '${escSql(_proj)}', '${escSql(_date)}', '${escSql(_status)}', '${escSql(_qno)}', '${escSql(_addr)}', '${escSql(payload)}')`;
       res = await fetch(PROXY+'/v1/databases/'+DB+'/query', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({sql, params:[]})});
       data = { id: newId };
     }
@@ -526,7 +526,7 @@ async function saveQuote() {
 async function delQuote() {
   if (!activeId||activeId==='__new__') { alert('Nothing to delete'); return; }
   if (!confirm('Delete this quotation?')) return;
-  try { const res = await fetch(PROXY+'/v1/databases/'+DB+'/query', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({sql:`DELETE FROM quotes WHERE id='${esc(activeId)}'`, params:[]})}); } catch(e){}
+  try { const res = await fetch(PROXY+'/v1/databases/'+DB+'/query', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({sql:`DELETE FROM quotes WHERE id='${escSql(activeId)}'`, params:[]})}); } catch(e){}
   quotes = quotes.filter(q=>q.id!==activeId);
   activeId = null; isDirty = false;
   document.getElementById('welcome').style.display='block';
@@ -559,7 +559,7 @@ function openPDF() {
     let secTotal = 0;
     // Section header row
     if (sec.section) {
-      rows.push(`<tr class="sec-row"><td colspan="6" style="background:#e8f4f1;font-weight:700;color:#2d5a47;font-size:12px;padding:8px 12px">${esc(sec.section)}</td></tr>`);
+      rows.push(`<tr class="sec-row"><td colspan="6" style="background:#e8f4f1;font-weight:700;color:#2d5a47;font-size:12px;padding:8px 12px">${escHtml(sec.section)}</td></tr>`);
     }
     (sec.items||[]).forEach(it => {
       if (!it.desc && !it.sell) return;
@@ -569,8 +569,8 @@ function openPDF() {
       grandTotal += line;
       rows.push(`<tr>
         <td style="width:24px;color:var(--gray-400)">${itemNum}</td>
-        <td>${esc(it.desc)||'—'}</td>
-        <td style="width:60px;text-align:center">${esc(it.unit)}</td>
+        <td>${escHtml(it.desc)||'—'}</td>
+        <td style="width:60px;text-align:center">${escHtml(it.unit)}</td>
         <td style="width:40px;text-align:right">${it.qty||0}</td>
         <td style="width:80px;text-align:right">RM ${fmt(it.sell)}</td>
         <td style="width:90px;text-align:right;font-weight:600">RM ${fmt(line)}</td>
@@ -580,15 +580,15 @@ function openPDF() {
     rows.push(`<tr class="sec-subtotal-row"><td colspan="5" style="text-align:right;font-weight:700;background:#f0faf7;color:#2d5a47;font-size:12px;padding:6px 12px">Section Total: RM ${fmt(secTotal)}</td><td style="text-align:right;font-weight:700;background:#f0faf7;color:#2d5a47;font-size:12px;padding:6px 12px">RM ${fmt(secTotal)}</td></tr>`);
   });
   const dateStr = _date ? new Date(_date+'T00:00:00').toLocaleDateString('en-GB',{day:'2-digit',month:'long',year:'numeric'}) : '';
-  const termList = terms.length ? `<div class="qp-terms"><h4>Payment Terms</h4><ul>${terms.map(t=>`<li>${esc(t)}</li>`).join('')}</ul></div>` : '';
+  const termList = terms.length ? `<div class="qp-terms"><h4>Payment Terms</h4><ul>${terms.map(t=>`<li>${escHtml(t)}</li>`).join('')}</ul></div>` : '';
   const stdTerms = _notes.filter(t=>t.trim());
-  const stdTermsList = stdTerms.length ? `<div class="qp-terms"><h4>Terms &amp; Conditions</h4><ol style="padding-left:18px;margin:0">${stdTerms.map(t=>`<li>${esc(t)}</li>`).join('')}</ol></div>` : '';
+  const stdTermsList = stdTerms.length ? `<div class="qp-terms"><h4>Terms &amp; Conditions</h4><ol style="padding-left:18px;margin:0">${stdTerms.map(t=>`<li>${escHtml(t)}</li>`).join('')}</ol></div>` : '';
   const html = `<div class="qp">
     <div class="qp-hdr">
       <div class="qp-logo"><h2>Health Space Interior</h2><p>HS Design (SSM: 202603001610)</p><p>24-1, Jalan Rosmerah 2/17, Taman Johor Jaya</p><p>81100 Johor Bahru, Johor</p><p>011-1688 0145 | hsdesign.biz</p></div>
-      <div class="qp-ref"><h3>QUOTATION</h3><p><strong>Ref:</strong> ${esc(_qno)||'—'}</p><p><strong>Date:</strong> ${dateStr}</p><p><strong>Status:</strong> ${_status}</p></div>
+      <div class="qp-ref"><h3>QUOTATION</h3><p><strong>Ref:</strong> ${escHtml(_qno)||'—'}</p><p><strong>Date:</strong> ${dateStr}</p><p><strong>Status:</strong> ${_status}</p></div>
     </div>
-    <div class="qp-ci"><h4>Prepared For</h4><p>${esc(_name)}</p><span>${esc(_addr||_proj||'—')}</span></div>
+    <div class="qp-ci"><h4>Prepared For</h4><p>${escHtml(_name)}</p><span>${escHtml(_addr||_proj||'—')}</span></div>
     <table class="qp-table"><thead><tr><th style="width:24px">#</th><th>Description</th><th style="width:60px;text-align:center">Unit</th><th style="width:40px;text-align:right">Qty</th><th style="width:80px;text-align:right">Unit Price</th><th style="width:90px;text-align:right">Amount</th></tr></thead><tbody>${rows.join('')}</tbody></table>
     <div class="qp-totals"><div class="qp-tbox"><div class="qp-tr gd"><span>Grand Total</span><span>RM ${fmt(grandTotal)}</span></div></div></div>
     ${termList}
