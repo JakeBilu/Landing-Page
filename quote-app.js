@@ -359,8 +359,8 @@ function toggleCost(el) { const cb=el.nextElementSibling; cb.classList.toggle('o
 // Item field sync
 function syncItemDesc(si,ii,inp) { _data[si].items[ii].desc = inp.value; dirty(); }
 function syncItemUnit(si,ii,inp) { _data[si].items[ii].unit = inp.value; dirty(); }
-function syncItemQty(si,ii,inp) { _data[si].items[ii].qty = parseFloat(inp.value)||0; recalc(); dirty(); }
-function syncItemSell(si,ii,inp) { _data[si].items[ii].sell = parseFloat(inp.value)||0; recalc(); dirty(); }
+function syncItemQty(si,ii,inp) { _data[si].items[ii].qty = parseFloat(inp.value.replace(/,/g,""))||0; recalc(); dirty(); }
+function syncItemSell(si,ii,inp) { _data[si].items[ii].sell = parseFloat(inp.value.replace(/,/g,""))||0; recalc(); dirty(); }
 
 function autoSell(si,ii) {
   const it = _data[si].items[ii];
@@ -418,8 +418,8 @@ function syncCi(si, ii, cii, inp, field) {
   const priceInp = row.querySelector('.ci-price');
   ci.desc = descInp ? descInp.value : ci.desc;
   ci.unit = unitSel ? unitSel.value : ci.unit;
-  ci.qty = qtyInp ? (parseFloat(qtyInp.value)||0) : ci.qty;
-  ci.unitPrice = priceInp ? (parseFloat(priceInp.value)||0) : ci.unitPrice;
+  ci.qty = qtyInp ? (parseFloat(qtyInp.value.replace(/,/g,""))||0) : ci.qty;
+  ci.unitPrice = priceInp ? (parseFloat(priceInp.value.replace(/,/g,""))||0) : ci.unitPrice;
   ci.amt = ci.unitPrice * ci.qty;
   const amtEl = row.querySelector('.ci-amt');
   if (amtEl) amtEl.textContent = ci.amt > 0 ? 'RM ' + fmt(ci.amt) : '—';
