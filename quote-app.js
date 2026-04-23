@@ -495,31 +495,37 @@ function gatherForm() {
 }
 
 async function saveQuote() {
-  if (!isDirty) return;
+  if (!isDirty) { console.log('saveQuote: nothing to save (not dirty)'); return; }
   gatherForm();
   const payload = JSON.stringify({items:_data, terms:_terms, notes2:_notes, qno:_qno, code:_code, addr:_addr, notes:_notesTxt});
   setSS('Saving...');
+  console.log('saveQuote: starting... activeId=' + activeId + ' payload length=' + payload.length);
   try {
     let res, data;
     if (activeId && activeId!=='__new__') {
       const sql = `UPDATE quotes SET name='${escSql(_name)}', project='${escSql(_proj)}', date='${escSql(_date)}', status='${escSql(_status)}', qno='${escSql(_qno)}', addr='${escSql(_addr)}', data='${escSql(payload)}' WHERE id='${escSql(activeId)}'`;
+      console.log('saveQuote: UPDATE sql=', sql);
       res = await fetch(PROXY+'/v1/databases/'+DB+'/query', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({sql, params:[]})});
     } else {
       const newId = crypto.randomUUID();
       const sql = `INSERT INTO quotes (id, name, project, date, status, qno, addr, data) VALUES ('${escSql(newId)}', '${escSql(_name)}', '${escSql(_proj)}', '${escSql(_date)}', '${escSql(_status)}', '${escSql(_qno)}', '${escSql(_addr)}', '${escSql(payload)}')`;
+      console.log('saveQuote: INSERT sql=', sql);
       res = await fetch(PROXY+'/v1/databases/'+DB+'/query', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({sql, params:[]})});
       data = { id: newId };
     }
-    if (!res.ok) { setSS('Network error'); return; }
+    console.log('saveQuote: response status=' + res.status);
+    if (!res.ok) { console.log('saveQuote: network error, res.ok=false'); setSS('Network error'); return; }
     data = await res.json();
-    if (!data.success) { setSS('D1 error: '+(data.errors&&data.errors[0]||'')); return; }
-    if (activeId==='__new__') { activeId=data.id; quotes.unshift({id:data.id,name:_name,project:_proj,date:_date,status:_status,qno:_qno,addr:_addr,items:_data,terms:_terms,notes2:_notes,notes:_notesTxt}); }
-    else { const idx=quotes.findIndex(q=>q.id===activeId); if(idx!==-1) quotes[idx]={...quotes[idx],name:_name,project:_proj,date:_date,status:_status,qno:_qno,addr:_addr,items:_data,terms:_terms,notes2:_notes,notes:_notesTxt}; }
+    console.log('saveQuote: D1 response=', JSON.stringify(data));
+    if (!data.success) { console.log('saveQuote: D1 error'); setSS('D1 error: '+(data.errors&&data.errors[0]||'')); return; }
+    if (activeId==='__new__') { console.log('saveQuote: new quote, adding to quotes array with newId=' + newId + ' (data.id was=' + data.id + ')'); activeId=newId; quotes.unshift({id:newId,name:_name,project:_proj,date:_date,status:_status,qno:_qno,addr:_addr,items:_data,terms:_terms,notes2:_notes,notes:_notesTxt}); }
+    else { console.log('saveQuote: update existing, activeId=' + activeId); const idx=quotes.findIndex(q=>q.id===activeId); if(idx!==-1) quotes[idx]={...quotes[idx],name:_name,project:_proj,date:_date,status:_status,qno:_qno,addr:_addr,items:_data,terms:_terms,notes2:_notes,notes:_notesTxt}; }
     isDirty = false;
     setSS('Saved ✓');
+    console.log('saveQuote: calling renderList, quotes.length=' + quotes.length);
     renderList();
     clearDraft();
-  } catch(e) { setSS('Network error'); }
+  } catch(e) { console.log('saveQuote: catch error=' + e.message); setSS('Network error'); }
 }
 
 // ─── DELETE ──────────────────────────────────────────────────────────────────
