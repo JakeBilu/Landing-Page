@@ -121,10 +121,10 @@ async function loadQuotes() {
     const d = await r.json();
     console.log('loadQuotes: d.success=' + d.success + ' result=' + JSON.stringify(d.result));
     if (!d.success) { console.log('loadQuotes D1 error:', d.errors); setSS('D1 error: ' + (d.errors && d.errors[0] || '')); quotes = []; }
-    else { const rows = (d.result && d.result[0] && d.result[0].results) || []; quotes = rows.map(parseD1Row); console.log('loadQuotes success: quotes.length=' + quotes.length + ' ids=' + quotes.map(q=>q.id).join(',')); setSS(quotes.length ? `Loaded ${quotes.length} quotes` : 'No quotes yet'); }
+    else { const rows = (d.result && d.result[0] && d.result[0].results) || []; quotes = rows.map(parseD1Row); console.log('loadQuotes success: quotes.length=' + quotes.length + ' ids=' + quotes.map(q=>q.id).join(',')); setSS(quotes.length ? `Loaded ${quotes.length} quotes` : 'No quotes yet'); /* Save to localStorage cache for offline fallback */ try { localStorage.setItem('hsdesign_quotes_cache', JSON.stringify(quotes)); } catch(e) {} }
     console.log('loadQuotes: calling renderList, quotes.length=' + quotes.length);
     renderList();
-  } catch (e) { console.log('loadQuotes network error:', e.message); setSS('Offline'); quotes = []; renderList(); }
+  } catch (e) { console.log('loadQuotes network error:', e.message); setSS('Offline'); /* Try localStorage cache as fallback */ try { const cached = localStorage.getItem('hsdesign_quotes_cache'); if (cached) { quotes = JSON.parse(cached); console.log('loadQuotes: restored', quotes.length, 'quotes from localStorage cache'); renderList(); return; } } catch(e2) {} quotes = []; renderList(); }
 }
 
 function parseD1Row(r) {
