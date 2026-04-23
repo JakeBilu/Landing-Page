@@ -1,5 +1,6 @@
 ﻿// ─── CONFIG ─────────────────────────────────────────────────────────────────
 const DB = '8d776216-e135-4c9f-b1bb-9669cb10bd85';
+const esc = s => String(s==null?'':s).replace(/'/g, "''"); // SQL string escape
 const PASS = 'HSHSHS';
 const PROXY = 'https://hsdesign-d1-api.ida-czia.workers.dev/d1-api';
 const UNITS = ['nos', 'set', 'm', 'm²', 'lot', 'box', 'lump sum', 'day', 'trip', 'ft', 'ft²', 'hour'];
@@ -492,12 +493,12 @@ async function saveQuote() {
   try {
     let res, data;
     if (activeId && activeId!=='__new__') {
-      const sql = "UPDATE quotes SET name=?, project=?, date=?, status=?, qno=?, addr=?, data=? WHERE id=?";
-      res = await fetch(PROXY+'/v1/databases/'+DB+'/query', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({sql, params:[_name, _proj, _date, _status, _qno, _addr, payload, activeId]})});
+      const sql = `UPDATE quotes SET name='${esc(_name)}', project='${esc(_proj)}', date='${esc(_date)}', status='${esc(_status)}', qno='${esc(_qno)}', addr='${esc(_addr)}', data='${esc(payload)}' WHERE id='${esc(activeId)}'`;
+      res = await fetch(PROXY+'/v1/databases/'+DB+'/query', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({sql, params:[]})});
     } else {
       const newId = crypto.randomUUID();
-      const sql = "INSERT INTO quotes (id, name, project, date, status, qno, addr, data) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-      res = await fetch(PROXY+'/v1/databases/'+DB+'/query', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({sql, params:[newId, _name, _proj, _date, _status, _qno, _addr, payload]})});
+      const sql = `INSERT INTO quotes (id, name, project, date, status, qno, addr, data) VALUES ('${esc(newId)}', '${esc(_name)}', '${esc(_proj)}', '${esc(_date)}', '${esc(_status)}', '${esc(_qno)}', '${esc(_addr)}', '${esc(payload)}')`;
+      res = await fetch(PROXY+'/v1/databases/'+DB+'/query', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({sql, params:[]})});
       data = { id: newId };
     }
     if (!res.ok) { setSS('Network error'); return; }
@@ -516,7 +517,7 @@ async function saveQuote() {
 async function delQuote() {
   if (!activeId||activeId==='__new__') { alert('Nothing to delete'); return; }
   if (!confirm('Delete this quotation?')) return;
-  try { const res = await fetch(PROXY+'/v1/databases/'+DB+'/query', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({sql:'DELETE FROM quotes WHERE id=?', params:[activeId]})}); } catch(e){}
+  try { const res = await fetch(PROXY+'/v1/databases/'+DB+'/query', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({sql:`DELETE FROM quotes WHERE id='${esc(activeId)}'`, params:[]})}); } catch(e){}
   quotes = quotes.filter(q=>q.id!==activeId);
   activeId = null; isDirty = false;
   document.getElementById('welcome').style.display='block';
