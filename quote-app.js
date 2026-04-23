@@ -147,7 +147,7 @@ function renderList() {
           <div class="qc-p">${esc(q.project)||'—'}</div>
           <div class="qc-b"><span class="qc-tot">RM ${fmt(tot)}</span><span class="bdg ${bdg}">${q.status}</span></div>
         </div>
-        <button class="qc-chevron ${isExp?'open':''}" onclick="toggleQ('${q.id}',event)" title="Expand">${isExp?'▴':'▾'}</button>
+        <button class="qc-chevron ${isExp?'open':''}" onclick="toggleQ('${q.id}',event)" title="Expand">${isExp?'▾':'▾'}</button>
       </div>
       <div class="qc-body ${isExp?'open':''}" onclick="event.stopPropagation()">
         <div class="qc-detail"><span class="qc-dl">No</span><span>${esc(q.qno)||'—'}</span></div>
