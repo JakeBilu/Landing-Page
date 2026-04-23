@@ -423,7 +423,7 @@ function syncCi(si, ii, cii, inp, field) {
   ci.amt = ci.unitPrice * ci.qty;
   const amtEl = row.querySelector('.ci-amt');
   if (amtEl) amtEl.textContent = ci.amt > 0 ? 'RM ' + fmt(ci.amt) : '—';
-  const ct = (_data[si].items[ii].costItems||[]).reduce((s,c) => s+(parseFloat(c.amt)||0), 0);
+  const ct = (_data[si].items[ii].costItems||[]).reduce((s,c) => s+(parseFloat(c.amt)||0), 0); console.log("syncCi si="+si+" ii="+ii+" ct="+ct+" amts="+((_data[si].items[ii].costItems||[]).map(c=>c.amt).join(",")));
   const itemRow = row.closest('.item');
   const costInput = itemRow.querySelector('.f-cost');
   if (costInput) costInput.value = ct>0?fmt(ct):'';
