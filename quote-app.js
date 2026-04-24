@@ -16,6 +16,7 @@ let _data = { items: [] };
 let _terms = [];
 let _notes = [];
 let _name = '', _qno = '', _addr = '', _proj = '', _date = '', _status = 'Draft', _notesTxt = '';
+let MARKUP_RATE = 0.25; // Default 25% markup — adjustable by user
 
 // Default Standard Terms & Conditions (used for new quotes)
 const DEFAULT_NOTES = [
@@ -344,7 +345,7 @@ function buildItemRow(it, si, ii) {
       <input type="number" class="f-qty" min="0" placeholder="1" value="${it.qty}" oninput="syncItemQty(${si},${ii},this)" style="text-align:center">
       <input type="text" class="f-cost" readonly placeholder="0.00" value="${ct>0?fmt(ct):''}">
       <input type="number" class="f-sell" min="0" placeholder="0.00" value="${it.sell||it.sell===0?fmt(it.sell):''}" oninput="syncItemSell(${si},${ii},this)">
-      <button class="btn btn-g btn-sm" style="padding:4px 8px;font-size:11px;white-space:nowrap" onclick="autoSell(${si},${ii})">+25%</button>
+      <button class="btn btn-g btn-sm mk-btn" style="padding:4px 8px;font-size:11px;white-space:nowrap" onclick="autoSell(${si},${ii})">+${Math.round(MARKUP_RATE*100)}%</button>
       <button class="del" onclick="remItem(${si},${ii})">×</button>
     </div>
     <div class="exp-h" onclick="toggleCost(this)">
@@ -377,7 +378,7 @@ function autoSell(si,ii) {
   const it = _data[si].items[ii];
   const ct = (it.costItems||[]).reduce((s,c) => s+(parseFloat(c.amt)||0), 0);
   if (ct <= 0) { alert('Cost breakdown is empty or 0! Add cost amounts first.'); return; }
-  const sell = ct * 1.25;
+  const sell = ct * (1 + MARKUP_RATE);
   it.sell = sell;
   // update DOM �?find row by section index + item index
   const secItems = document.querySelectorAll('.sec-items');
