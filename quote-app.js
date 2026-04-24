@@ -33,7 +33,18 @@ const DEFAULT_NOTES = [
 const ISO = () => new Date().toISOString().slice(0, 10);
 const fmt = n => parseFloat(n || 0).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 const escHtml = s => String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-const setSS = m => { document.getElementById('ss').textContent = m; };
+let _ssTimer=null;
+const setSS = m => {
+  document.getElementById('ss').textContent = m;
+  document.getElementById('ss').style.opacity = '1';
+  clearTimeout(_ssTimer);
+  if (m.includes('Saved') || m.includes('restored') || m.includes('Imported')) {
+    _ssTimer = setTimeout(() => {
+      document.getElementById('ss').style.transition = 'opacity 1.5s';
+      document.getElementById('ss').style.opacity = '0';
+    }, 2000);
+  }
+};
 const dirty = () => { isDirty = true; setSS('Unsaved...'); clearTimeout(autoSaveTimer); autoSaveTimer = setTimeout(saveQuote, 3000); clearTimeout(_draftTimer); _draftTimer = setTimeout(saveDraft, 1000); };
 let _draftTimer = null;
 const DRAFT_KEY = 'hsdesign_quote_draft';
@@ -155,14 +166,14 @@ function renderList() {
       <div class="qc-head" onclick="handleQClick('${q.id}',event)">
         <div class="qc-mini">
           <div class="qc-t">${escHtml(q.name)||'Unnamed'}</div>
-          <div class="qc-p">${escHtml(q.project)||'�?}</div>
+          <div class="qc-p">${escHtml(q.project)||'�?}</div>
           <div class="qc-b"><span class="qc-tot">RM ${fmt(tot)}</span><span class="bdg ${bdg}">${q.status}</span></div>
         </div>
-        <button class="qc-chevron ${isExp?'open':''}" onclick="toggleQ('${q.id}',event)" title="Expand">${isExp?'�?:'�?}</button>
+        <button class="qc-chevron ${isExp?'open':''}" onclick="toggleQ('${q.id}',event)" title="Expand">${isExp?'�?:'�?}</button>
       </div>
       <div class="qc-body ${isExp?'open':''}" onclick="event.stopPropagation()">
-        <div class="qc-detail"><span class="qc-dl">No</span><span>${escHtml(q.qno)||'�?}</span></div>
-        <div class="qc-detail"><span class="qc-dl">Date</span><span>${q.date||'�?}</span></div>
+        <div class="qc-detail"><span class="qc-dl">No</span><span>${escHtml(q.qno)||'�?}</span></div>
+        <div class="qc-detail"><span class="qc-dl">Date</span><span>${q.date||'�?}</span></div>
         <div class="qc-detail"><span class="qc-dl">Sections</span><span>${secNames}</span></div>
         <div class="qc-detail"><span class="qc-dl">Items</span><span>${itemCount} item${itemCount!==1?'s':''}</span></div>
       </div>
@@ -180,7 +191,7 @@ function toggleQ(id, event) {
 }
 
 // ─── OPEN / NEW ───────────────────────────────────────────────────────────────
-// Migrate old cost items (desc,amt) �?new structure (desc,unit,qty,unitPrice,amt)
+// Migrate old cost items (desc,amt) �?new structure (desc,unit,qty,unitPrice,amt)
 function migrateCi(ci) {
   if (ci.unit !== undefined) return ci; // already migrated
   return { desc: ci.desc||'', unit: 'lump sum', qty: 1, unitPrice: parseFloat(ci.amt)||0, amt: parseFloat(ci.amt)||0 };
@@ -271,9 +282,9 @@ function renderSections() {
     secEl.ondrop = function(ev) { ev.preventDefault(); this.classList.remove('drag-over'); if(window._dragSec==null||window._dragSec===si) return; const tmp=_data.splice(window._dragSec,1)[0]; _data.splice(si,0,tmp); window._dragSec=null; renderSections(); dirty(); };
     secEl.innerHTML = `
       <div class="sec-hdr">
-        <span class="drag-handle" title="Drag to reorder">�?/span>
-        <button class="btn btn-sm" onclick="moveSectionUp(${si})" title="Move up" style="padding:4px 8px;background:none;border:1px solid var(--gray-200)">�?/button>
-        <button class="btn btn-sm" onclick="moveSectionDown(${si})" title="Move down" style="padding:4px 8px;background:none;border:1px solid var(--gray-200)">�?/button>
+        <span class="drag-handle" title="Drag to reorder">�?/span>
+        <button class="btn btn-sm" onclick="moveSectionUp(${si})" title="Move up" style="padding:4px 8px;background:none;border:1px solid var(--gray-200)">�?/button>
+        <button class="btn btn-sm" onclick="moveSectionDown(${si})" title="Move down" style="padding:4px 8px;background:none;border:1px solid var(--gray-200)">�?/button>
         <input type="text" class="sec-name" placeholder="Section name, e.g. Electrical Work" value="${escHtml(sec.section)}" oninput="syncSectionName(${si},this)">
         <button class="btn btn-r btn-sm" onclick="delSection(${si})" title="Delete section">🗑</button>
       </div>
@@ -314,7 +325,7 @@ function buildItemRow(it, si, ii) {
   const ct = (it.costItems||[]).reduce((s,c) => s+(parseFloat(c.amt)||0), 0);
   const mk = ct>0 && it.sell>0 ? ((it.sell-ct)/ct*100) : 0;
   const mkCls = mk>=30?'mk-g':mk>=15?'mk-y':'mk-r';
-  const ctStr = ct>0?`RM ${fmt(ct)}`:'�?;
+  const ctStr = ct>0?`RM ${fmt(ct)}`:'�?;
   const mkStr = mk>0?`<span class="mk ${mkCls}">+${fmt(mk)}%</span>`:'';
   const ciRows = (it.costItems||[]).map((ci, cii) => `
     <div class="csub">
@@ -322,7 +333,7 @@ function buildItemRow(it, si, ii) {
       <select class="ci-unit" onchange="syncCi(${si},${ii},${cii},this,'unit')">${UNITS.map(u => `<option value="${u}" ${(ci.unit||'nos')===u?'selected':''}>${u}</option>`).join('')}</select>
       <input type="number" min="0" class="ci-qty" placeholder="Qty" value="${ci.qty||''}" oninput="syncCi(${si},${ii},${cii},this,'qty')" style="text-align:center">
       <input type="number" min="0" class="ci-price" placeholder="RM" value="${ci.unitPrice||ci.unitPrice===0?ci.unitPrice:''}" oninput="syncCi(${si},${ii},${cii},this,'price')">
-      <span class="ci-amt">${ci.amt>0?'RM '+fmt(ci.amt):'�?}</span>
+      <span class="ci-amt">${ci.amt>0?'RM '+fmt(ci.amt):'�?}</span>
       <button class="del" style="font-size:13px" onclick="remCi(${si},${ii},${cii},this)">×</button>
     </div>`).join('');
   el.innerHTML = `
@@ -337,7 +348,7 @@ function buildItemRow(it, si, ii) {
       <button class="del" onclick="remItem(${si},${ii})">×</button>
     </div>
     <div class="exp-h" onclick="toggleCost(this)">
-      💰 Cost breakdown <span style="font-size:11px;color:var(--gold)">${ctStr}</span> ${mkStr}<span class="tog">�?/span>
+      💰 Cost breakdown <span style="font-size:11px;color:var(--gold)">${ctStr}</span> ${mkStr}<span class="tog">�?/span>
     </div>
     <div class="cb">${ciRows}
       <button class="btn btn-g btn-sm" onclick="addCi(${si},${ii},this)" style="margin-top:4px">+ Add cost line</button>
@@ -354,7 +365,7 @@ function buildItemRow(it, si, ii) {
   return el;
 }
 
-function toggleCost(el) { const cb=el.nextElementSibling; cb.classList.toggle('open'); el.querySelector('.tog').textContent = cb.classList.contains('open')?'�?:'�?; }
+function toggleCost(el) { const cb=el.nextElementSibling; cb.classList.toggle('open'); el.querySelector('.tog').textContent = cb.classList.contains('open')?'�?:'�?; }
 
 // Item field sync
 function syncItemDesc(si,ii,inp) { _data[si].items[ii].desc = inp.value; dirty(); }
@@ -368,7 +379,7 @@ function autoSell(si,ii) {
   if (ct <= 0) { alert('Cost breakdown is empty or 0! Add cost amounts first.'); return; }
   const sell = ct * 1.25;
   it.sell = sell;
-  // update DOM �?find row by section index + item index
+  // update DOM �?find row by section index + item index
   const secItems = document.querySelectorAll('.sec-items');
   const row = secItems[si] ? secItems[si].children[ii] : null;
   if (row) {
@@ -382,7 +393,7 @@ function autoSell(si,ii) {
     dirty();
   } else {
     // fallback: just update the sell field directly
-    alert('Cost RM ' + fmt(ct) + ' �?Sell RM ' + fmt(sell) + ' (row not found in DOM, please refresh)');
+    alert('Cost RM ' + fmt(ct) + ' �?Sell RM ' + fmt(sell) + ' (row not found in DOM, please refresh)');
   }
 }
 
@@ -396,7 +407,7 @@ function addCi(si, ii, btn) {
   <select class="ci-unit" onchange="syncCi(${si},${ii},${ciRows.length},this,'unit')">${UNITS.map(u => `<option value="${u}">${u}</option>`).join('')}</select>
   <input type="number" min="0" class="ci-qty" placeholder="Qty" value="" oninput="syncCi(${si},${ii},${ciRows.length},this,'qty')" style="text-align:center">
   <input type="number" min="0" class="ci-price" placeholder="RM" value="" oninput="syncCi(${si},${ii},${ciRows.length},this,'price')">
-  <span class="ci-amt">�?/span>
+  <span class="ci-amt">�?/span>
   <button class="del" style="font-size:13px" onclick="remCi(${si},${ii},${ciRows.length},this)">×</button>`;
   row.insertBefore(newRow, btn);
   dirty();
@@ -422,7 +433,7 @@ function syncCi(si, ii, cii, inp, field) {
   ci.unitPrice = priceInp ? (parseFloat(priceInp.value.replace(/,/g,""))||0) : ci.unitPrice;
   ci.amt = ci.unitPrice * ci.qty;
   const amtEl = row.querySelector('.ci-amt');
-  if (amtEl) amtEl.textContent = ci.amt > 0 ? 'RM ' + fmt(ci.amt) : '�?;
+  if (amtEl) amtEl.textContent = ci.amt > 0 ? 'RM ' + fmt(ci.amt) : '�?;
   const ct = (_data[si].items[ii].costItems||[]).reduce((s,c) => s+(parseFloat(c.amt)||0), 0);
   const itemRow = row.closest('.item');
   const costInput = itemRow.querySelector('.f-cost');
@@ -486,7 +497,7 @@ function recalc() {
   document.getElementById('tot-sell').textContent = 'RM '+fmt(totalSell);
   const mkEl = document.getElementById('tot-mk');
   if (mkPct>0) { mkEl.textContent = `+${fmt(mkPct)}% (RM ${fmt(profit)})`; mkEl.style.color = mkPct>=30?'#166534':mkPct>=15?'#92400e':'#dc2626'; }
-  else { mkEl.textContent='�?; mkEl.style.color=''; }
+  else { mkEl.textContent='�?; mkEl.style.color=''; }
 }
 
 // ─── SAVE ────────────────────────────────────────────────────────────────────
@@ -528,7 +539,7 @@ async function saveQuote() {
     if (activeId==='__new__') { console.log('saveQuote: new quote, adding to quotes array with newId=' + newId + ' (data.id was=' + data.id + ')'); activeId=newId; quotes.unshift({id:newId,name:_name,project:_proj,date:_date,status:_status,qno:_qno,addr:_addr,items:_data,terms:_terms,notes2:_notes,notes:_notesTxt}); }
     else { console.log('saveQuote: update existing, activeId=' + activeId); const idx=quotes.findIndex(q=>q.id===activeId); if(idx!==-1) quotes[idx]={...quotes[idx],name:_name,project:_proj,date:_date,status:_status,qno:_qno,addr:_addr,items:_data,terms:_terms,notes2:_notes,notes:_notesTxt}; }
     isDirty = false;
-    setSS('Saved �?);
+    setSS('Saved �?);
     console.log('saveQuote: calling renderList, quotes.length=' + quotes.length);
     renderList();
     clearDraft();
@@ -551,7 +562,7 @@ async function delQuote() {
 // ─── PDF ─────────────────────────────────────────────────────────────────────
 function openPDF() {
   gatherForm();
-  // Sync section names and item sell values from DOM �?_data before PDF generation
+  // Sync section names and item sell values from DOM �?_data before PDF generation
   const sectionBlocks = document.querySelectorAll('.section-block');
   sectionBlocks.forEach((block, si) => {
     const secNameInput = block.querySelector('.sec-name');
@@ -582,7 +593,7 @@ function openPDF() {
       grandTotal += line;
       rows.push(`<tr>
         <td style="width:24px;color:var(--gray-400)">${itemNum}</td>
-        <td>${escHtml(it.desc)||'�?}</td>
+        <td>${escHtml(it.desc)||'�?}</td>
         <td style="width:60px;text-align:center">${escHtml(it.unit)}</td>
         <td style="width:40px;text-align:right">${it.qty||0}</td>
         <td style="width:80px;text-align:right">RM ${fmt(it.sell)}</td>
@@ -599,9 +610,9 @@ function openPDF() {
   const html = `<div class="qp">
     <div class="qp-hdr">
       <div class="qp-logo"><h2>Health Space Interior</h2><p>HS Design (SSM: 202603001610)</p><p>24-1, Jalan Rosmerah 2/17, Taman Johor Jaya</p><p>81100 Johor Bahru, Johor</p><p>011-1688 0145 | hsdesign.biz</p></div>
-      <div class="qp-ref"><h3>QUOTATION</h3><p><strong>Ref:</strong> ${escHtml(_qno)||'�?}</p><p><strong>Date:</strong> ${dateStr}</p><p><strong>Status:</strong> ${_status}</p></div>
+      <div class="qp-ref"><h3>QUOTATION</h3><p><strong>Ref:</strong> ${escHtml(_qno)||'�?}</p><p><strong>Date:</strong> ${dateStr}</p><p><strong>Status:</strong> ${_status}</p></div>
     </div>
-    <div class="qp-ci"><h4>Prepared For</h4><p>${escHtml(_name)}</p><span>${escHtml(_addr||_proj||'�?)}</span></div>
+    <div class="qp-ci"><h4>Prepared For</h4><p>${escHtml(_name)}</p><span>${escHtml(_addr||_proj||'�?)}</span></div>
     <table class="qp-table"><thead><tr><th style="width:24px">#</th><th>Description</th><th style="width:60px;text-align:center">Unit</th><th style="width:40px;text-align:right">Qty</th><th style="width:80px;text-align:right">Unit Price</th><th style="width:90px;text-align:right">Amount</th></tr></thead><tbody>${rows.join('')}</tbody></table>
     <div class="qp-totals"><div class="qp-tbox"><div class="qp-tr gd"><span>Grand Total</span><span>RM ${fmt(grandTotal)}</span></div></div></div>
     ${termList}
@@ -628,7 +639,7 @@ function exportJSON() {
   a.download = 'HS_Quote_' + (_qno || ISO()) + '.json';
   a.click();
   URL.revokeObjectURL(url);
-  setSS('Exported �?);
+  setSS('Exported �?);
 }
 
 function importJSON() {
@@ -668,7 +679,7 @@ function importJSON() {
         renderNotes();
         recalc();
         clearDraft();
-        setSS('Imported �?save to Notion when online');
+        setSS('Imported �?save to Notion when online');
       } catch(err) {
         alert('Failed to import: ' + err.message);
       }
