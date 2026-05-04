@@ -1,8 +1,5 @@
 // ─── CONFIG ─────────────────────────────────────────────────────────────────
-const DB = '8d776216-e135-4c9f-b1bb-9669cb10bd85';
-const escSql = s => String(s==null?'':s).replace(/'/g, "''"); // SQL string escape
-const PASS = 'HSHSHS';
-const PROXY = 'https://hsdesign-d1-api.ida-czia.workers.dev/d1-api';
+const API_BASE = 'https://quotation.hsdesign.biz'; // SaaS API base
 const UNITS = ['nos', 'set', 'm', 'm²', 'lot', 'box', 'lump sum', 'day', 'trip', 'ft', 'ft²', 'hour'];
 
 // ─── STATE ────────────────────────────────────────────────────────────────────
@@ -10,13 +7,15 @@ let quotes = [];
 let activeId = null;
 let expandedId = null;
 let isDirty = false;
+let searchFilter = '';
 let autoSaveTimer = null;
 // _data = [{ section: '', items: [{ desc:'', unit:'nos', qty:1, costItems:[{desc:'',unit:'nos',qty:1,unitPrice:0,amt:0}], sell:0 }] }]
 let _data = { items: [] };
 let _terms = [];
 let _notes = [];
 let _name = '', _qno = '', _addr = '', _proj = '', _date = '', _status = 'Draft', _notesTxt = '';
-let MARKUP_RATE = 0.25; // Default 25% markup — adjustable by user
+let _dragSection = null; // {fromSi}
+let _dragItem = null;    // {fromSi, fromIi}
 
 // Default Standard Terms & Conditions (used for new quotes)
 const DEFAULT_NOTES = [
@@ -33,7 +32,7 @@ const DEFAULT_NOTES = [
 // ─── UTILS ───────────────────────────────────────────────────────────────────
 const ISO = () => new Date().toISOString().slice(0, 10);
 const fmt = n => parseFloat(n || 0).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-const escHtml = s => String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const esc = s => String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 const setSS = m => { document.getElementById('ss').textContent = m; };
 const dirty = () => { isDirty = true; setSS('Unsaved...'); clearTimeout(autoSaveTimer); autoSaveTimer = setTimeout(saveQuote, 3000); clearTimeout(_draftTimer); _draftTimer = setTimeout(saveDraft, 1000); };
 let _draftTimer = null;
@@ -78,74 +77,178 @@ function restoreDraft(draft) {
   renderNotes();
   recalc();
   isDirty = false;
-  setSS('Draft restored');
-  renderList();
+setSS('Draft restored');
+    renderList();
+  }
+
+  // ─── SIDEBAR COLLAPSE ──────────────────────────────────────────────────────────
+function toggleSidebar() {
+  const sb = document.querySelector('.sidebar');
+  const collapsed = sb.classList.toggle('collapsed');
+  document.querySelector('.body').classList.toggle('collapsed', collapsed);
+  document.getElementById('sidebar-toggle').textContent = collapsed ? '▸' : '☰';
+  try { localStorage.setItem('hsdesign_sidebar', collapsed ? '1' : '0'); } catch(e) {}
 }
 
-// ─── GATE ─────────────────────────────────────────────────────────────────────
+function initSidebar() {
+  try {
+    const v = localStorage.getItem('hsdesign_sidebar');
+    if (v === '1') {
+      document.querySelector('.sidebar').classList.add('collapsed');
+      document.querySelector('.body').classList.add('collapsed');
+      document.getElementById('sidebar-toggle').textContent = '▸';
+    }
+  } catch(e) {}
+}
+
+// ─── SECTION DRAG-AND-DROP ────────────────────────────────────────────────────
+function secDragStart(si, el) {
+  _dragSection = si;
+  el.classList.add('dragging');
+  el.addEventListener('dragend', () => el.classList.remove('dragging'), { once: true });
+}
+
+function secDragOver(si, el) {
+  if (_dragSection === null || _dragSection === si) return;
+  el.classList.add('drag-over');
+}
+
+function secDragLeave(si, el) {
+  el.classList.remove('drag-over');
+}
+
+function secDrop(si, el) {
+  el.classList.remove('drag-over');
+  if (_dragSection === null || _dragSection === si) return;
+  const from = _dragSection;
+  _dragSection = null;
+  const data = _data.splice(from, 1)[0];
+  _data.splice(si, 0, data);
+  renderSections();
+  dirty();
+}
+
+// ─── ITEM DRAG-AND-DROP ───────────────────────────────────────────────────────
+function itemDragStart(si, ii, el) {
+  _dragItem = { fromSi: si, fromIi: ii };
+  el.classList.add('dragging');
+  el.addEventListener('dragend', () => el.classList.remove('dragging'), { once: true });
+}
+
+function itemDragOver(si, ii, el) {
+  if (!_dragItem || (_dragItem.fromSi === si && _dragItem.fromIi === ii)) return;
+  el.classList.add('drag-over');
+}
+
+function itemDragLeave(si, ii, el) {
+  el.classList.remove('drag-over');
+}
+
+function itemDrop(si, ii, el) {
+  el.classList.remove('drag-over');
+  if (!_dragItem) return;
+  const { fromSi, fromIi } = _dragItem;
+  _dragItem = null;
+  // Remove from original position
+  const [moved] = _data[fromSi].items.splice(fromIi, 1);
+  // Insert at new position (same section or different)
+  _data[si].items.splice(ii, 0, moved);
+  renderSections();
+  dirty();
+}
+
+// ─── GATE (SaaS) ───────────────────────────────────────────────────────────────
+function checkAuth() {
+  const token = localStorage.getItem('token');
+  return token || null;
+}
+
+function showGate() {
+  // Redirect to login page
+  window.location.href = '/dashboard?login=1';
+}
+
 function chkGate() {
-  if (document.getElementById('pass').value === PASS) {
-    document.getElementById('gate').style.display = 'none';
-    const app = document.getElementById('app');
-    app.style.display = 'flex';
-    app.style.flexDirection = 'column';
-    loadQuotes();
-    initSidebar();
-    // Check for unsaved draft after loading quotes list
-    setTimeout(() => {
-      try {
-        const raw = localStorage.getItem(DRAFT_KEY);
-        if (raw) {
-          const draft = JSON.parse(raw);
-          if (confirm('You have an unsaved draft. Restore it?')) {
-            restoreDraft(draft);
-          }
-        }
-      } catch(e) {}
-    }, 200);
-  } else {
-    document.getElementById('gerr').textContent = 'Incorrect password';
-    document.getElementById('gerr').style.display = 'block';
+  const token = checkAuth();
+  if (!token) {
+    // Show error if password field exists (original gate UI still visible)
+    const passEl = document.getElementById('pass');
+    if (passEl) {
+      document.getElementById('gerr').textContent = 'Please login via quotation.hsdesign.biz';
+      document.getElementById('gerr').style.display = 'block';
+    }
+    return;
   }
+  document.getElementById('gate').style.display = 'none';
+  const app = document.getElementById('app');
+  app.style.display = 'flex';
+  app.style.flexDirection = 'column';
+  initSidebar();
+  loadQuotes();
+  // Check for unsaved draft
+  setTimeout(() => {
+    try {
+      const raw = localStorage.getItem(DRAFT_KEY);
+      if (raw) {
+        const draft = JSON.parse(raw);
+        if (confirm('You have an unsaved draft. Restore it?')) {
+          restoreDraft(draft);
+        }
+      }
+    } catch(e) {}
+  }, 200);
 }
 
 // ─── NOTION ───────────────────────────────────────────────────────────────────
 async function loadQuotes() {
   setSS('Loading...');
-  console.log('loadQuotes: starting...');
+  const token = localStorage.getItem('token') || '';
   try {
-    const r = await fetch(PROXY, {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ sql: "SELECT id, name, project, date, status, qno, addr, data, created_at FROM quotes ORDER BY date DESC LIMIT 50", params: [] })
+    const r = await fetch(API_BASE + '/api/quotations', {
+      headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' }
     });
-    console.log('loadQuotes: response status=' + r.status);
-    if (!r.ok) {
-      r.text().then(t => console.log('loadQuotes: HTTP error body:', t));
-      console.log('loadQuotes: HTTP error, status=' + r.status);
-      /* Try localStorage cache as fallback */
-      try { const cached = localStorage.getItem('hsdesign_quotes_cache'); if (cached) { quotes = JSON.parse(cached); console.log('loadQuotes: restored', quotes.length, 'quotes from localStorage cache'); renderList(); return; } } catch(e2) {}
-      setSS('Network error'); quotes = []; renderList(); return;
-    }
     const d = await r.json();
-    console.log('loadQuotes: d.success=' + d.success + ' result=' + JSON.stringify(d.result));
-    if (!d.success) { console.log('loadQuotes D1 error:', d.errors); setSS('D1 error: ' + (d.errors && d.errors[0] || '')); quotes = []; }
-    else { const rows = (d.result && d.result[0] && d.result[0].results) || []; quotes = rows.map(parseD1Row); console.log('loadQuotes success: quotes.length=' + quotes.length + ' ids=' + quotes.map(q=>q.id).join(',')); setSS(quotes.length ? `Loaded ${quotes.length} quotes` : 'No quotes yet'); /* Save to localStorage cache for offline fallback */ try { localStorage.setItem('hsdesign_quotes_cache', JSON.stringify(quotes)); } catch(e) {} }
-    console.log('loadQuotes: calling renderList, quotes.length=' + quotes.length);
+    if (!r.ok) { setSS('Error: ' + (d.error || r.statusText)); quotes = []; }
+    else {
+      quotes = (d.quotations || []).map(parseSaaS);
+      setSS(quotes.length ? `Loaded ${quotes.length} quotes` : 'No quotes yet');
+    }
     renderList();
-  } catch (e) { console.log('loadQuotes network error:', e.message); setSS('Offline'); /* Try localStorage cache as fallback */ try { const cached = localStorage.getItem('hsdesign_quotes_cache'); if (cached) { quotes = JSON.parse(cached); console.log('loadQuotes: restored', quotes.length, 'quotes from localStorage cache'); renderList(); return; } } catch(e2) {} quotes = []; renderList(); }
+  } catch (e) { setSS('Offline'); quotes = []; renderList(); }
 }
 
-function parseD1Row(r) {
+function parseSaaS(row) {
+  // SaaS list returns flat fields; full data loaded on openQ via GET /api/quotations/:id
+  return { id: row.id, name: row.name||'', project: row.proj||'', date: row.date||'', status: row.status||'Draft', qno: row.qno||'', addr: row.addr||'', items: [], terms: [], notes: '', notes2: [] };
+}
+
+function parsePage(p) {
+  const g = k => { const v = p.properties[k]; if (!v) return ''; if (v.type==='title') return v.title?.[0]?.plain_text||''; if (v.type==='rich_text') return v.rich_text?.[0]?.plain_text||''; if (v.type==='date') return v.date?.start||''; if (v.type==='select') return v.select?.name||''; if (v.type==='status') return v.status?.name||''; return ''; };
   let items=[],terms=[],notes='',notes2=[],qno='',addr='';
-  try { const j=JSON.parse(r.data||'{}'); items=j.items||[]; terms=j.terms||[]; notes=j.notes||''; notes2=j.notes2||[]; qno=j.qno||''; addr=j.addr||''; } catch(e) {}
-  return { id:r.id, name:r.name||'', project:r.project||'', date:r.date||'', status:r.status||'Draft', qno:r.qno||'', addr:r.addr||'', items, terms, notes, notes2 };
+  try { const j=JSON.parse(g('Notes')||'{}'); items=j.items||[]; terms=j.terms||[]; notes=j.notes||''; notes2=j.notes2||[]; qno=j.qno||''; addr=j.addr||''; } catch(e) {}
+  return { id:p.id, name:g('Name'), project:g('Project'), date:g('Date'), status:g('Status')||'Draft', qno, addr, items, terms, notes, notes2 };
 }
 
 // ─── LIST ─────────────────────────────────────────────────────────────────────
+function handleSearch(val) {
+  searchFilter = val.trim().toLowerCase();
+  renderList();
+}
+
 function renderList() {
   const el = document.getElementById('ql');
-  if (!quotes.length) { el.innerHTML='<div class="el"><div class="e">📋</div><p>No quotations yet</p></div>'; return; }
-  el.innerHTML = quotes.map(q => {
+  const list = quotes.filter(q => {
+    if (!searchFilter) return true;
+    return (q.name||'').toLowerCase().includes(searchFilter)
+        || (q.project||'').toLowerCase().includes(searchFilter)
+        || (q.qno||'').toLowerCase().includes(searchFilter)
+        || (q.status||'').toLowerCase().includes(searchFilter);
+  });
+  if (!list.length) {
+    el.innerHTML = `<div class="el"><div class="e">${searchFilter ? '🔍' : '📋'}</div><p>${searchFilter ? 'No matches found' : 'No quotations yet'}</p></div>`;
+    return;
+  }
+  el.innerHTML = list.map(q => {
     const tot = (q.items||[]).reduce((s,sec) => s + (sec.items||[]).reduce((a,it) => a + (parseFloat(it.sell)||0)*(parseFloat(it.qty)||0), 0), 0);
     const bdg = q.status==='Sent'?'bdg-se':q.status==='Paid'?'bdg-pa':'bdg-dr';
     const secNames = (q.items||[]).map(s=>s.section||'Untitled').filter(Boolean).join(', ') || 'No sections';
@@ -155,14 +258,14 @@ function renderList() {
     return `<div class="qc ${isOpen?'active':''}" id="qc-${q.id}">
       <div class="qc-head" onclick="handleQClick('${q.id}',event)">
         <div class="qc-mini">
-          <div class="qc-t">${escHtml(q.name)||'Unnamed'}</div>
-          <div class="qc-p">${escHtml(q.project)||'—'}</div>
+          <div class="qc-t">${esc(q.name)||'Unnamed'}</div>
+          <div class="qc-p">${esc(q.project)||'—'}</div>
           <div class="qc-b"><span class="qc-tot">RM ${fmt(tot)}</span><span class="bdg ${bdg}">${q.status}</span></div>
         </div>
-        <button class="qc-chevron ${isExp?'open':''}" onclick="toggleQ('${q.id}',event)" title="Expand">${isExp?'▾':'▾'}</button>
+        <button class="qc-chevron ${isExp?'open':''}" onclick="toggleQ('${q.id}',event)" title="Expand">${isExp?'▴':'▾'}</button>
       </div>
       <div class="qc-body ${isExp?'open':''}" onclick="event.stopPropagation()">
-        <div class="qc-detail"><span class="qc-dl">No</span><span>${escHtml(q.qno)||'—'}</span></div>
+        <div class="qc-detail"><span class="qc-dl">No</span><span>${esc(q.qno)||'—'}</span></div>
         <div class="qc-detail"><span class="qc-dl">Date</span><span>${q.date||'—'}</span></div>
         <div class="qc-detail"><span class="qc-dl">Sections</span><span>${secNames}</span></div>
         <div class="qc-detail"><span class="qc-dl">Items</span><span>${itemCount} item${itemCount!==1?'s':''}</span></div>
@@ -170,7 +273,7 @@ function renderList() {
     </div>`;
   }).join('');
 }
-function handleQClick(id, event) { console.log('handleQClick: id=' + id + ' isDirty=' + isDirty);
+function handleQClick(id, event) {
   event.stopPropagation();
   openQ(id);
 }
@@ -198,19 +301,60 @@ function migrateData(data) {
   }));
 }
 
-function openQ(id) {
-  console.log('openQ: ENTER id=' + id + ' isDirty=' + isDirty + ' quotes.length=' + quotes.length);
-  if (isDirty && !confirm('Unsaved changes. Discard?')) { console.log('openQ: ABORTED (isDirty)'); return; }
+async function openQ(id) {
+  if (isDirty && !confirm('Unsaved changes. Discard?')) return;
   clearDraft();
   activeId = id;
-  console.log('openQ: activeId set to ' + activeId + ', searching quotes array...');
   const q = quotes.find(x => x.id === id);
-  console.log('openQ: quotes.find result=', q ? 'FOUND name=' + q.name : 'NOT FOUND');
-  if (!q) { console.log('openQ: ABORT - quote not found. Available ids=' + quotes.map(q=>q.id).join(',')); return; }
-  _data = migrateData(q.items && q.items.length ? q.items : null) || [{section:'',items:[makeItem()]}];
-  _terms = JSON.parse(JSON.stringify(q.terms && q.terms.length ? q.terms : ['50% deposit upon confirmation','40% upon work commencement','10% upon completion']));
-  _notes = JSON.parse(JSON.stringify(q.notes2 && q.notes2.length ? q.notes2 : DEFAULT_NOTES));
-  _name = q.name||''; _qno = q.qno||''; _addr = q.addr||''; _proj = q.project||''; _date = q.date||''; _status = q.status||'Draft'; _notesTxt = q.notes||'';
+  if (!q) return;
+  // Load full data from SaaS API (list only returns flat fields)
+  const token = localStorage.getItem('token') || '';
+  try {
+    const res = await fetch(API_BASE + '/api/quotations/' + id, {
+      headers: { 'Authorization': 'Bearer ' + token }
+    });
+    if (res.ok) {
+      const d = await res.json();
+      const sq = d.quotation;
+      if (sq) {
+        let full = null;
+        // Try notes field first (original Notion format stored as JSON)
+        if (sq.notes) {
+          try { full = JSON.parse(sq.notes); } catch(e) {}
+        }
+        if (!full && sq.data) {
+          try { full = typeof sq.data === 'string' ? JSON.parse(sq.data) : sq.data; } catch(e) {}
+        }
+        if (full) {
+          _data = migrateData(full.items && full.items.length ? full.items : null) || [{section:'',items:[makeItem()]}];
+          _terms = JSON.parse(JSON.stringify(full.terms && full.terms.length ? full.terms : ['50% deposit upon confirmation','40% upon work commencement','10% upon completion']));
+          _notes = JSON.parse(JSON.stringify(full.notes2 && full.notes2.length ? full.notes2 : DEFAULT_NOTES));
+          _notesTxt = full.notes || '';
+        } else {
+          _data = [{section:'',items:[makeItem()]}];
+          _terms = ['50% deposit upon confirmation','40% upon work commencement','10% upon completion'];
+          _notes = JSON.parse(JSON.stringify(DEFAULT_NOTES));
+          _notesTxt = '';
+        }
+      } else {
+        _data = [{section:'',items:[makeItem()]}];
+        _terms = ['50% deposit upon confirmation','40% upon work commencement','10% upon completion'];
+        _notes = JSON.parse(JSON.stringify(DEFAULT_NOTES));
+        _notesTxt = '';
+      }
+    } else {
+      _data = [{section:'',items:[makeItem()]}];
+      _terms = ['50% deposit upon confirmation','40% upon work commencement','10% upon completion'];
+      _notes = JSON.parse(JSON.stringify(DEFAULT_NOTES));
+      _notesTxt = '';
+    }
+  } catch(e) {
+    _data = [{section:'',items:[makeItem()]}];
+    _terms = ['50% deposit upon confirmation','40% upon work commencement','10% upon completion'];
+    _notes = JSON.parse(JSON.stringify(DEFAULT_NOTES));
+    _notesTxt = '';
+  }
+  _name = q.name||''; _qno = q.qno||''; _addr = q.addr||''; _proj = q.project||''; _date = q.date||''; _status = q.status||'Draft';
   document.getElementById('welcome').style.display='none';
   document.getElementById('editor').style.display='block';
   document.getElementById('f-name').value = _name;
@@ -226,9 +370,7 @@ function openQ(id) {
   recalc();
   isDirty = false;
   setSS('Loaded');
-  console.log('openQ: calling renderList with activeId=' + activeId);
   renderList();
-  console.log('openQ: DONE');
 }
 
 function newQuote() {
@@ -263,19 +405,9 @@ function renderSections() {
   _data.forEach((sec, si) => {
     const secEl = document.createElement('div');
     secEl.className = 'section-block';
-    secEl.setAttribute('draggable','true');
-    secEl.setAttribute('data-si', si);
-    secEl.ondragstart = function(ev) { window._dragSec=si; ev.dataTransfer.effectAllowed='move'; this.style.opacity='0.5'; };
-    secEl.ondragend = function(ev) { this.style.opacity='1'; };
-    secEl.ondragover = function(ev) { ev.preventDefault(); this.classList.add('drag-over'); };
-    secEl.ondragleave = function(ev) { this.classList.remove('drag-over'); };
-    secEl.ondrop = function(ev) { ev.preventDefault(); this.classList.remove('drag-over'); if(window._dragSec==null||window._dragSec===si) return; const tmp=_data.splice(window._dragSec,1)[0]; _data.splice(si,0,tmp); window._dragSec=null; renderSections(); dirty(); };
     secEl.innerHTML = `
       <div class="sec-hdr">
-        <span class="drag-handle" title="Drag to reorder">☰</span>
-        <button class="btn btn-sm" onclick="moveSectionUp(${si})" title="Move up" style="padding:4px 8px;background:none;border:1px solid var(--gray-200)">↑</button>
-        <button class="btn btn-sm" onclick="moveSectionDown(${si})" title="Move down" style="padding:4px 8px;background:none;border:1px solid var(--gray-200)">↓</button>
-        <input type="text" class="sec-name" placeholder="Section name, e.g. Electrical Work" value="${escHtml(sec.section)}" oninput="syncSectionName(${si},this)">
+        <input type="text" class="sec-name" placeholder="Section name, e.g. Electrical Work" value="${esc(sec.section)}" oninput="syncSectionName(${si},this)">
         <button class="btn btn-r btn-sm" onclick="delSection(${si})" title="Delete section">🗑</button>
       </div>
       <div class="sec-items" id="sec-items-${si}"></div>
@@ -290,8 +422,6 @@ function renderSections() {
   });
 }
 
-function moveSectionUp(si) { if(si<=0)return; const tmp=_data.splice(si,1)[0]; _data.splice(si-1,0,tmp); renderSections(); dirty(); }
-function moveSectionDown(si) { if(si>=_data.length-1)return; const tmp=_data.splice(si,1)[0]; _data.splice(si+1,0,tmp); renderSections(); dirty(); }
 function addSection(name) { _data.push({section:name||'',items:[makeItem()]}); renderSections(); dirty(); }
 function delSection(si) { if (_data.length <= 1) return; _data.splice(si,1); renderSections(); dirty(); }
 function syncSectionName(si, inp) { _data[si].section = inp.value; dirty(); }
@@ -319,7 +449,7 @@ function buildItemRow(it, si, ii) {
   const mkStr = mk>0?`<span class="mk ${mkCls}">+${fmt(mk)}%</span>`:'';
   const ciRows = (it.costItems||[]).map((ci, cii) => `
     <div class="csub">
-      <input type="text" placeholder="e.g. Wire 100m" value="${escHtml(ci.desc)}" oninput="syncCi(${si},${ii},${cii},this,'desc')">
+      <input type="text" placeholder="e.g. Wire 100m" value="${esc(ci.desc)}" oninput="syncCi(${si},${ii},${cii},this,'desc')">
       <select class="ci-unit" onchange="syncCi(${si},${ii},${cii},this,'unit')">${UNITS.map(u => `<option value="${u}" ${(ci.unit||'nos')===u?'selected':''}>${u}</option>`).join('')}</select>
       <input type="number" min="0" class="ci-qty" placeholder="Qty" value="${ci.qty||''}" oninput="syncCi(${si},${ii},${cii},this,'qty')" style="text-align:center">
       <input type="number" min="0" class="ci-price" placeholder="RM" value="${ci.unitPrice||ci.unitPrice===0?ci.unitPrice:''}" oninput="syncCi(${si},${ii},${cii},this,'price')">
@@ -329,11 +459,11 @@ function buildItemRow(it, si, ii) {
   el.innerHTML = `
     <div class="item-main">
       <span class="item-num">${ii+1}</span>
-      <input type="text" class="f-desc" placeholder="e.g. Install lighting point" value="${escHtml(it.desc)}" oninput="syncItemDesc(${si},${ii},this)">
+      <input type="text" class="f-desc" placeholder="e.g. Install lighting point" value="${esc(it.desc)}" oninput="syncItemDesc(${si},${ii},this)">
       <select class="f-unit" onchange="syncItemUnit(${si},${ii},this)">${UNITS.map(u => `<option value="${u}" ${it.unit===u?'selected':''}>${u}</option>`).join('')}</select>
       <input type="number" class="f-qty" min="0" placeholder="1" value="${it.qty}" oninput="syncItemQty(${si},${ii},this)" style="text-align:center">
-      <input type="text" class="f-cost" readonly placeholder="0.00" value="${ct>0?fmt(ct):''}">
-      <input type="number" class="f-sell" min="0" placeholder="0.00" value="${it.sell||it.sell===0?it.sell:''}" oninput="syncItemSell(${si},${ii},this)">
+      <input type="number" class="f-cost" min="0" placeholder="0.00" value="${ct>0?fmt(ct):''}" readonly>
+      <input type="number" class="f-sell" min="0" placeholder="0.00" value="${it.sell||it.sell===0?fmt(it.sell):''}" oninput="syncItemSell(${si},${ii},this)">
       <button class="btn btn-g btn-sm" style="padding:4px 8px;font-size:11px;white-space:nowrap" onclick="autoSell(${si},${ii})">+25%</button>
       <button class="del" onclick="remItem(${si},${ii})">×</button>
     </div>
@@ -344,14 +474,6 @@ function buildItemRow(it, si, ii) {
       <button class="btn btn-g btn-sm" onclick="addCi(${si},${ii},this)" style="margin-top:4px">+ Add cost line</button>
       <div class="csub-row">Subtotal cost: <span>RM ${fmt(ct)}</span></div>
     </div>`;
-  el.setAttribute('draggable', 'true');
-  el.dataset.si = si;
-  el.dataset.ii = ii;
-  el.ondragstart = function(e) { window._dragItem = {si,ii}; e.dataTransfer.effectAllowed = 'move'; this.style.opacity = '0.5'; };
-  el.ondragend = function(e) { this.style.opacity = '1'; window._dragItem = null; };
-  el.ondragover = function(e) { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; this.classList.add('drag-over'); };
-  el.ondragleave = function(e) { this.classList.remove('drag-over'); };
-  el.ondrop = function(e) { e.preventDefault(); this.classList.remove('drag-over'); if(!window._dragItem) return; const {si:fsi,ii:fii}=window._dragItem; if(fsi===si&&fii===ii) return; const [moved]=_data[fsi].items.splice(fii,1); _data[si].items.splice(ii,0,moved); renderSections(); dirty(); };
   return el;
 }
 
@@ -360,23 +482,23 @@ function toggleCost(el) { const cb=el.nextElementSibling; cb.classList.toggle('o
 // Item field sync
 function syncItemDesc(si,ii,inp) { _data[si].items[ii].desc = inp.value; dirty(); }
 function syncItemUnit(si,ii,inp) { _data[si].items[ii].unit = inp.value; dirty(); }
-function syncItemQty(si,ii,inp) { _data[si].items[ii].qty = parseFloat(inp.value.replace(/,/g,""))||0; recalc(); dirty(); }
-function syncItemSell(si,ii,inp) { _data[si].items[ii].sell = parseFloat(inp.value.replace(/,/g,""))||0; recalc(); dirty(); }
+function syncItemQty(si,ii,inp) { _data[si].items[ii].qty = parseFloat(inp.value)||0; recalc(); dirty(); }
+function syncItemSell(si,ii,inp) { _data[si].items[ii].sell = parseFloat(inp.value)||0; recalc(); dirty(); }
 
 function autoSell(si,ii) {
   const it = _data[si].items[ii];
   const ct = (it.costItems||[]).reduce((s,c) => s+(parseFloat(c.amt)||0), 0);
   if (ct <= 0) { alert('Cost breakdown is empty or 0! Add cost amounts first.'); return; }
-  const sell = ct * (1 + MARKUP_RATE);
+  const sell = ct * 1.25;
   it.sell = sell;
   // update DOM — find row by section index + item index
   const secItems = document.querySelectorAll('.sec-items');
   const row = secItems[si] ? secItems[si].children[ii] : null;
   if (row) {
     const sellInput = row.querySelector('.f-sell');
-    if (sellInput) sellInput.value = sell;
+    if (sellInput) sellInput.value = fmt(sell);
     const costInput = row.querySelector('.f-cost');
-    if (costInput) costInput.value = ct > 0 ? ct : '';
+    if (costInput) costInput.value = fmt(ct);
     const subRow = row.querySelector('.csub-row span');
     if (subRow) subRow.textContent = 'RM ' + fmt(ct);
     recalc();
@@ -419,15 +541,15 @@ function syncCi(si, ii, cii, inp, field) {
   const priceInp = row.querySelector('.ci-price');
   ci.desc = descInp ? descInp.value : ci.desc;
   ci.unit = unitSel ? unitSel.value : ci.unit;
-  ci.qty = qtyInp ? (parseFloat(qtyInp.value.replace(/,/g,""))||0) : ci.qty;
-  ci.unitPrice = priceInp ? (parseFloat(priceInp.value.replace(/,/g,""))||0) : ci.unitPrice;
+  ci.qty = qtyInp ? (parseFloat(qtyInp.value)||0) : ci.qty;
+  ci.unitPrice = priceInp ? (parseFloat(priceInp.value)||0) : ci.unitPrice;
   ci.amt = ci.unitPrice * ci.qty;
   const amtEl = row.querySelector('.ci-amt');
   if (amtEl) amtEl.textContent = ci.amt > 0 ? 'RM ' + fmt(ci.amt) : '—';
   const ct = (_data[si].items[ii].costItems||[]).reduce((s,c) => s+(parseFloat(c.amt)||0), 0);
   const itemRow = row.closest('.item');
   const costInput = itemRow.querySelector('.f-cost');
-  if (costInput) costInput.value = ct > 0 ? ct : '';
+  if (costInput) costInput.value = ct>0?fmt(ct):'';
   const subRow = itemRow.querySelector('.csub-row span');
   if (subRow) subRow.textContent = 'RM '+fmt(ct);
   recalc();
@@ -441,7 +563,7 @@ function renderTerms() {
   _terms.forEach((t,i) => {
     const row = document.createElement('div');
     row.className = 'terms-row';
-    row.innerHTML = `<input type="text" placeholder="e.g. 50% deposit upon confirmation" value="${escHtml(t)}" oninput="syncTerm(${i},this)"><button class="del" onclick="remTerm(${i})">×</button>`;
+    row.innerHTML = `<input type="text" placeholder="e.g. 50% deposit upon confirmation" value="${esc(t)}" oninput="syncTerm(${i},this)"><button class="del" onclick="remTerm(${i})">×</button>`;
     c.appendChild(row);
   });
 }
@@ -457,7 +579,7 @@ function renderNotes() {
   _notes.forEach((t,i) => {
     const row = document.createElement('div');
     row.className = 'terms-row';
-    row.innerHTML = `<input type="text" placeholder="Enter term or note..." value="${escHtml(t)}" oninput="syncNote(${i},this)"><button class="del" onclick="remNote(${i})">×</button>`;
+    row.innerHTML = `<input type="text" placeholder="Enter term or note..." value="${esc(t)}" oninput="syncNote(${i},this)"><button class="del" onclick="remNote(${i})">×</button>`;
     c.appendChild(row);
   });
 }
@@ -503,44 +625,52 @@ function gatherForm() {
 }
 
 async function saveQuote() {
-  if (!isDirty) { console.log('saveQuote: nothing to save (not dirty)'); return; }
+  if (!isDirty) return;
   gatherForm();
-  const payload = JSON.stringify({items:_data, terms:_terms, notes2:_notes, qno:_qno, code:_code, addr:_addr, notes:_notesTxt});
+  const token = localStorage.getItem('token') || '';
+  const total = _data.reduce((s,sec) => s+(sec.items||[]).reduce((a,it)=>a+(parseFloat(it.sell)||0)*(parseFloat(it.qty)||0),0),0);
+  // Store original Notion-format data in notes field; SaaS data field stores full JSON for portability
+  const notesPayload = JSON.stringify({items:_data, terms:_terms, notes2:_notes, qno:_qno, code:_code, addr:_addr, notes:_notesTxt});
+  const body = {
+    qno: _qno, name: _name, proj: _proj, addr: _addr, date: _date, status: _status,
+    notes: notesPayload,
+    total
+  };
   setSS('Saving...');
-  console.log('saveQuote: starting... activeId=' + activeId + ' payload length=' + payload.length);
   try {
     let res, data;
-    if (activeId && activeId!=='__new__') {
-      const sql = `UPDATE quotes SET name='${escSql(_name)}', project='${escSql(_proj)}', date='${escSql(_date)}', status='${escSql(_status)}', qno='${escSql(_qno)}', addr='${escSql(_addr)}', data='${escSql(payload)}' WHERE id='${escSql(activeId)}'`;
-      console.log('saveQuote: UPDATE sql=', sql);
-      res = await fetch(PROXY, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({sql})});
+    const headers = { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token };
+    if (activeId && activeId !== '__new__') {
+      res = await fetch(API_BASE + '/api/quotations/' + activeId, { method: 'PUT', headers, body: JSON.stringify(body) });
     } else {
-      const newId = crypto.randomUUID();
-      const sql = `INSERT INTO quotes (id, name, project, date, status, qno, addr, data) VALUES ('${escSql(newId)}', '${escSql(_name)}', '${escSql(_proj)}', '${escSql(_date)}', '${escSql(_status)}', '${escSql(_qno)}', '${escSql(_addr)}', '${escSql(payload)}')`;
-      console.log('saveQuote: INSERT sql=', sql);
-      res = await fetch(PROXY, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({sql})});
-      data = { id: newId };
+      res = await fetch(API_BASE + '/api/quotations', { method: 'POST', headers, body: JSON.stringify(body) });
     }
-    console.log('saveQuote: response status=' + res.status);
-    if (!res.ok) { console.log('saveQuote: network error, res.ok=false'); setSS('Network error'); return; }
     data = await res.json();
-    console.log('saveQuote: D1 response=', JSON.stringify(data));
-    if (!data.success) { console.log('saveQuote: D1 error'); setSS('D1 error: '+(data.errors&&data.errors[0]||'')); return; }
-    if (activeId==='__new__') { console.log('saveQuote: new quote, adding to quotes array with newId=' + newId + ' (data.id was=' + data.id + ')'); activeId=newId; quotes.unshift({id:newId,name:_name,project:_proj,date:_date,status:_status,qno:_qno,addr:_addr,items:_data,terms:_terms,notes2:_notes,notes:_notesTxt}); }
-    else { console.log('saveQuote: update existing, activeId=' + activeId); const idx=quotes.findIndex(q=>q.id===activeId); if(idx!==-1) quotes[idx]={...quotes[idx],name:_name,project:_proj,date:_date,status:_status,qno:_qno,addr:_addr,items:_data,terms:_terms,notes2:_notes,notes:_notesTxt}; }
+    if (!res.ok) { setSS('Error: ' + (data.error || res.statusText)); return; }
+    if (activeId === '__new__') {
+      activeId = data.quotation.id;
+      quotes.unshift({ id: data.quotation.id, name: _name, project: _proj, date: _date, status: _status, qno: _qno, addr: _addr, items: _data, terms: _terms, notes2: _notes, notes: _notesTxt });
+    } else {
+      const idx = quotes.findIndex(q => q.id === activeId);
+      if (idx !== -1) quotes[idx] = { ...quotes[idx], name: _name, project: _proj, date: _date, status: _status, qno: _qno, addr: _addr, items: _data, terms: _terms, notes2: _notes, notes: _notesTxt };
+    }
     isDirty = false;
     setSS('Saved ✓');
-    console.log('saveQuote: calling renderList, quotes.length=' + quotes.length);
     renderList();
     clearDraft();
-  } catch(e) { console.log('saveQuote: catch error=' + e.message); setSS('Network error'); }
+  } catch(e) { setSS('Network error'); }
 }
 
 // ─── DELETE ──────────────────────────────────────────────────────────────────
 async function delQuote() {
   if (!activeId||activeId==='__new__') { alert('Nothing to delete'); return; }
   if (!confirm('Delete this quotation?')) return;
-  try { const res = await fetch(PROXY, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({sql:`DELETE FROM quotes WHERE id='${escSql(activeId)}'`})}); } catch(e){}
+  const token = localStorage.getItem('token') || '';
+  try {
+    await fetch(API_BASE + '/api/quotations/' + activeId, {
+      method: 'DELETE', headers: { 'Authorization': 'Bearer ' + token }
+    });
+  } catch(e){}
   quotes = quotes.filter(q=>q.id!==activeId);
   activeId = null; isDirty = false;
   document.getElementById('welcome').style.display='block';
@@ -573,7 +703,7 @@ function openPDF() {
     let secTotal = 0;
     // Section header row
     if (sec.section) {
-      rows.push(`<tr class="sec-row"><td colspan="6" style="background:#e8f4f1;font-weight:700;color:#2d5a47;font-size:12px;padding:8px 12px">${escHtml(sec.section)}</td></tr>`);
+      rows.push(`<tr class="sec-row"><td colspan="6" style="background:#e8f4f1;font-weight:700;color:#2d5a47;font-size:12px;padding:8px 12px">${esc(sec.section)}</td></tr>`);
     }
     (sec.items||[]).forEach(it => {
       if (!it.desc && !it.sell) return;
@@ -583,8 +713,8 @@ function openPDF() {
       grandTotal += line;
       rows.push(`<tr>
         <td style="width:24px;color:var(--gray-400)">${itemNum}</td>
-        <td>${escHtml(it.desc)||'—'}</td>
-        <td style="width:60px;text-align:center">${escHtml(it.unit)}</td>
+        <td>${esc(it.desc)||'—'}</td>
+        <td style="width:60px;text-align:center">${esc(it.unit)}</td>
         <td style="width:40px;text-align:right">${it.qty||0}</td>
         <td style="width:80px;text-align:right">RM ${fmt(it.sell)}</td>
         <td style="width:90px;text-align:right;font-weight:600">RM ${fmt(line)}</td>
@@ -594,15 +724,15 @@ function openPDF() {
     rows.push(`<tr class="sec-subtotal-row"><td colspan="5" style="text-align:right;font-weight:700;background:#f0faf7;color:#2d5a47;font-size:12px;padding:6px 12px">Section Total: RM ${fmt(secTotal)}</td><td style="text-align:right;font-weight:700;background:#f0faf7;color:#2d5a47;font-size:12px;padding:6px 12px">RM ${fmt(secTotal)}</td></tr>`);
   });
   const dateStr = _date ? new Date(_date+'T00:00:00').toLocaleDateString('en-GB',{day:'2-digit',month:'long',year:'numeric'}) : '';
-  const termList = terms.length ? `<div class="qp-terms"><h4>Payment Terms</h4><ul>${terms.map(t=>`<li>${escHtml(t)}</li>`).join('')}</ul></div>` : '';
+  const termList = terms.length ? `<div class="qp-terms"><h4>Payment Terms</h4><ul>${terms.map(t=>`<li>${esc(t)}</li>`).join('')}</ul></div>` : '';
   const stdTerms = _notes.filter(t=>t.trim());
-  const stdTermsList = stdTerms.length ? `<div class="qp-terms"><h4>Terms &amp; Conditions</h4><ol style="padding-left:18px;margin:0">${stdTerms.map(t=>`<li>${escHtml(t)}</li>`).join('')}</ol></div>` : '';
+  const stdTermsList = stdTerms.length ? `<div class="qp-terms"><h4>Terms &amp; Conditions</h4><ol style="padding-left:18px;margin:0">${stdTerms.map(t=>`<li>${esc(t)}</li>`).join('')}</ol></div>` : '';
   const html = `<div class="qp">
     <div class="qp-hdr">
       <div class="qp-logo"><h2>Health Space Interior</h2><p>HS Design (SSM: 202603001610)</p><p>24-1, Jalan Rosmerah 2/17, Taman Johor Jaya</p><p>81100 Johor Bahru, Johor</p><p>011-1688 0145 | hsdesign.biz</p></div>
-      <div class="qp-ref"><h3>QUOTATION</h3><p><strong>Ref:</strong> ${escHtml(_qno)||'—'}</p><p><strong>Date:</strong> ${dateStr}</p><p><strong>Status:</strong> ${_status}</p></div>
+      <div class="qp-ref"><h3>QUOTATION</h3><p><strong>Ref:</strong> ${esc(_qno)||'—'}</p><p><strong>Date:</strong> ${dateStr}</p><p><strong>Status:</strong> ${_status}</p></div>
     </div>
-    <div class="qp-ci"><h4>Prepared For</h4><p>${escHtml(_name)}</p><span>${escHtml(_addr||_proj||'—')}</span></div>
+    <div class="qp-ci"><h4>Prepared For</h4><p>${esc(_name)}</p><span>${esc(_addr||_proj||'—')}</span></div>
     <table class="qp-table"><thead><tr><th style="width:24px">#</th><th>Description</th><th style="width:60px;text-align:center">Unit</th><th style="width:40px;text-align:right">Qty</th><th style="width:80px;text-align:right">Unit Price</th><th style="width:90px;text-align:right">Amount</th></tr></thead><tbody>${rows.join('')}</tbody></table>
     <div class="qp-totals"><div class="qp-tbox"><div class="qp-tr gd"><span>Grand Total</span><span>RM ${fmt(grandTotal)}</span></div></div></div>
     ${termList}
@@ -718,25 +848,4 @@ function printPDF() {
 }
 
 // ─── INIT ─────────────────────────────────────────────────────────────────────
-
-// ─── SIDEBAR COLLAPSE ──────────────────────────────────────────────────────────
-function toggleSidebar() {
-  const sb = document.querySelector('.sidebar');
-  const body = document.querySelector('.body');
-  const collapsed = sb.classList.toggle('collapsed');
-  body.classList.toggle('sidebar-collapsed', collapsed);
-  const btn = document.getElementById('sidebar-toggle');
-  if (btn) btn.textContent = collapsed ? '\u25ba' : '\u2630';
-  localStorage.setItem('sidebarCollapsed', collapsed);
-}
-function initSidebar() {
-  const sb = document.querySelector('.sidebar');
-  const body = document.querySelector('.body');
-  const collapsed = localStorage.getItem('sidebarCollapsed') === 'true';
-  sb.classList.toggle('collapsed', collapsed);
-  body.classList.toggle('sidebar-collapsed', collapsed);
-  const btn = document.getElementById('sidebar-toggle');
-  if (btn) btn.textContent = collapsed ? '\u25ba' : '\u2630';
-}
-
 document.getElementById('pass').focus();
