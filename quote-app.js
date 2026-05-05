@@ -645,7 +645,7 @@ async function saveQuote() {
     } else {
       res = await fetch(API_BASE + '/api/quotations', { method: 'POST', headers, body: JSON.stringify(body) });
     }
-    let data;
+
     try { data = await res.json(); } catch(e) { data = {}; }
     if (!res.ok) { setSS('Error: ' + (data.error || res.statusText)); return; }
     if (activeId === '__new__') {
