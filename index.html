@@ -286,6 +286,15 @@ footer{background:#0f0f11;color:#555;padding:32px 28px;}
 .wa-float:hover{transform:scale(1.06);box-shadow:0 6px 20px rgba(37,211,102,.5)}
 .container{max-width:960px;margin:0 auto;padding:0 24px}
 
+
+.testimonials{padding:60px 0;background:#fff;border-top:1px solid #eee}
+.testimonials h2{text-align:center;font-size:24px;font-weight:800;margin-bottom:36px;color:#111}
+.testimonial-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:20px;max-width:900px;margin:0 auto}
+.testimonial{background:#f8f9fa;border-radius:14px;padding:24px;border:1px solid #eee}
+.stars{color:#f59e0b;font-size:16px;margin-bottom:10px;letter-spacing:2px}
+.testimonial p{font-size:14px;color:#374151;line-height:1.7;margin-bottom:14px;font-style:italic}
+.t-author{font-size:13px;font-weight:700;color:#6b7280}
+
 </style>
 </head>
 <body>
@@ -600,7 +609,30 @@ footer{background:#0f0f11;color:#555;padding:32px 28px;}
         </div>
       </div>
     </div>
-  </section><footer>
+  </section>
+  <section class="testimonials" id="testimonials">
+    <div class="container">
+      <h2>Used by 200+ Malaysian Design Firms</h2>
+      <div class="testimonial-grid">
+        <div class="testimonial">
+          <div class="stars">★★★★★</div>
+          <p>"从前手工算要 3 小时，现在 10 分钟搞定。客户说我们专业了很多！"</p>
+          <div class="t-author">— Liyana M., KL Interior Studio</div>
+        </div>
+        <div class="testimonial">
+          <div class="stars">★★★★★</div>
+          <p>"Referral 功能超棒，推荐两个同事我们三个都拿到了额外 quota。"</p>
+          <div class="t-author">— Jason T., SpaceCraft Design</div>
+        </div>
+        <div class="testimonial">
+          <div class="stars">★★★★★</div>
+          <p>"PDF 直接发客户，看起来比用 Excel 专业 100 倍。"</p>
+          <div class="t-author">— Nur A., Ace Renovation</div>
+        </div>
+      </div>
+    </div>
+  </section>
+<footer>
   <div class="footer-inner">
     <div class="footer-logo"><img src="images/logo.png" alt="Health Space Interior"></div>
     <div class="footer-links">
