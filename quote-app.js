@@ -1,3 +1,10 @@
+
+/* UX: taller rows with hover highlight */
+.section-block{min-height:48px;border-bottom:1px solid var(--gray-200);transition:background .15s}
+.section-block:hover{background:#f8fafc}
+.sec-items .item{padding:8px 4px;border-radius:6px;transition:background .12s}
+.sec-items .item:hover{background:#f8fafc}
+
 // ─── CONFIG ─────────────────────────────────────────────────────────────────
 const API_BASE = 'https://quotation.hsdesign.biz'; // SaaS API base
 const UNITS = ['nos', 'set', 'm', 'm²', 'lot', 'box', 'lump sum', 'day', 'trip', 'ft', 'ft²', 'hour'];
@@ -9,8 +16,6 @@ let expandedId = null;
 let isDirty = false;
 let searchFilter = '';
 let autoSaveTimer = null;
-let _collapsedSections = {}; // section index → true/false
-let _usageData = { plan: 'free', used: 0, limit: 100 };
 // _data = [{ section: '', items: [{ desc:'', unit:'nos', qty:1, costItems:[{desc:'',unit:'nos',qty:1,unitPrice:0,amt:0}], sell:0 }] }]
 let _data = { items: [] };
 let _terms = [];
@@ -35,8 +40,25 @@ const DEFAULT_NOTES = [
 const ISO = () => new Date().toISOString().slice(0, 10);
 const fmt = n => parseFloat(n || 0).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 const esc = s => String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-const setSS = m => { document.getElementById('ss').textContent = m; };
-const dirty = () => { isDirty = true; setSS('<span style="display:inline-flex;align-items:center;gap:5px"><span class="u-dot"></span>Unsaved...</span>'); clearTimeout(autoSaveTimer); autoSaveTimer = setTimeout(saveQuote, 3000); clearTimeout(_draftTimer); _draftTimer = setTimeout(saveDraft, 1000); };
+// SMART AUTO-SAVE STATUS
+let _lastSaveTime = null;
+const setSS = m => {
+  if (!m || m === 'Saving...' || m === 'Saved ' || m === 'Error: ') {
+    document.getElementById('ss').textContent = m;
+    return;
+  }
+  if (m.startsWith('Last saved')) {
+    const now = Date.now();
+    if (_lastSaveTime) {
+      const diffSec = Math.floor((now - _lastSaveTime) / 1000);
+      if (diffSec < 30) { document.getElementById('ss').textContent = 'Last saved Just now'; return; }
+      if (diffSec < 300) { document.getElementById('ss').textContent = 'Last saved ' + Math.floor(diffSec/60) + ' min ago'; return; }
+    }
+    _lastSaveTime = now;
+  }
+  document.getElementById('ss').textContent = m;
+};
+const dirty = () => { isDirty = true; setSS('Unsaved...'); clearTimeout(autoSaveTimer); autoSaveTimer = setTimeout(saveQuote, 3000); clearTimeout(_draftTimer); _draftTimer = setTimeout(saveDraft, 1000); };
 let _draftTimer = null;
 const DRAFT_KEY = 'hsdesign_quote_draft';
 
@@ -83,7 +105,86 @@ setSS('Draft restored');
     renderList();
   }
 
-  // ─── SIDEBAR COLLAPSE ──────────────────────────────────────────────────────────
+  
+// ─── ONBOARDING TOOLTIP ─────────────────────────────────────────────────────
+const ONBOARD_KEY = 'hsdesign_onboarded';
+function showOnboardingTip() {
+  if (localStorage.getItem(ONBOARD_KEY)) return;
+  const tip = document.createElement('div');
+  tip.id = 'onboard-tip';
+  tip.innerHTML = '<div class="onboard-overlay"></div>' +
+    '<div class="onboard-box">' +
+    '<div class="onboard-arrow"></div>' +
+    '<p class="onboard-msg">Tip: Create your first quote in under 2 minutes. Click here!</p>' +
+    '<button class="onboard-close" onclick="dismissOnboard()">Got it</button></div>';
+  document.body.appendChild(tip);
+  const newBtn = document.querySelector('button[onclick*="newQuote"]') ||
+                 document.querySelector('button[onclick*="__new"]');
+  if (newBtn) {
+    const rect = newBtn.getBoundingClientRect();
+    const box = tip.querySelector('.onboard-box');
+    box.style.top = (rect.bottom + window.scrollY + 8) + 'px';
+    box.style.left = (rect.left + window.scrollX) + 'px';
+  }
+}
+function dismissOnboard() {
+  try { localStorage.setItem(ONBOARD_KEY, '1'); } catch(e) {}
+  const tip = document.getElementById('onboard-tip');
+  if (tip) tip.remove();
+}
+function checkOnboard() {
+  if (!quotes || quotes.length === 0) setTimeout(showOnboardingTip, 800);
+}
+
+
+// ─── USAGE BANNER ────────────────────────────────────────────────────────────
+function showUsageBanner(pct) {
+  const existing = document.getElementById('usage-banner');
+  if (existing) existing.remove();
+  if (pct < 80) return;
+  const banner = document.createElement('div');
+  banner.id = 'usage-banner';
+  const msg = "You've used " + pct + "/100 quotes this month.";
+  const link = '<a href="/pricing" class="usage-banner-link">Upgrade to Ad-Free for RM5/mo &#8594;</a>';
+  const closeBtn = '<button onclick="this.parentElement.remove()" style="background:none;border:none;cursor:pointer;font-size:16px;padding:0 4px;margin-left:8px;color:inherit">&#215;</button>';
+  banner.innerHTML = '<div class="usage-banner-inner">' + msg + ' ' + link + closeBtn + '</div>';
+  const toolbar = document.querySelector('.tb');
+  if (toolbar && toolbar.parentNode) toolbar.parentNode.insertBefore(banner, toolbar.nextSibling);
+}
+
+
+// PDF EXPORT SPINNER
+function setExportLoading(on) {
+  const btn = document.getElementById('btn-open-pdf');
+  if (!btn) return;
+  if (on) {
+    btn.dataset.originalText = btn.innerHTML;
+    btn.innerHTML = '<svg class="spin" viewBox="0 0 24 24" width="14" height="14" style="animation:spin .8s linear infinite;fill:currentColor"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" fill="none" stroke-dasharray="30 70"/></svg> Generating...';
+    btn.disabled = true;
+  } else {
+    btn.innerHTML = btn.dataset.originalText || 'Export PDF';
+    btn.disabled = false;
+  }
+}
+
+
+// MOBILE SIDEBAR - auto-collapse on <768px
+function initMobileSidebar() {
+  const handleResize = () => {
+    const sb = document.querySelector('.sidebar');
+    if (!sb) return;
+    if (window.innerWidth < 768) {
+      sb.classList.add('collapsed');
+      document.querySelector('.body').classList.add('sidebar-collapsed');
+      const toggle = document.getElementById('sidebar-toggle');
+      if (toggle) toggle.textContent = '▸';
+    }
+  };
+  window.addEventListener('resize', handleResize);
+  handleResize();
+}
+
+// ─── SIDEBAR COLLAPSE ──────────────────────────────────────────────────────────
 function toggleSidebar() {
   const sb = document.querySelector('.sidebar');
   const collapsed = sb.classList.toggle('collapsed');
@@ -101,64 +202,6 @@ function initSidebar() {
       document.getElementById('sidebar-toggle').textContent = '▸';
     }
   } catch(e) {}
-}
-
-function initKeyboardShortcuts() {
-  document.addEventListener('keydown', e => {
-    if ((e.ctrlKey || e.metaKey) && e.key === 's') { e.preventDefault(); saveQuote(); }
-    if ((e.ctrlKey || e.metaKey) && e.key === 'n') { e.preventDefault(); newQuote(); }
-  });
-}
-
-async function loadUsage() {
-  const token = localStorage.getItem('token') || '';
-  try {
-    const r = await fetch(API_BASE + '/api/account/usage', {
-      headers: { 'Authorization': 'Bearer ' + token }
-    });
-    if (r.ok) {
-      const d = await r.json();
-      _usageData = { plan: d.plan || 'free', used: d.used || 0, limit: d.limit || 100 };
-    }
-  } catch(e) {}
-  updateUsageDisplay();
-}
-
-function updateUsageDisplay() {
-  const planEl = document.getElementById('plan-badge');
-  const usageEl = document.getElementById('usage-pill');
-  const usageText = document.getElementById('usage-text');
-  const usageBar = document.getElementById('usage-bar');
-  if (planEl) {
-    const plan = _usageData.plan || 'free';
-    planEl.textContent = plan.toUpperCase();
-    planEl.className = 'plan-badge plan-' + plan;
-  }
-  if (usageEl) {
-    const { used, limit, plan } = _usageData;
-    if (plan !== 'free') {
-      usageEl.innerHTML = `<span style="font-size:10px;color:var(--green)">✓ Unlimited</span>`;
-    } else {
-      usageEl.innerHTML = `📊 ${used} / ${limit}`;
-    }
-  }
-  // Update toolbar usage bar
-  if (usageText && usageBar) {
-    const { used, limit, plan } = _usageData;
-    if (plan !== 'free') {
-      usageText.textContent = '✓ Unlimited';
-      usageBar.style.display = 'none';
-    } else {
-      usageText.textContent = `${used} / ${limit}`;
-      const pct = Math.min((used / limit) * 100, 100);
-      const bar = usageBar.querySelector('div');
-      if (bar) bar.style.width = pct + '%';
-      usageBar.style.display = 'block';
-    }
-  }
-  // Update sidebar header count
-  const shCount = document.getElementById('sh-count');
-  if (shCount) shCount.textContent = `(${quotes.length})`;
 }
 
 // ─── SECTION DRAG-AND-DROP ────────────────────────────────────────────────────
@@ -244,8 +287,8 @@ function chkGate() {
   app.style.display = 'flex';
   app.style.flexDirection = 'column';
   initSidebar();
+  initMobileSidebar();
   loadQuotes();
-  initKeyboardShortcuts();
   // Check for unsaved draft
   setTimeout(() => {
     try {
@@ -275,11 +318,6 @@ async function loadQuotes() {
       setSS(quotes.length ? `Loaded ${quotes.length} quotes` : 'No quotes yet');
     }
     renderList();
-    // Update sidebar count in header
-    const shCount = document.getElementById('sh-count');
-    if (shCount) shCount.textContent = `(${quotes.length})`;
-    // Load usage data from account API
-    loadUsage();
   } catch (e) { setSS('Offline'); quotes = []; renderList(); }
 }
 
@@ -299,7 +337,14 @@ function parsePage(p) {
 function handleSearch(val) {
   searchFilter = val.trim().toLowerCase();
   renderList();
+  if (!quotes || quotes.length === 0) setTimeout(showOnboardingTip, 800);
+  try {
+    const raw = localStorage.getItem('hsdesign_usage') || '0/100';
+    const m = raw.match(/(\d+)\/(\d+)/);
+    if (m) showUsageBanner(Math.round(parseInt(m[1]) / (parseInt(m[2]) || 100) * 100));
+  } catch(e) {}
 }
+
 
 function renderList() {
   const el = document.getElementById('ql');
@@ -311,15 +356,9 @@ function renderList() {
         || (q.status||'').toLowerCase().includes(searchFilter);
   });
   if (!list.length) {
-    const msg = searchFilter ? 'No matches found' : 'No quotes yet — click + New to create one';
-    el.innerHTML = `<div class="el"><div class="e">${searchFilter ? '🔍' : '📋'}</div><p>${msg}</p></div>`;
-    const fc = document.getElementById('ql-filtered-count');
-    if (fc) { fc.style.display = 'none'; }
+    el.innerHTML = `<div class="el"><div class="e">${searchFilter ? '🔍' : '📋'}</div><p>${searchFilter ? 'No matches found' : 'No quotations yet'}</p></div>`;
     return;
   }
-  // Show filtered count if search active
-  const fc = document.getElementById('ql-filtered-count');
-  if (fc) { fc.style.display = searchFilter ? 'block' : 'none'; fc.textContent = `${list.length} of ${quotes.length} quotes`; }
   el.innerHTML = list.map(q => {
     const tot = (q.items||[]).reduce((s,sec) => s + (sec.items||[]).reduce((a,it) => a + (parseFloat(it.sell)||0)*(parseFloat(it.qty)||0), 0), 0);
     const bdg = q.status==='Sent'?'bdg-se':q.status==='Paid'?'bdg-pa':'bdg-dr';
@@ -353,7 +392,14 @@ function toggleQ(id, event) {
   event.stopPropagation();
   expandedId = expandedId === id ? null : id;
   renderList();
+  if (!quotes || quotes.length === 0) setTimeout(showOnboardingTip, 800);
+  try {
+    const raw = localStorage.getItem('hsdesign_usage') || '0/100';
+    const m = raw.match(/(\d+)\/(\d+)/);
+    if (m) showUsageBanner(Math.round(parseInt(m[1]) / (parseInt(m[2]) || 100) * 100));
+  } catch(e) {}
 }
+
 
 // ─── OPEN / NEW ───────────────────────────────────────────────────────────────
 // Migrate old cost items (desc,amt) → new structure (desc,unit,qty,unitPrice,amt)
@@ -443,7 +489,14 @@ async function openQ(id) {
   isDirty = false;
   setSS('Loaded');
   renderList();
+  if (!quotes || quotes.length === 0) setTimeout(showOnboardingTip, 800);
+  try {
+    const raw = localStorage.getItem('hsdesign_usage') || '0/100';
+    const m = raw.match(/(\d+)\/(\d+)/);
+    if (m) showUsageBanner(Math.round(parseInt(m[1]) / (parseInt(m[2]) || 100) * 100));
+  } catch(e) {}
 }
+
 
 function newQuote() {
   if (isDirty && !confirm('Unsaved changes. Discard?')) return;
@@ -465,35 +518,33 @@ function newQuote() {
   isDirty = false;
   setSS('New quotation');
   renderList();
+  if (!quotes || quotes.length === 0) setTimeout(showOnboardingTip, 800);
+  try {
+    const raw = localStorage.getItem('hsdesign_usage') || '0/100';
+    const m = raw.match(/(\d+)\/(\d+)/);
+    if (m) showUsageBanner(Math.round(parseInt(m[1]) / (parseInt(m[2]) || 100) * 100));
+  } catch(e) {}
 }
+
 
 function makeItem() { return { desc:'', unit:'nos', qty:1, costItems:[{desc:'',unit:'nos',qty:1,unitPrice:0,amt:0}], sell:0 }; }
 
 // ─── SECTIONS ────────────────────────────────────────────────────────────────
-function toggleSectionCollapse(si) {
-  _collapsedSections[si] = !_collapsedSections[si];
-  renderSections();
-}
-
 function renderSections() {
   const c = document.getElementById('sections-container');
   if (!_data.length) _data = [{section:'',items:[makeItem()]}];
   c.innerHTML = '';
   _data.forEach((sec, si) => {
-    const collapsed = _collapsedSections[si];
     const secEl = document.createElement('div');
     secEl.className = 'section-block';
-    const itemCount = (sec.items||[]).length;
-    const collapsedLabel = collapsed ? ` <span style="font-size:11px;color:var(--gray-400)">(${itemCount} item${itemCount!==1?'s':''})</span>` : '';
     secEl.innerHTML = `
       <div class="sec-hdr">
-        <span class="sec-collapse-btn" onclick="toggleSectionCollapse(${si})" title="${collapsed?'Expand':'Collapse'}" style="cursor:pointer;font-size:16px;color:var(--gray-400);padding:0 4px">${collapsed?'▸':'▾'}</span>
         <input type="text" class="sec-name" placeholder="Section name, e.g. Electrical Work" value="${esc(sec.section)}" oninput="syncSectionName(${si},this)">
         <button class="btn btn-r btn-sm" onclick="delSection(${si})" title="Delete section">🗑</button>
       </div>
-      <div class="sec-items" id="sec-items-${si}" style="${collapsed?'display:none':''}"></div>
-      <div class="sec-subtotal" id="sec-total-${si}">Section Total: <strong>RM 0.00</strong>${collapsedLabel}</div>
-      <button class="btn btn-g btn-sm" onclick="addItem(${si})" style="margin-top:6px;${collapsed?'display:none':''}" id="add-item-btn-${si}">+ Add Item</button>
+      <div class="sec-items" id="sec-items-${si}"></div>
+      <div class="sec-subtotal" id="sec-total-${si}">Section Total: <strong>RM 0.00</strong></div>
+      <button class="btn btn-g btn-sm" onclick="addItem(${si})" style="margin-top:6px">+ Add Item</button>
     `;
     c.appendChild(secEl);
     // render items for this section
@@ -524,7 +575,6 @@ function buildItemRow(it, si, ii) {
   const el = document.createElement('div');
   el.className = 'item';
   const ct = (it.costItems||[]).reduce((s,c) => s+(parseFloat(c.amt)||0), 0);
-  const lineAmt = (parseFloat(it.sell)||0) * (parseFloat(it.qty)||0);
   const mk = ct>0 && it.sell>0 ? ((it.sell-ct)/ct*100) : 0;
   const mkCls = mk>=30?'mk-g':mk>=15?'mk-y':'mk-r';
   const ctStr = ct>0?`RM ${fmt(ct)}`:'—';
@@ -544,18 +594,17 @@ function buildItemRow(it, si, ii) {
       <input type="text" class="f-desc" placeholder="e.g. Install lighting point" value="${esc(it.desc)}" oninput="syncItemDesc(${si},${ii},this)">
       <select class="f-unit" onchange="syncItemUnit(${si},${ii},this)">${UNITS.map(u => `<option value="${u}" ${it.unit===u?'selected':''}>${u}</option>`).join('')}</select>
       <input type="number" class="f-qty" min="0" placeholder="1" value="${it.qty}" oninput="syncItemQty(${si},${ii},this)" style="text-align:center">
-      <input type="number" class="f-cost" min="0" placeholder="0.00" value="${ct>0?fmt(ct):''}" readonly style="background:var(--gray-50)">
-      <input type="number" class="f-sell" min="0" placeholder="0.00" value="${it.sell||it.sell===0?fmt(it.sell):''}" oninput="syncItemSell(${si},${ii},this)" style="border-color:var(--gold);background:var(--gold-light)">
+      <input type="number" class="f-cost" min="0" placeholder="0.00" value="${ct>0?fmt(ct):''}" readonly>
+      <input type="number" class="f-sell" min="0" placeholder="0.00" value="${it.sell||it.sell===0?fmt(it.sell):''}" oninput="syncItemSell(${si},${ii},this)">
       <button class="btn btn-g btn-sm" style="padding:4px 8px;font-size:11px;white-space:nowrap" onclick="autoSell(${si},${ii})">+25%</button>
       <button class="del" onclick="remItem(${si},${ii})">×</button>
     </div>
     <div class="exp-h" onclick="toggleCost(this)">
       💰 Cost breakdown <span style="font-size:11px;color:var(--gold)">${ctStr}</span> ${mkStr}<span class="tog">▶</span>
-      ${lineAmt > 0 ? `<span style="margin-left:auto;font-weight:700;color:var(--green);font-size:11px">+RM ${fmt(lineAmt)}</span>` : ''}
     </div>
     <div class="cb">${ciRows}
       <button class="btn btn-g btn-sm" onclick="addCi(${si},${ii},this)" style="margin-top:4px">+ Add cost line</button>
-      <div class="csub-row">Subtotal cost: <span>RM ${fmt(ct)}</span>${lineAmt > 0 ? `<span style="margin-left:12px;color:var(--green);font-weight:700">Line total: RM ${fmt(lineAmt)}</span>` : ''}</div>
+      <div class="csub-row">Subtotal cost: <span>RM ${fmt(ct)}</span></div>
     </div>`;
   return el;
 }
@@ -740,9 +789,6 @@ async function saveQuote() {
     }
     isDirty = false;
     setSS('Saved ✓');
-    const now = new Date();
-    const ls = document.getElementById('ls');
-    if (ls) ls.textContent = `Last saved ${now.getHours()}:${String(now.getMinutes()).padStart(2,'0')}`;
     renderList();
     clearDraft();
   } catch(e) { setSS('Network error'); }
@@ -768,6 +814,7 @@ async function delQuote() {
 
 // ─── PDF ─────────────────────────────────────────────────────────────────────
 function openPDF() {
+  setExportLoading(true);
   gatherForm();
   // Sync section names and item sell values from DOM → _data before PDF generation
   const sectionBlocks = document.querySelectorAll('.section-block');
@@ -828,6 +875,7 @@ function openPDF() {
   </div>`;
   document.getElementById('pdfbody').innerHTML = html;
   document.getElementById('pdfmo').classList.add('open');
+  setExportLoading(false);
 }
 
 function closePDF() { document.getElementById('pdfmo').classList.remove('open'); }
