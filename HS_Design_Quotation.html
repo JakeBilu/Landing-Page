@@ -87,6 +87,18 @@ body{font-family:'Plus Jakarta Sans','Segoe UI',Arial,sans-serif;background:#ece
 .bdg-pa{background:#dcfce7;color:#166534}
 .el{text-align:center;padding:40px 16px;color:var(--gray-400)}
 .el .e{font-size:32px;margin-bottom:12px}
+/* Pulsing dot for unsaved indicator */
+.u-dot{display:inline-block;width:7px;height:7px;background:var(--amber);border-radius:50%;animation:u-pulse 1.4s ease-in-out infinite}
+@keyframes u-pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.7)}}
+/* Plan badge */
+.plan-badge{padding:3px 8px;border-radius:10px;font-size:10px;font-weight:800;letter-spacing:.5px}
+.plan-free{background:var(--gray-100);color:var(--gray-600)}
+.plan-ad-free{background:var(--gold-light);color:var(--gold);border:1px solid var(--gold-border)}
+.plan-pro{background:#dcfce7;color:#166534}
+/* Usage pill in sidebar header */
+.usage-pill{display:inline-flex;align-items:center;font-size:10px;color:var(--gray-500);background:var(--gray-50);border:1px solid var(--gray-200);border-radius:10px;padding:2px 7px;font-weight:600}
+/* Last saved */
+#ls{font-size:10px;color:var(--gray-400);margin-left:6px}
 .main{flex:1;overflow-y:auto;padding:24px;background:#f0f2f5}
 .mi{max-width:720px;margin:0 auto}
 /* Welcome state */
@@ -194,7 +206,14 @@ body{font-family:'Plus Jakarta Sans','Segoe UI',Arial,sans-serif;background:#ece
 <div class="app" id="app">
   <div class="tb">
     <div class="tb-brand"><div class="tb-logo">HS</div><div><h1>Quotation Tool</h1><span>HS Design Internal</span></div></div>
-    <div class="tb-actions"><span class="ss" id="ss">—</span>
+    <div style="display:flex;align-items:center;gap:10px;font-size:11px">
+      <span id="plan-badge" class="plan-badge plan-free">FREE</span>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:2px;min-width:80px">
+        <span id="usage-text" style="font-size:10px;color:var(--gray-400)"></span>
+        <div id="usage-bar" style="width:80px;height:4px;background:var(--gray-200);border-radius:2px;overflow:hidden"><div style="height:100%;width:0%;background:var(--green);border-radius:2px;transition:width .3s"></div></div>
+      </div>
+    </div>
+    <div class="tb-actions"><span class="ss" id="ss">—</span><span id="ls"></span>
       <span style="display:flex;align-items:center;gap:3px;font-size:11px;background:var(--gray-50);border:1px solid var(--gray-200);border-radius:6px;padding:4px 6px;white-space:nowrap">
         <span style="font-weight:700;color:var(--gray-500);letter-spacing:.3px">Markup</span>
         <input type="number" min="5" max="200" value="25" id="mk-input" style="width:44px;padding:4px 5px;border:1.5px solid var(--green-light);border-radius:4px;font-size:12px;text-align:center;background:var(--green-pale);color:var(--green-dark);font-weight:700" oninput="const v=parseFloat(this.value);if(v>0&&v<=200){MARKUP_RATE=v/100;document.querySelectorAll('.mk-btn').forEach(b=>b.textContent='+'+Math.round(MARKUP_RATE*100)+'%')}">
@@ -207,7 +226,12 @@ body{font-family:'Plus Jakarta Sans','Segoe UI',Arial,sans-serif;background:#ece
   </div>
   <div class="body">
     <div class="sidebar">
-      <div class="sh"><h3>Quotations</h3><button class="btn btn-p btn-sm" onclick="newQuote()">+ New</button></div><div class="ql" id="ql"><div class="el"><div class="e">📋</div><p>Loading...</p></div></div>
+      <div class="sh"><h3>Quotations <span id="sh-count">(0)</span></h3><span id="usage-pill" class="usage-pill"></span><button class="btn btn-p btn-sm" onclick="newQuote()">+ New</button></div>
+      <div style="padding:8px 10px;border-bottom:1px solid var(--gray-200)">
+        <input type="text" placeholder="🔍 Search quotes..." oninput="handleSearch(this.value)" style="width:100%;padding:8px 12px;border:1.5px solid var(--gray-200);border-radius:8px;font-size:13px;outline:none;font-family:inherit">
+      </div>
+      <div id="ql-filtered-count" style="padding:4px 12px;font-size:11px;color:var(--gray-400);display:none"></div>
+      <div class="ql" id="ql"><div class="el"><div class="e">📋</div><p>Loading...</p></div></div>
 <button class="btn btn-g btn-sm" onclick="toggleSidebar()" id="sidebar-toggle" title="Toggle sidebar">☰</button>
 
     </div>
