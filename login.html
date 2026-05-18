@@ -256,8 +256,8 @@ async function handleRegister(e) {
     const d = await r.json();
     if (d.success && d.token) {
       setToken(d.token);
-      showSuccess(sucEl, 'Account created! Loading dashboard...');
-      setTimeout(loadDashboard, 1000);
+      showSuccess(sucEl, 'Account created! Redirecting...');
+      loadDashboard();
     } else {
       showError(errEl, d.error || 'Registration failed');
     }
