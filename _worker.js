@@ -173,6 +173,17 @@ export default {
       }
     }
 
+    // ── SPA fallback: serve index.html for /app and other client routes ──
+    if (pathname.startsWith('/app') || pathname === '/') {
+      const indexReq = new Request(request.url.origin + '/index.html', {
+        method: request.method,
+        headers: request.headers,
+        body: request.method !== 'GET' && request.method !== 'HEAD' ? request.body : null,
+        redirect: 'manual',
+      });
+      return env.ASSETS.fetch(indexReq);
+    }
+
     // Serve static assets
     return env.ASSETS.fetch(request);
   }
