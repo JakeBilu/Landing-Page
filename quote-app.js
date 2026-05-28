@@ -630,7 +630,7 @@ function autoSell(si,ii) {
     const sellInput = row.querySelector('.f-sell');
     if (sellInput) sellInput.value = fmt(sell);
     const costInput = row.querySelector('.f-cost');
-    if (costInput) costInput.value = fmt(ct);
+    if (costInput) costInput.value = ct.toFixed(2);
     const subRow = row.querySelector('.csub-row span');
     if (subRow) subRow.textContent = 'RM ' + fmt(ct);
     recalc();
@@ -681,7 +681,7 @@ function syncCi(si, ii, cii, inp, field) {
   const ct = (_data[si].items[ii].costItems||[]).reduce((s,c) => s+(parseFloat(c.amt)||0), 0);
   const itemRow = row.closest('.item');
   const costInput = itemRow.querySelector('.f-cost');
-  if (costInput) costInput.value = ct>0?fmt(ct):'';
+  if (costInput) costInput.value = ct>0?ct.toFixed(2):'';
   const subRow = itemRow.querySelector('.csub-row span');
   if (subRow) subRow.textContent = 'RM '+fmt(ct);
   recalc();
