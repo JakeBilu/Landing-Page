@@ -594,8 +594,8 @@ function buildItemRow(it, si, ii) {
       <input type="text" class="f-desc" placeholder="e.g. Install lighting point" value="${esc(it.desc)}" oninput="syncItemDesc(${si},${ii},this)">
       <select class="f-unit" onchange="syncItemUnit(${si},${ii},this)">${UNITS.map(u => `<option value="${u}" ${it.unit===u?'selected':''}>${u}</option>`).join('')}</select>
       <input type="number" class="f-qty" min="0" placeholder="1" value="${it.qty}" oninput="syncItemQty(${si},${ii},this)" style="text-align:center">
-      <input type="number" class="f-cost" min="0" placeholder="0.00" value="${ct>0?fmt(ct):''}" readonly>
-      <input type="number" class="f-sell" min="0" placeholder="0.00" value="${it.sell||it.sell===0?fmt(it.sell):''}" oninput="syncItemSell(${si},${ii},this)">
+      <input type="number" class="f-cost" min="0" placeholder="0.00" value="${ct>0?ct.toFixed(2):''}" readonly>
+      <input type="number" class="f-sell" min="0" placeholder="0.00" value="${(it.sell||0).toFixed(2)}" oninput="syncItemSell(${si},${ii},this)">
       <button class="btn btn-g btn-sm" style="padding:4px 8px;font-size:11px;white-space:nowrap" onclick="autoSell(${si},${ii})">+25%</button>
       <button class="del" onclick="remItem(${si},${ii})">×</button>
     </div>
