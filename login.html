@@ -178,7 +178,7 @@ body { font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans
   </div>
 </div>
 
-<script>
+<script>function showForgotPassword(){document.getElementById('login-form').style.display='none';document.getElementById('register-form').style.display='none';document.getElementById('forgot-form').style.display='block';}async function forgotPassword(){var e=document.getElementById('forgot-email').value;if(!e){alert('Please enter your email');return}try{var r=await fetch('/api/forgot-password',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:e})});var d=await r.json();if(d.success){document.getElementById('forgot-msg').className='success';document.getElementById('forgot-msg').textContent='Check your email for reset instructions.';document.getElementById('forgot-msg').style.display='block'}else{document.getElementById('forgot-msg').className='error';document.getElementById('forgot-msg').textContent=d.error||'Failed';document.getElementById('forgot-msg').style.display='block'}}catch(e){alert('Network error')}}
 const API = 'https://quotation.hsdesign.biz';
 
 
