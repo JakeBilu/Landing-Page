@@ -20,7 +20,7 @@ let autoSaveTimer = null;
 let _data = { items: [] };
 let _terms = [];
 let _notes = [];
-let _name = '', _qno = '', _addr = '', _proj = '', _date = '', _status = 'Draft', _notesTxt = '';
+let _name = '', _qno = '', _addr = '', _proj = '', _date = '', _status = 'Quotation', _notesTxt = '';
 let _dragSection = null; // {fromSi}
 let _dragItem = null;    // {fromSi, fromIi}
 
@@ -323,14 +323,14 @@ async function loadQuotes() {
 
 function parseSaaS(row) {
   // SaaS list returns flat fields; full data loaded on openQ via GET /api/quotations/:id
-  return { id: row.id, name: row.name||'', project: row.proj||'', date: row.date||'', status: row.status||'Draft', qno: row.qno||'', addr: row.addr||'', items: [], terms: [], notes: '', notes2: [] };
+  return { id: row.id, name: row.name||'', project: row.proj||'', date: row.date||'', status: row.status||'Quotation', qno: row.qno||'', addr: row.addr||'', items: [], terms: [], notes: '', notes2: [] };
 }
 
 function parsePage(p) {
   const g = k => { const v = p.properties[k]; if (!v) return ''; if (v.type==='title') return v.title?.[0]?.plain_text||''; if (v.type==='rich_text') return v.rich_text?.[0]?.plain_text||''; if (v.type==='date') return v.date?.start||''; if (v.type==='select') return v.select?.name||''; if (v.type==='status') return v.status?.name||''; return ''; };
   let items=[],terms=[],notes='',notes2=[],qno='',addr='';
   try { const j=JSON.parse(g('Notes')||'{}'); items=j.items||[]; terms=j.terms||[]; notes=j.notes||''; notes2=j.notes2||[]; qno=j.qno||''; addr=j.addr||''; } catch(e) {}
-  return { id:p.id, name:g('Name'), project:g('Project'), date:g('Date'), status:g('Status')||'Draft', qno, addr, items, terms, notes, notes2 };
+  return { id:p.id, name:g('Name'), project:g('Project'), date:g('Date'), status:g('Status')||'Quotation', qno, addr, items, terms, notes, notes2 };
 }
 
 // ─── LIST ─────────────────────────────────────────────────────────────────────
@@ -472,7 +472,7 @@ async function openQ(id) {
     _notes = JSON.parse(JSON.stringify(DEFAULT_NOTES));
     _notesTxt = '';
   }
-  _name = q.name||''; _qno = q.qno||''; _addr = q.addr||''; _proj = q.project||''; _date = q.date||''; _status = q.status||'Draft';
+  _name = q.name||''; _qno = q.qno||''; _addr = q.addr||''; _proj = q.project||''; _date = q.date||''; _status = q.status||'Quotation';
   document.getElementById('welcome').style.display='none';
   document.getElementById('editor').style.display='block';
   document.getElementById('f-name').value = _name;
@@ -505,7 +505,7 @@ function newQuote() {
   _data = [{ section: '', items: [makeItem()] }];
   _terms = ['50% deposit upon confirmation','40% upon work commencement','10% upon completion'];
   _notes = JSON.parse(JSON.stringify(DEFAULT_NOTES));
-  _name=''; _qno='QUO-HS-'+String(quotes.length+1).padStart(3,'0'); _addr=''; _proj=''; _date=ISO(); _status='Draft'; _notesTxt='';
+  _name=''; _qno='INV-'+String(quotes.length+1).padStart(3,'0'); _addr=''; _proj=''; _date=ISO(); _status='Quotation'; _notesTxt='';
   document.getElementById('welcome').style.display='none';
   document.getElementById('editor').style.display='block';
   document.getElementById('f-name').value=_name; document.getElementById('f-qno').value=_qno; document.getElementById('f-addr').value=_addr;
@@ -841,7 +841,7 @@ function openPDF() {
     let secTotal = 0;
     // Section header row
     if (sec.section) {
-      rows.push(`<tr class="sec-row"><td colspan="6" style="background:#e8f4f1;font-weight:700;color:#2d5a47;font-size:12px;padding:8px 12px">${esc(sec.section)}</td></tr>`);
+      rows.push(`<tr class="sec-row"><td colspan="6" style="background:#e8f4f1;font-weight:700;color:${_cmpColor};font-size:12px;padding:8px 12px">${esc(sec.section)}</td></tr>`);
     }
     (sec.items||[]).forEach(it => {
       if (!it.desc && !it.sell) return;
@@ -859,7 +859,7 @@ function openPDF() {
       </tr>`);
     });
     // Section subtotal row
-    rows.push(`<tr class="sec-subtotal-row"><td colspan="5" style="text-align:right;font-weight:700;background:#f0faf7;color:#2d5a47;font-size:12px;padding:6px 12px">Section Total: RM ${fmt(secTotal)}</td><td style="text-align:right;font-weight:700;background:#f0faf7;color:#2d5a47;font-size:12px;padding:6px 12px">RM ${fmt(secTotal)}</td></tr>`);
+    rows.push(`<tr class="sec-subtotal-row"><td colspan="5" style="text-align:right;font-weight:700;background:#f0faf7;color:${_cmpColor};font-size:12px;padding:6px 12px">Section Total: RM ${fmt(secTotal)}</td><td style="text-align:right;font-weight:700;background:#f0faf7;color:${_cmpColor};font-size:12px;padding:6px 12px">RM ${fmt(secTotal)}</td></tr>`);
   });
   const dateStr = _date ? new Date(_date+'T00:00:00').toLocaleDateString('en-GB',{day:'2-digit',month:'long',year:'numeric'}) : '';
   const termList = terms.length ? `<div class="qp-terms"><h4>Payment Terms</h4><ul>${terms.map(t=>`<li>${esc(t)}</li>`).join('')}</ul></div>` : '';
@@ -869,24 +869,26 @@ function openPDF() {
   var _acct = window.__acct || {};
   var _cmpSettings = {};
   try { _cmpSettings = JSON.parse(localStorage.getItem('hsdesign_company') || '{}'); } catch(e) {}
-  var _cmpName = _acct.company || _cmpSettings.company || 'Health Space Interior';
-  var _cmpReg = _cmpSettings.reg || (_acct.name ? 'SSM: ' + _acct.name : 'HS Design (SSM: 202603001610)');
-  var _cmpAddr = _cmpSettings.addr || '24-1, Jalan Rosmerah 2/17, Taman Johor Jaya\n81100 Johor Bahru, Johor';
-  var _cmpPhone = _cmpSettings.phone || '011-1688 0145';
+  // Show placeholder guide if company not set yet
+  var _hasCompany = _acct.company || _cmpSettings.company;
+  var _cmpName = _acct.company || _cmpSettings.company || '⚠️ Please fill in your company name';
+  var _cmpReg = _hasCompany ? (_cmpSettings.reg || '') : '';
+  var _cmpAddr = _hasCompany ? (_cmpSettings.addr || '') : '';
+  var _cmpPhone = _hasCompany ? (_cmpSettings.phone || '') : '';
   var _cmpColor = _acct.color_hex || _cmpSettings.color_hex || '#5a9e8f';
   var _cmpLogo = _acct.logo_url || _cmpSettings.logo_url || '';
   var _cmpLogoHtml = _cmpLogo ? '<img src="' + esc(_cmpLogo) + '" style="max-height:50px;margin-bottom:8px">' : '';
   const html = `<div class="qp">
     <div class="qp-hdr">
       <div class="qp-logo">${_cmpLogoHtml}<h2 style="color:${_cmpColor}">${esc(_cmpName)}</h2><p>${esc(_cmpReg)}</p>${_cmpAddr.split('\n').map(function(l){return '<p>'+esc(l)+'</p>';}).join('')}<p>${esc(_cmpPhone)}</p></div>
-      <div class="qp-ref"><h3>QUOTATION</h3><p><strong>Ref:</strong> ${esc(_qno)||'—'}</p><p><strong>Date:</strong> ${dateStr}</p><p><strong>Status:</strong> ${_status}</p></div>
+      <div class="qp-ref"><h3>${_status === 'Invoice' ? 'INVOICE' : 'QUOTATION'}</h3><p><strong>Ref:</strong> ${esc(_qno)||'—'}</p><p><strong>Date:</strong> ${dateStr}</p><p><strong>Status:</strong> ${_status}</p></div>
     </div>
     <div class="qp-ci"><h4>Prepared For</h4><p>${esc(_name)}</p><span>${esc(_addr||_proj||'—')}</span></div>
     <table class="qp-table"><thead><tr><th style="width:24px">#</th><th>Description</th><th style="width:60px;text-align:center">Unit</th><th style="width:40px;text-align:right">Qty</th><th style="width:80px;text-align:right">Unit Price</th><th style="width:90px;text-align:right">Amount</th></tr></thead><tbody>${rows.join('')}</tbody></table>
     <div class="qp-totals"><div class="qp-tbox"><div class="qp-tr gd"><span>Grand Total</span><span>RM ${fmt(grandTotal)}</span></div></div></div>
     ${termList}
     ${stdTermsList}
-    <div class="qp-footer">Thank you for considering Health Space Interior<br>This quotation is valid for 30 days from the date above.</div>
+    <div class="qp-footer">${_hasCompany ? 'Thank you for your business' : 'Please configure your company info in Company Settings'}<br>This ${_status === 'Invoice' ? 'invoice' : 'quotation'} is valid for 30 days from the date above.</div>
   </div>`;
   document.getElementById('pdfbody').innerHTML = html;
   document.getElementById('pdfmo').classList.add('open');
