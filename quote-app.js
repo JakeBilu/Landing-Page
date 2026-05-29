@@ -781,8 +781,8 @@ async function saveQuote() {
     try { data = await res.json(); } catch(e) { data = {}; }
     if (!res.ok) { setSS('Error: ' + (data.error || res.statusText)); return; }
     if (activeId === '__new__') {
-      activeId = data.quotation.id;
-      quotes.unshift({ id: data.quotation.id, name: _name, project: _proj, date: _date, status: _status, qno: _qno, addr: _addr, items: _data, terms: _terms, notes2: _notes, notes: _notesTxt });
+      activeId = data.id;
+      quotes.unshift({ id: data.id, name: _name, project: _proj, date: _date, status: _status, qno: _qno, addr: _addr, items: _data, terms: _terms, notes2: _notes, notes: _notesTxt });
     } else {
       const idx = quotes.findIndex(q => q.id === activeId);
       if (idx !== -1) quotes[idx] = { ...quotes[idx], name: _name, project: _proj, date: _date, status: _status, qno: _qno, addr: _addr, items: _data, terms: _terms, notes2: _notes, notes: _notesTxt };
