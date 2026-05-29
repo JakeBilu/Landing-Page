@@ -865,9 +865,20 @@ function openPDF() {
   const termList = terms.length ? `<div class="qp-terms"><h4>Payment Terms</h4><ul>${terms.map(t=>`<li>${esc(t)}</li>`).join('')}</ul></div>` : '';
   const stdTerms = _notes.filter(t=>t.trim());
   const stdTermsList = stdTerms.length ? `<div class="qp-terms"><h4>Terms &amp; Conditions</h4><ol style="padding-left:18px;margin:0">${stdTerms.map(t=>`<li>${esc(t)}</li>`).join('')}</ol></div>` : '';
+  // Use company settings from __acct or localStorage
+  var _acct = window.__acct || {};
+  var _cmpSettings = {};
+  try { _cmpSettings = JSON.parse(localStorage.getItem('hsdesign_company') || '{}'); } catch(e) {}
+  var _cmpName = _acct.company || _cmpSettings.company || 'Health Space Interior';
+  var _cmpReg = _cmpSettings.reg || (_acct.name ? 'SSM: ' + _acct.name : 'HS Design (SSM: 202603001610)');
+  var _cmpAddr = _cmpSettings.addr || '24-1, Jalan Rosmerah 2/17, Taman Johor Jaya\n81100 Johor Bahru, Johor';
+  var _cmpPhone = _cmpSettings.phone || '011-1688 0145';
+  var _cmpColor = _acct.color_hex || _cmpSettings.color_hex || '#5a9e8f';
+  var _cmpLogo = _acct.logo_url || _cmpSettings.logo_url || '';
+  var _cmpLogoHtml = _cmpLogo ? '<img src="' + esc(_cmpLogo) + '" style="max-height:50px;margin-bottom:8px">' : '';
   const html = `<div class="qp">
     <div class="qp-hdr">
-      <div class="qp-logo"><h2>Health Space Interior</h2><p>HS Design (SSM: 202603001610)</p><p>24-1, Jalan Rosmerah 2/17, Taman Johor Jaya</p><p>81100 Johor Bahru, Johor</p><p>011-1688 0145 | hsdesign.biz</p></div>
+      <div class="qp-logo">${_cmpLogoHtml}<h2 style="color:${_cmpColor}">${esc(_cmpName)}</h2><p>${esc(_cmpReg)}</p>${_cmpAddr.split('\n').map(function(l){return '<p>'+esc(l)+'</p>';}).join('')}<p>${esc(_cmpPhone)}</p></div>
       <div class="qp-ref"><h3>QUOTATION</h3><p><strong>Ref:</strong> ${esc(_qno)||'—'}</p><p><strong>Date:</strong> ${dateStr}</p><p><strong>Status:</strong> ${_status}</p></div>
     </div>
     <div class="qp-ci"><h4>Prepared For</h4><p>${esc(_name)}</p><span>${esc(_addr||_proj||'—')}</span></div>
@@ -949,12 +960,16 @@ function importJSON() {
 }
 
 function printPDF() {
+  var _acct2 = window.__acct || {};
+  var _cmpSet2 = {};
+  try { _cmpSet2 = JSON.parse(localStorage.getItem('hsdesign_company') || '{}'); } catch(e) {}
+  var _pdfColor = _acct2.color_hex || _cmpSet2.color_hex || '#5a9e8f';
   const content = document.getElementById('pdfbody').innerHTML;
   const win = window.open('','_blank');
   win.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Quotation</title><style>
     body{font-family:'Segoe UI',Arial,sans-serif;padding:32px;max-width:720px;margin:0 auto;color:#1a1a1a;font-size:13px}
     .qp-hdr{display:flex;justify-content:space-between;margin-bottom:24px}
-    .qp-logo h2{font-size:18px;font-weight:700;color:#5a9e8f}
+    .qp-logo h2{font-size:18px;font-weight:700;color:${_pdfColor}}
     .qp-logo p{font-size:11px;color:#6b7280;line-height:1.8}
     .qp-ref{text-align:right}
     .qp-ref h3{font-size:15px;font-weight:700;margin-bottom:6px}

@@ -311,5 +311,86 @@ body{font-family:'Plus Jakarta Sans','Segoe UI',Arial,sans-serif;background:#ece
   </div>
 </div>
 <script src="quote-app.js?v=20260425"></script>
+<!-- Company Settings Modal -->
+<div class="mo" id="settingsmo">
+  <div class="mo-in" style="max-width:520px">
+    <div class="mo-hdr"><h3>⚙️ Company Settings</h3><div><button class="btn btn-p" onclick="saveCompanySettings()">💾 Save</button><button class="btn btn-g" onclick="closeSettings()" style="margin-left:8px">Close</button></div></div>
+    <div class="mo-body">
+      <p style="font-size:13px;color:var(--gray-500);margin-bottom:16px">Customize how your company appears on quotations and PDF exports.</p>
+      <div class="f" style="margin-bottom:14px"><label>Company Name</label><input type="text" id="cmp-company" placeholder="Your company name" oninput="dirty()"></div>
+      <div class="f" style="margin-bottom:14px"><label>Company Logo URL</label><input type="text" id="cmp-logo" placeholder="https://example.com/logo.png" oninput="dirty()"></div>
+      <div class="f" style="margin-bottom:14px"><label>Brand Color</label><div style="display:flex;align-items:center;gap:10px"><input type="color" id="cmp-color" value="#1A73E8" style="width:50px;height:40px;padding:2px;border:1px solid var(--gray-200);border-radius:6px;cursor:pointer"><span id="cmp-color-label" style="font-size:13px;color:var(--gray-500);font-family:monospace">#1A73E8</span></div></div>
+      <div class="f" style="margin-bottom:14px"><label>Company Reg No</label><input type="text" id="cmp-reg" placeholder="e.g. SSM: 202603001610"></div>
+      <div class="f" style="margin-bottom:14px"><label>Company Address</label><textarea id="cmp-addr" rows="2" placeholder="Your business address" style="padding:10px 12px;border:1.5px solid var(--gray-200);border-radius:var(--radius-sm);font-size:13px;outline:none;font-family:inherit;resize:vertical;width:100%"></textarea></div>
+      <div class="f" style="margin-bottom:14px"><label>Phone / Contact</label><input type="text" id="cmp-phone" placeholder="e.g. 011-1688 0145"></div>
+      <div style="display:flex;gap:10px;margin-top:20px">
+        <button class="btn btn-p" style="flex:1" onclick="saveCompanySettings()">💾 Save Settings</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+// ─── COMPANY SETTINGS ───────────────────────────────────────────
+function openSettings() {
+  var m = document.getElementById('settingsmo');
+  if (!m) return;
+  // Load current values from __acct or localStorage
+  var acct = window.__acct || {};
+  var saved = {};
+  try { saved = JSON.parse(localStorage.getItem('hsdesign_company') || '{}'); } catch(e) {}
+  var company = acct.company || saved.company || '';
+  var logo_url = acct.logo_url || saved.logo_url || '';
+  var color_hex = acct.color_hex || saved.color_hex || '#1A73E8';
+  var reg = saved.reg || (acct.name ? 'SSM: ' + acct.name : '');
+  var addr = saved.addr || '';
+  var phone = saved.phone || '';
+  document.getElementById('cmp-company').value = company;
+  document.getElementById('cmp-logo').value = logo_url;
+  document.getElementById('cmp-color').value = color_hex;
+  document.getElementById('cmp-color-label').textContent = color_hex;
+  document.getElementById('cmp-reg').value = reg;
+  document.getElementById('cmp-addr').value = addr;
+  document.getElementById('cmp-phone').value = phone;
+  m.classList.add('open');
+}
+function closeSettings() {
+  var m = document.getElementById('settingsmo');
+  if (m) m.classList.remove('open');
+}
+function saveCompanySettings() {
+  var company = document.getElementById('cmp-company').value.trim();
+  var logo_url = document.getElementById('cmp-logo').value.trim();
+  var color_hex = document.getElementById('cmp-color').value;
+  var reg = document.getElementById('cmp-reg').value.trim();
+  var addr = document.getElementById('cmp-addr').value.trim();
+  var phone = document.getElementById('cmp-phone').value.trim();
+  // Save locally
+  var settings = { company: company, logo_url: logo_url, color_hex: color_hex, reg: reg, addr: addr, phone: phone };
+  try { localStorage.setItem('hsdesign_company', JSON.stringify(settings)); } catch(e) {}
+  // Save to API
+  var token = localStorage.getItem('qs_token') || localStorage.getItem('token') || '';
+  fetch('/api/account', {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+    body: JSON.stringify({ company: company, logo_url: logo_url, color_hex: color_hex })
+  }).then(function(r){ return r.json(); }).then(function(d){
+    if (d.success) {
+      // Update __acct
+      if (window.__acct) {
+        window.__acct.company = company;
+        window.__acct.logo_url = logo_url;
+        window.__acct.color_hex = color_hex;
+      }
+      closeSettings();
+      alert('Settings saved!');
+    } else {
+      alert('Saved locally, but server save failed: ' + (d.error || 'unknown'));
+    }
+  }).catch(function(){
+    closeSettings();
+    alert('Saved locally (offline). Will sync when online.');
+  });
+}
+</script>
 </body>
 </html>
