@@ -987,4 +987,4 @@ function printPDF() {
 }
 
 // ─── INIT ─────────────────────────────────────────────────────────────────────
-document.getElementById('pass').focus();
+document.getElementById('pass')?.focus();
