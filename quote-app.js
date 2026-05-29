@@ -621,7 +621,7 @@ function autoSell(si,ii) {
   const it = _data[si].items[ii];
   const ct = (it.costItems||[]).reduce((s,c) => s+(parseFloat(c.amt)||0), 0);
   if (ct <= 0) { alert('Cost breakdown is empty or 0! Add cost amounts first.'); return; }
-  const sell = ct * 1.25;
+  var mk = parseFloat(document.getElementById("mk-input")?.value||25)/100;const sell = ct * mk;
   it.sell = sell;
   // update DOM — find row by section index + item index
   const secItems = document.querySelectorAll('.sec-items');
