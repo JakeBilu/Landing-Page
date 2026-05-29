@@ -628,7 +628,7 @@ function autoSell(si,ii) {
   const row = secItems[si] ? secItems[si].children[ii] : null;
   if (row) {
     const sellInput = row.querySelector('.f-sell');
-    if (sellInput) sellInput.value = fmt(sell);
+    if (sellInput) sellInput.value = sell.toFixed(2);
     const costInput = row.querySelector('.f-cost');
     if (costInput) costInput.value = ct.toFixed(2);
     const subRow = row.querySelector('.csub-row span');
