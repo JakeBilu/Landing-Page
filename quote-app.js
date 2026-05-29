@@ -721,6 +721,9 @@ function syncNote(i,inp) { _notes[i]=inp.value; dirty(); }
 
 // ─── RECALC ──────────────────────────────────────────────────────────────────
 function applyMarkupAll(){var mk=parseFloat(document.getElementById("mk-input")?.value||25)/100;if(!_data||!_data.length)return;var any=false;_data.forEach(function(sec){sec.items.forEach(function(it){if(it.costItems&&it.costItems.length){var ct=it.costItems.reduce(function(s,ci){return s+(parseFloat(ci.amt)||0)},0);if(ct>0){it.sell=ct*mk;any=true}}});});if(any){renderSections();recalc();dirty()}}
+function attachMarkupListener(){var mi=document.getElementById("mk-input");if(mi&&!mi._hasListener){mi._hasListener=true;mi.addEventListener("change",function(){applyMarkupAll()});mi.addEventListener("input",function(){applyMarkupAll()})}}
+if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",attachMarkupListener)}else{attachMarkupListener()}
+
 function recalc() {
   let totalCost=0, totalSell=0;
   _data.forEach((sec, si) => {
