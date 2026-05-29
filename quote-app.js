@@ -621,7 +621,7 @@ function autoSell(si,ii) {
   const it = _data[si].items[ii];
   const ct = (it.costItems||[]).reduce((s,c) => s+(parseFloat(c.amt)||0), 0);
   if (ct <= 0) { alert('Cost breakdown is empty or 0! Add cost amounts first.'); return; }
-  var mk = parseFloat(document.getElementById("mk-input")?.value||25)/100;const sell = ct * mk;
+  var mk = parseFloat(document.getElementById("mk-input")?.value||25)/100;const sell = ct * (1 + mk);
   it.sell = sell;
   // update DOM — find row by section index + item index
   const secItems = document.querySelectorAll('.sec-items');
@@ -720,7 +720,7 @@ function remNote(i) { _notes.splice(i,1); renderNotes(); dirty(); }
 function syncNote(i,inp) { _notes[i]=inp.value; dirty(); }
 
 // ─── RECALC ──────────────────────────────────────────────────────────────────
-function applyMarkupAll(){var mk=parseFloat(document.getElementById("mk-input")?.value||25)/100;if(!_data||!_data.length)return;var any=false;_data.forEach(function(sec){sec.items.forEach(function(it){if(it.costItems&&it.costItems.length){var ct=it.costItems.reduce(function(s,ci){return s+(parseFloat(ci.amt)||0)},0);if(ct>0){it.sell=ct*mk;any=true}}});});if(any){renderSections();recalc();dirty()}}
+function applyMarkupAll(){var mk=parseFloat(document.getElementById("mk-input")?.value||25)/100;if(!_data||!_data.length)return;var any=false;_data.forEach(function(sec){sec.items.forEach(function(it){if(it.costItems&&it.costItems.length){var ct=it.costItems.reduce(function(s,ci){return s+(parseFloat(ci.amt)||0)},0);if(ct>0){it.sell=ct*(1+mk);any=true}}});});if(any){renderSections();recalc();dirty()}}
 function attachMarkupListener(){var mi=document.getElementById("mk-input");if(mi&&!mi._hasListener){mi._hasListener=true;mi.addEventListener("change",function(){applyMarkupAll()});mi.addEventListener("input",function(){applyMarkupAll()})}}
 if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",attachMarkupListener)}else{attachMarkupListener()}
 
