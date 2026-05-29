@@ -841,7 +841,7 @@ function openPDF() {
     let secTotal = 0;
     // Section header row
     if (sec.section) {
-      rows.push(`<tr class="sec-row"><td colspan="6" style="background:#e8f4f1;font-weight:700;color:${_cmpColor};font-size:12px;padding:8px 12px">${esc(sec.section)}</td></tr>`);
+      rows.push(`<tr class="sec-row"><td colspan="6" style="background:${_sectionBg};font-weight:700;color:${_cmpColor};font-size:12px;padding:8px 12px">${esc(sec.section)}</td></tr>`);
     }
     (sec.items||[]).forEach(it => {
       if (!it.desc && !it.sell) return;
@@ -859,7 +859,7 @@ function openPDF() {
       </tr>`);
     });
     // Section subtotal row
-    rows.push(`<tr class="sec-subtotal-row"><td colspan="5" style="text-align:right;font-weight:700;background:#f0faf7;color:${_cmpColor};font-size:12px;padding:6px 12px">Section Total: RM ${fmt(secTotal)}</td><td style="text-align:right;font-weight:700;background:#f0faf7;color:${_cmpColor};font-size:12px;padding:6px 12px">RM ${fmt(secTotal)}</td></tr>`);
+    rows.push(`<tr class="sec-subtotal-row"><td colspan="5" style="text-align:right;font-weight:700;background:${_sectionBg};color:${_cmpColor};font-size:12px;padding:6px 12px">Section Total: RM ${fmt(secTotal)}</td><td style="text-align:right;font-weight:700;background:${_sectionBg};color:${_cmpColor};font-size:12px;padding:6px 12px">RM ${fmt(secTotal)}</td></tr>`);
   });
   const dateStr = _date ? new Date(_date+'T00:00:00').toLocaleDateString('en-GB',{day:'2-digit',month:'long',year:'numeric'}) : '';
   const termList = terms.length ? `<div class="qp-terms"><h4>Payment Terms</h4><ul>${terms.map(t=>`<li>${esc(t)}</li>`).join('')}</ul></div>` : '';
@@ -876,6 +876,14 @@ function openPDF() {
   var _cmpAddr = _hasCompany ? (_cmpSettings.addr || '') : '';
   var _cmpPhone = _hasCompany ? (_cmpSettings.phone || '') : '';
   var _cmpColor = _acct.color_hex || _cmpSettings.color_hex || '#5a9e8f';
+  // Helper: hex → rgba with opacity
+  function hexToRgba(hex, alpha) {
+    var r = 0, g = 0, b = 0;
+    if (hex.length === 4) { r=parseInt(hex[1]+hex[1],16); g=parseInt(hex[2]+hex[2],16); b=parseInt(hex[3]+hex[3],16); }
+    else if (hex.length === 7) { r=parseInt(hex[1]+hex[2],16); g=parseInt(hex[3]+hex[4],16); b=parseInt(hex[5]+hex[6],16); }
+    return 'rgba('+r+','+g+','+b+','+alpha+')';
+  }
+  var _sectionBg = hexToRgba(_cmpColor, 0.1);
   var _cmpLogo = _acct.logo_url || _cmpSettings.logo_url || '';
   var _cmpLogoHtml = _cmpLogo ? '<img src="' + esc(_cmpLogo) + '" style="max-height:50px;margin-bottom:8px">' : '';
   const html = `<div class="qp">

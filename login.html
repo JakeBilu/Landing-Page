@@ -4,28 +4,53 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Quotation SaaS - HS Design</title>
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
-body { font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif; background: #f5f5f5; color: #333; }
-.container { max-width: 480px; margin: 60px auto; padding: 20px; }
-.card { background: #fff; border-radius: 12px; box-shadow: 0 2px 12px rgba(0,0,0,0.1); padding: 32px; }
+html { scroll-behavior: smooth; }
+body { font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif; background: #F5F3F0; color: #333; }
+
+/* ─── HERO BANNER ──────────────────────────────────────────── */
+.hero { width:100%; min-height:100vh; background:linear-gradient(135deg,#0a0e1a 0%,#1a1f35 40%,#2a2f45 100%); display:flex; align-items:center; justify-content:center; position:relative; overflow:hidden; }
+.hero::before { content:''; position:absolute; inset:0; background-image:repeating-linear-gradient(0deg,transparent,transparent 48px,rgba(201,168,76,.03) 48px,rgba(201,168,76,.03) 49px),repeating-linear-gradient(90deg,transparent,transparent 48px,rgba(201,168,76,.03) 48px,rgba(201,168,76,.03) 49px); pointer-events:none; }
+.hero-dots { position:absolute; inset:0; pointer-events:none; }
+.hero-content { text-align:center; z-index:2; padding:20px; max-width:700px; }
+.hero-logo { width:80px;height:80px;border:3px solid #c9a84c;border-radius:20px;display:flex;align-items:center;justify-content:center;font-size:36px;font-weight:900;color:#c9a84c;margin:0 auto 24px; }
+.hero h1 { font-size:52px; font-weight:900; color:#fff; margin-bottom:12px; }
+.hero h1 span { color:#c9a84c; }
+.hero .accent-line { width:80px;height:3px;background:linear-gradient(90deg,transparent,#c9a84c,transparent);margin:16px auto; }
+.hero .subtitle { font-size:20px; color:rgba(255,255,255,0.7); margin-bottom:8px; }
+.hero .meta { font-size:14px; color:rgba(255,255,255,0.4); }
+.hero .scroll-indicator { position:absolute; bottom:40px; left:50%; transform:translateX(-50%); color:rgba(255,255,255,0.3); font-size:13px; display:flex; flex-direction:column; align-items:center; gap:8px; cursor:pointer; }
+.hero .scroll-indicator .arrow { width:20px;height:20px;border-right:2px solid rgba(255,255,255,0.3);border-bottom:2px solid rgba(255,255,255,0.3);transform:rotate(45deg);animation:scrollBounce 2s infinite; }
+@keyframes scrollBounce { 0%,100%{transform:rotate(45deg) translate(0,0);opacity:0.3} 50%{transform:rotate(45deg) translate(4px,4px);opacity:0.8} }
+
+/* ─── FEATURES STRIP ───────────────────────────────────────── */
+.features-strip { display:flex; gap:12px; justify-content:center; flex-wrap:wrap; margin-top:30px; }
+.fs-item { background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:10px; padding:10px 14px; font-size:12px; color:rgba(255,255,255,0.6); display:flex; align-items:center; gap:6px; }
+
+/* ─── AUTH SECTION ─────────────────────────────────────────── */
+.auth-section { padding:40px 20px 60px; background:#F5F3F0; }
+.container { max-width: 480px; margin: 0 auto; }
+.card { background: #fff; border-radius: 16px; box-shadow: 0 2px 20px rgba(0,0,0,0.08); padding: 32px; }
 .logo { text-align: center; margin-bottom: 24px; }
-.logo h1 { font-size: 24px; color: #1A73E8; font-weight: 700; }
-.logo p { color: #666; font-size: 14px; margin-top: 4px; }
+.logo h1 { font-size: 22px; color: #7C9A8E; font-weight: 700; }
+.logo p { color: #6B6865; font-size: 13px; margin-top: 4px; }
 .tab-group { display: flex; gap: 0; margin-bottom: 24px; border-bottom: 1px solid #e0e0e0; }
 .tab { flex: 1; padding: 10px; text-align: center; cursor: pointer; color: #666; font-size: 14px; border-bottom: 2px solid transparent; transition: all 0.2s; }
-.tab.active { color: #1A73E8; border-bottom-color: #1A73E8; font-weight: 600; }
+.tab.active { color: #7C9A8E; border-bottom-color: #7C9A8E; font-weight: 600; }
 .form-group { margin-bottom: 16px; }
 .form-group label { display: block; font-size: 13px; font-weight: 500; margin-bottom: 6px; color: #444; }
 .form-group input { width: 100%; padding: 10px 14px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; transition: border 0.2s; }
-.form-group input:focus { outline: none; border-color: #1A73E8; }
+.form-group input:focus { outline: none; border-color: #7C9A8E; }
 .btn { width: 100%; padding: 12px; border: none; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
-.btn-primary { background: #1A73E8; color: #fff; }
-.btn-primary:hover { background: #1557b0; }
+.btn-primary { background: #7C9A8E; color: #fff; }
+.btn-primary:hover { background: #5A7D6E; }
 .btn-google { background: #fff; color: #333; border: 1px solid #ddd; display: flex; align-items: center; justify-content: flex-start; gap: 12px; margin-bottom: 16px; padding: 12px 16px; }
 .btn-google:hover { background: #f8f8f8; }
 .btn-google img { width: 18px; height: 18px; }
@@ -76,12 +101,36 @@ body { font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans
 </head>
 <body>
 
+<!-- ─── HERO BANNER ──────────────────────────────────────────────── -->
+<div class="hero" id="hero">
+  <div class="hero-dots" id="hero-dots"></div>
+  <div class="hero-content">
+    <div class="hero-logo" id="hero-logo">HS</div>
+    <h1 id="hero-title">HS <span>Design</span></h1>
+    <div class="accent-line" id="hero-accent"></div>
+    <p class="subtitle" id="hero-sub">马来西亚室内设计师的智能报价工具</p>
+    <p class="meta" id="hero-meta">快速创建专业报价单 · 自动保存 · 一键导出 PDF</p>
+    <div class="features-strip" id="hero-features">
+      <span class="fs-item">📋 多模板</span>
+      <span class="fs-item">📊 成本分解</span>
+      <span class="fs-item">🤖 AI 助手</span>
+      <span class="fs-item">📄 PDF 导出</span>
+    </div>
+  </div>
+  <div class="scroll-indicator" onclick="document.getElementById('auth-section').scrollIntoView({behavior:'smooth'})">
+    <span>向下滚动开始使用</span>
+    <div class="arrow"></div>
+  </div>
+</div>
+
+<!-- ─── AUTH SECTION ──────────────────────────────────────────── -->
+<div class="auth-section" id="auth-section">
 <div class="container">
   <!-- Auth Card -->
-  <div id="authCard" class="card hidden">
+  <div id="authCard" class="card">
     <div class="logo">
       <h1>Quotation SaaS</h1>
-      <p>by HS Design</p>
+      <p>开始使用</p>
     </div>
     <div id="authError" class="error"></div>
     <div id="authSuccess" class="success"></div>
@@ -424,6 +473,39 @@ async function handleSubscribe() {
   }
 })();
 </script>
+
+<!-- Hero Animation -->
+<script>
+(function(){
+  // Dots
+  var dc = document.getElementById('hero-dots');
+  if(dc) {
+    for(var i=0;i<30;i++) {
+      var d = document.createElement('div');
+      d.style.cssText = 'position:absolute;border-radius:50%;background:rgba(201,168,76,0.12);width:'+(2+~~(Math.random()*4))+'px;height:'+(2+~~(Math.random()*4))+'px;left:'+(Math.random()*100)+'%;top:'+(Math.random()*100)+'%;opacity:'+(0.1+Math.random()*0.2);
+      dc.appendChild(d);
+    }
+  }
+  // GSAP hero animation
+  gsap.set('#hero-logo',{opacity:0,scale:0.5,rotation:-15});
+  gsap.set('#hero-title',{opacity:0,y:40});
+  gsap.set('#hero-accent',{scaleX:0});
+  gsap.set('#hero-sub',{opacity:0,y:20});
+  gsap.set('#hero-meta',{opacity:0});
+  gsap.set('.fs-item',{opacity:0,y:20});
+  gsap.set('.scroll-indicator',{opacity:0});
+
+  var ht = gsap.timeline({defaults:{ease:'power2.out'}});
+  ht.to('#hero-logo',{opacity:1,scale:1,rotation:0,duration:0.8,ease:'back.out(1.7)'},0.3);
+  ht.to('#hero-title',{opacity:1,y:0,duration:0.7},1.0);
+  ht.to('#hero-accent',{scaleX:1,duration:0.5,transformOrigin:'50% 50%'},1.8);
+  ht.to('#hero-sub',{opacity:1,y:0,duration:0.5},2.4);
+  ht.to('#hero-meta',{opacity:1,duration:0.4},3.2);
+  ht.to('.fs-item',{opacity:1,y:0,duration:0.3,stagger:0.1},3.8);
+  ht.to('.scroll-indicator',{opacity:1,duration:0.5},4.8);
+})();
+</script>
+
 <script defer src="https://static.cloudflareinsights.com/beacon.min.js/v833ccba57c9e4d2798f2e76cebdd09a11778172276447" integrity="sha512-57MDmcccJXYtNnH+ZiBwzC4jb2rvgVCEokYN+L/nLlmO8rfYT/gIpW2A569iJ/3b+0UEasghjuZH/ma3wIs/EQ==" data-cf-beacon='{"version":"2024.11.0","token":"2bec5673be7846f1aabce009fbb7e2cd","r":1,"server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
-</body>
+</div></body>
 </html>
