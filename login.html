@@ -92,11 +92,14 @@ body { font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans
 /* Password toggle */
 .form-group { position: relative; }
 .password-toggle {
-  position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+  position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
   background: none; border: none; cursor: pointer; color: #888; font-size: 14px;
-  padding: 4px; line-height: 1;
+  padding: 6px; line-height: 1; z-index: 2; display:flex; align-items:center; justify-content:center;
 }
 .password-toggle:hover { color: #333; }
+.form-group { position: relative; }
+.form-group input[type="password"], .form-group input[type="text"] { padding-right: 36px; }
+.forgot-form { display: none; }
 </style>
 </head>
 <body>
@@ -167,6 +170,10 @@ body { font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans
         <label>Password</label>
         <input type="password" id="registerPassword" required minlength="6" placeholder="Min 6 characters" style="padding-right:36px;"><button type="button" class="password-toggle" id="registerPasswordToggle" onclick="togglePassword('registerPassword')"><i class="fa-regular fa-eye"></i></button>
       </div>
+      <div class="form-group">
+        <label>Referral Code (optional)</label>
+        <input type="text" id="registerRefCode" placeholder="Enter referral code">
+      </div>
       <button type="submit" class="btn btn-primary">Create Account</button>
       <div class="divider">or</div>
       <button type="button" class="btn btn-google" onclick="handleGoogleLogin()">
@@ -174,6 +181,22 @@ body { font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans
         Sign up with Google
       </button>
     </form>
+
+    <!-- Forgot Password Form -->
+    <form id="forgotForm" class="hidden" onsubmit="forgotPassword(event)">
+      <div style="text-align:center;margin-bottom:16px">
+        <div style="font-size:32px;margin-bottom:8px">🔑</div>
+        <p style="font-size:14px;color:#6B6865">Enter your email to receive password reset instructions.</p>
+      </div>
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="forgotEmail" required placeholder="you@example.com">
+      </div>
+      <div id="forgotMsg" class="error" style="display:none"></div>
+      <button type="submit" class="btn btn-primary">Send Reset Link</button>
+      <p style="text-align:center;margin-top:12px;font-size:13px"><a href="javascript:void(0)" onclick="showAuth()" style="color:#7C9A8E;text-decoration:none">← Back to Login</a></p>
+    </form>
+
   </div>
 
   <!-- Dashboard Card -->
@@ -195,7 +218,6 @@ body { font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans
     <div class="account-info">
       <p>Name: <span id="accountName">-</span></p>
       <p>Email: <span id="accountEmail">-</span></p>
-      <div class="form-group"><label>Referral Code (optional)</label><input type="text" id="registerRefCode" placeholder="Enter referral code"></div>
       <p style="margin-top:10px">Quotations: <span id="usageText">0 / 100</span></p>
       <div class="usage-bar"><div id="usageFill" class="usage-fill" style="width:0%"></div></div>
     </div>
@@ -227,7 +249,7 @@ body { font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans
   </div>
 </div>
 
-<script>function showForgotPassword(){document.getElementById('login-form').style.display='none';document.getElementById('register-form').style.display='none';document.getElementById('forgot-form').style.display='block';}async function forgotPassword(){var e=document.getElementById('forgot-email').value;if(!e){alert('Please enter your email');return}try{var r=await fetch('/api/forgot-password',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:e})});var d=await r.json();if(d.success){document.getElementById('forgot-msg').className='success';document.getElementById('forgot-msg').textContent='Check your email for reset instructions.';document.getElementById('forgot-msg').style.display='block'}else{document.getElementById('forgot-msg').className='error';document.getElementById('forgot-msg').textContent=d.error||'Failed';document.getElementById('forgot-msg').style.display='block'}}catch(e){alert('Network error')}}
+<script>function showForgotPassword(){document.getElementById('authCard').classList.add('hidden');document.getElementById('forgotForm').classList.remove('hidden');}async function forgotPassword(e){e.preventDefault();var em=document.getElementById('forgotEmail').value;if(!em){alert('Please enter your email');return}var msg=document.getElementById('forgotMsg');try{var r=await fetch('/api/forgot-password',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:em})});var d=await r.json();if(d.success){msg.className='success';msg.textContent='Check your email for reset instructions.';msg.style.display='block'}else{msg.className='error';msg.textContent=d.error||'Failed';msg.style.display='block'}}catch(e){msg.className='error';msg.textContent='Network error';msg.style.display='block'}}
 const API = 'https://quotation.hsdesign.biz';
 
 
