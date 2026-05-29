@@ -96,7 +96,7 @@ function restoreDraft(draft) {
   document.getElementById('f-notes').value = _notesTxt;
   document.getElementById('welcome').style.display='none';
   document.getElementById('editor').style.display='block';
-  renderSections();
+  renderSections(); recalc();
   renderTerms();
   renderNotes();
   recalc();
@@ -554,7 +554,7 @@ function renderSections() {
   });
 }
 
-function addSection(name) { _data.push({section:name||'',items:[makeItem()]}); renderSections(); dirty(); }
+function addSection(name) { _data.push({section:name||'',items:[makeItem()]}); renderSections(); recalc(); dirty(); }
 function delSection(si) { if (_data.length <= 1) return; _data.splice(si,1); renderSections(); dirty(); }
 function syncSectionName(si, inp) { _data[si].section = inp.value; dirty(); }
 
