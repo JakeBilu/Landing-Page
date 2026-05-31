@@ -1,537 +1,149 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
-
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Quotation SaaS - HS Design</title>
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<title>Register - HS Design Quotation</title>
 <style>
-* { margin: 0; padding: 0; box-sizing: border-box; }
-html { scroll-behavior: smooth; }
-body { font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif; background: #F5F3F0; color: #333; }
-
-/* ─── HERO BANNER ──────────────────────────────────────────── */
-.hero { width:100%; min-height:100vh; background:linear-gradient(135deg,#0a0e1a 0%,#1a1f35 40%,#2a2f45 100%); display:flex; align-items:center; justify-content:center; position:relative; overflow:hidden; }
-.hero::before { content:''; position:absolute; inset:0; background-image:repeating-linear-gradient(0deg,transparent,transparent 48px,rgba(201,168,76,.03) 48px,rgba(201,168,76,.03) 49px),repeating-linear-gradient(90deg,transparent,transparent 48px,rgba(201,168,76,.03) 48px,rgba(201,168,76,.03) 49px); pointer-events:none; }
-.hero-dots { position:absolute; inset:0; pointer-events:none; }
-.hero-content { text-align:center; z-index:2; padding:20px; max-width:700px; }
-.hero-logo { width:80px;height:80px;border:3px solid #c9a84c;border-radius:20px;display:flex;align-items:center;justify-content:center;font-size:36px;font-weight:900;color:#c9a84c;margin:0 auto 24px; }
-.hero h1 { font-size:52px; font-weight:900; color:#fff; margin-bottom:12px; }
-.hero h1 span { color:#c9a84c; }
-.hero .accent-line { width:80px;height:3px;background:linear-gradient(90deg,transparent,#c9a84c,transparent);margin:16px auto; }
-.hero .subtitle { font-size:20px; color:rgba(255,255,255,0.7); margin-bottom:8px; }
-.hero .meta { font-size:14px; color:rgba(255,255,255,0.4); }
-.hero .scroll-indicator { position:absolute; bottom:40px; left:50%; transform:translateX(-50%); color:rgba(255,255,255,0.3); font-size:13px; display:flex; flex-direction:column; align-items:center; gap:8px; cursor:pointer; }
-.hero .scroll-indicator .arrow { width:20px;height:20px;border-right:2px solid rgba(255,255,255,0.3);border-bottom:2px solid rgba(255,255,255,0.3);transform:rotate(45deg);animation:scrollBounce 2s infinite; }
-@keyframes scrollBounce { 0%,100%{transform:rotate(45deg) translate(0,0);opacity:0.3} 50%{transform:rotate(45deg) translate(4px,4px);opacity:0.8} }
-
-/* ─── FEATURES STRIP ───────────────────────────────────────── */
-.features-strip { display:flex; gap:12px; justify-content:center; flex-wrap:wrap; margin-top:30px; }
-.fs-item { background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:10px; padding:10px 14px; font-size:12px; color:rgba(255,255,255,0.6); display:flex; align-items:center; gap:6px; }
-
-/* ─── AUTH SECTION ─────────────────────────────────────────── */
-.auth-section { padding:40px 20px 60px; background:#F5F3F0; }
-.container { max-width: 480px; margin: 0 auto; }
-.card { background: #fff; border-radius: 16px; box-shadow: 0 2px 20px rgba(0,0,0,0.08); padding: 32px; }
-.logo { text-align: center; margin-bottom: 24px; }
-.logo h1 { font-size: 22px; color: #7C9A8E; font-weight: 700; }
-.logo p { color: #6B6865; font-size: 13px; margin-top: 4px; }
-.tab-group { display: flex; gap: 0; margin-bottom: 24px; border-bottom: 1px solid #e0e0e0; }
-.tab { flex: 1; padding: 10px; text-align: center; cursor: pointer; color: #666; font-size: 14px; border-bottom: 2px solid transparent; transition: all 0.2s; }
-.tab.active { color: #7C9A8E; border-bottom-color: #7C9A8E; font-weight: 600; }
-.form-group { margin-bottom: 16px; }
-.form-group label { display: block; font-size: 13px; font-weight: 500; margin-bottom: 6px; color: #444; }
-.form-group input { width: 100%; padding: 10px 14px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; transition: border 0.2s; }
-.form-group input:focus { outline: none; border-color: #7C9A8E; }
-.btn { width: 100%; padding: 12px; border: none; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
-.btn-primary { background: #7C9A8E; color: #fff; }
-.btn-primary:hover { background: #5A7D6E; }
-.btn-google { background: #fff; color: #333; border: 1px solid #ddd; display: flex; align-items: center; justify-content: flex-start; gap: 12px; margin-bottom: 16px; padding: 12px 16px; }
-.btn-google:hover { background: #f8f8f8; }
-.btn-google img { width: 18px; height: 18px; }
-.btn-logout { background: #f44336; color: #fff; margin-top: 16px; }
-.divider { text-align: center; color: #999; font-size: 13px; margin: 16px 0; position: relative; }
-.divider::before, .divider::after { content: ''; position: absolute; top: 48%; width: 35%; height: 1px; background: #e0e0e0; }
-.divider::before { left: 0; }
-.divider::after { right: 0; }
-.error { background: #fde7e7; color: #c00; padding: 10px 12px; border-radius: 8px; font-size: 13px; margin-bottom: 16px; display: none; }
-.success { background: #e7f7e7; color: #2a7; padding: 10px 12px; border-radius: 8px; font-size: 13px; margin-bottom: 16px; display: none; }
-.hidden { display: none !important; }
-
-/* Dashboard */
-.dashboard-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid #e0e0e0; }
-.dashboard-header h2 { font-size: 18px; color: #1A73E8; }
-.dashboard-header .plan { font-size: 12px; background: #e8f0fe; color: #1A73E8; padding: 4px 10px; border-radius: 20px; font-weight: 600; }
-.account-info { background: #f8f9fa; border-radius: 8px; padding: 16px; margin-bottom: 20px; }
-.account-info p { font-size: 13px; color: #555; margin-bottom: 6px; }
-.account-info p span { color: #333; font-weight: 500; }
-.usage-bar { background: #e0e0e0; border-radius: 4px; height: 8px; margin-top: 8px; overflow: hidden; }
-.usage-fill { background: #1A73E8; height: 100%; border-radius: 4px; transition: width 0.3s; }
-.quotations-list { margin-top: 20px; }
-.quotations-list h3 { font-size: 15px; margin-bottom: 12px; color: #333; }
-.quote-item { background: #f8f9fa; border-radius: 8px; padding: 14px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
-.quote-item .name { font-weight: 600; font-size: 14px; }
-.quote-item .date { font-size: 12px; color: #888; margin-top: 2px; }
-.quote-item .actions { display: flex; gap: 8px; }
-.btn-sm { padding: 6px 14px; font-size: 13px; border-radius: 6px; border: none; cursor: pointer; font-weight: 500; }
-.btn-sm-view { background: #e8f0fe; color: #1A73E8; }
-.btn-sm-delete { background: #fde7e7; color: #c00; }
-.btn-sm:hover { opacity: 0.85; }
-.empty { text-align: center; color: #888; font-size: 14px; padding: 30px 0; }
-.loading { text-align: center; color: #888; font-size: 14px; padding: 20px 0; }
-.subscription-banner { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #fff; border-radius: 10px; padding: 16px; margin-bottom: 20px; text-align: center; }
-.subscription-banner h3 { font-size: 15px; margin-bottom: 6px; }
-.subscription-banner p { font-size: 13px; opacity: 0.9; margin-bottom: 10px; }
-.subscription-banner .btn { background: #fff; color: #667eea; font-size: 13px; padding: 8px; }
-
-/* Password toggle */
-.form-group { position: relative; }
-.password-toggle {
-  position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
-  background: none; border: none; cursor: pointer; color: #888; font-size: 14px;
-  padding: 6px; line-height: 1; z-index: 2; display:flex; align-items:center; justify-content:center;
-}
-.password-toggle:hover { color: #333; }
-.form-group { position: relative; }
-.form-group input[type="password"], .form-group input[type="text"] { padding-right: 36px !important; }
-.password-toggle { width: 32px; height: 32px; right: 4px; display: flex !important; align-items: center; justify-content: center; cursor: pointer; border-radius: 6px; }
-.password-toggle:hover { background: #f0f0f0; }
-.forgot-form { display: none; }
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%}
+body{font-family:"Inter",-apple-system,"SF Pro Text",sans-serif;background:#f5f5f7;color:#1d1d1f;display:flex;align-items:center;justify-content:center;min-height:100vh;-webkit-font-smoothing:antialiased}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.auth-container{width:100%;max-width:400px;padding:24px;animation:fadeUp .6s ease-out}
+.logo{text-align:center;margin-bottom:32px}
+.logo a{font-size:20px;font-weight:700;letter-spacing:-.3px;color:#1d1d1f;text-decoration:none}
+.logo span{color:#0071e3}
+.logo .sub{font-size:13px;color:#86868b;margin-top:4px}
+.card{background:#fff;border-radius:20px;padding:32px;box-shadow:0 2px 12px rgba(0,0,0,.04);border:1px solid #f0f0f0}
+.card h1{font-size:22px;font-weight:700;margin-bottom:4px}
+.card .subtitle{font-size:14px;color:#86868b;margin-bottom:24px}
+.tabs{display:flex;gap:0;margin-bottom:24px;background:#f5f5f7;border-radius:10px;padding:3px}
+.tab{flex:1;text-align:center;padding:8px 0;font-size:13px;font-weight:600;border-radius:8px;cursor:pointer;transition:all .3s;color:#86868b;border:none;background:transparent}
+.tab.active{background:#fff;color:#1d1d1f;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.form-group{margin-bottom:16px}
+.form-group label{display:block;font-size:12px;font-weight:600;color:#86868b;margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px}
+.form-group input{width:100%;padding:12px 14px;border:1px solid #e8e8ed;border-radius:10px;font-size:14px;font-family:"Inter",sans-serif;transition:border-color .2s;background:#fff;outline:none}
+.form-group input:focus{border-color:#0071e3;box-shadow:0 0 0 3px rgba(0,113,227,.1)}
+.form-group .hint{font-size:11px;color:#aeaeb2;margin-top:4px}
+.btn-primary{width:100%;padding:13px;border-radius:980px;border:none;background:#0071e3;color:#fff;font-size:15px;font-weight:600;cursor:pointer;transition:all .3s;font-family:"Inter",sans-serif}
+.btn-primary:hover{background:#0077ed;transform:scale(1.01)}
+.btn-primary.loading{opacity:.7;pointer-events:none}
+.divider{display:flex;align-items:center;gap:12px;margin:20px 0;color:#aeaeb2;font-size:12px}
+.divider::before,.divider::after{content:"";flex:1;height:1px;background:#e8e8ed}
+.btn-google{width:100%;padding:12px;border-radius:980px;border:1px solid #e8e8ed;background:#fff;color:#1d1d1f;font-size:14px;font-weight:600;cursor:pointer;transition:all .3s;display:flex;align-items:center;justify-content:center;gap:8px;font-family:"Inter",sans-serif;text-decoration:none}
+.btn-google:hover{border-color:#0071e3;background:#f5f5f7}
+.btn-google img{width:18px;height:18px}
+.error{color:#ff3b30;font-size:12px;margin-top:6px;display:none}
+.success{color:#34c759;font-size:12px;margin-top:6px;display:none}
+.footer{text-align:center;margin-top:24px;font-size:13px;color:#86868b}
+.footer a{color:#0071e3;text-decoration:none}
+.footer a:hover{text-decoration:underline}
+.password-hint{font-size:11px;color:#aeaeb2;margin-top:4px}
+.form-group .pw-toggle{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:#86868b;cursor:pointer;font-size:13px}
+.pw-wrap{position:relative}
+@media(max-width:480px){.auth-container{padding:16px}.card{padding:24px;border-radius:16px}}
 </style>
 </head>
 <body>
+<div class="auth-container">
+  <div class="logo"><a href="/">HS <span>Design</span> Quotation</a><div class="sub">Free quotation tool for Malaysian designers</div></div>
+  <div class="card" id="auth-card">
+    <h1 id="form-title">Create your account</h1>
+    <p class="subtitle" id="form-subtitle">Start creating professional quotations in minutes.</p>
+    <div class="tabs" id="auth-tabs"><button class="tab active" onclick="switchTab('register')">Register</button><button class="tab" onclick="switchTab('login')">Sign In</button></div>
 
-<!-- ─── HERO BANNER ──────────────────────────────────────────────── -->
-<div class="hero" id="hero">
-  <div class="hero-dots" id="hero-dots"></div>
-  <div class="hero-content">
-    <div class="hero-logo" id="hero-logo">HS</div>
-    <h1 id="hero-title">HS <span>Design</span></h1>
-    <div class="accent-line" id="hero-accent"></div>
-    <p class="subtitle" id="hero-sub">马来西亚室内设计师的智能报价工具</p>
-    <p class="meta" id="hero-meta">快速创建专业报价单 · 自动保存 · 一键导出 PDF</p>
-    <div class="features-strip" id="hero-features">
-      <span class="fs-item">📋 多模板</span>
-      <span class="fs-item">📊 成本分解</span>
-      <span class="fs-item">🤖 AI 助手</span>
-      <span class="fs-item">📄 PDF 导出</span>
-    </div>
-  </div>
-  <div class="scroll-indicator" onclick="document.getElementById('auth-section').scrollIntoView({behavior:'smooth'})">
-    <span>向下滚动开始使用</span>
-    <div class="arrow"></div>
-  </div>
-</div>
-
-<!-- ─── AUTH SECTION ──────────────────────────────────────────── -->
-<div class="auth-section" id="auth-section">
-<div class="container">
-  <!-- Auth Card -->
-  <div id="authCard" class="card">
-    <div class="logo">
-      <h1>Quotation SaaS</h1>
-      <p>开始使用</p>
-    </div>
-    <div id="authError" class="error"></div>
-    <div id="authSuccess" class="success"></div>
-    <div class="tab-group">
-      <div class="tab active" data-tab="login" onclick="switchTab('login')">Login</div>
-      <div class="tab" data-tab="register" onclick="switchTab('register')">Register</div>
-    </div>
-    <form id="loginForm" onsubmit="handleLogin(event)">
-      <div class="form-group">
-        <label>Email</label>
-        <input type="email" id="loginEmail" required placeholder="you@example.com">
-      </div>
-      <div class="form-group">
-        <label>Password</label>
-        <input type="password" id="loginPassword" required placeholder="••••••••" style="padding-right:36px;"><button type="button" class="password-toggle" id="loginPasswordToggle" onclick="togglePassword('loginPassword')"><i class="fa-regular fa-eye"></i></button>
-      </div>
-      <button type="submit" class="btn btn-primary">Login</button><p style="text-align:center;margin-top:12px;font-size:13px"><a href="javascript:void(0)" onclick="showForgotPassword()" style="color:#7C9A8E;text-decoration:none">Forgot password?</a></p>
+    <!-- Register Form -->
+    <div id="register-form">
+      <div class="form-group"><label>Full Name</label><input type="text" id="reg-name" placeholder="Your name" autocomplete="name"></div>
+      <div class="form-group"><label>Email</label><input type="email" id="reg-email" placeholder="you@example.com" autocomplete="email"></div>
+      <div class="form-group"><label>Password</label><div class="pw-wrap"><input type="password" id="reg-pass" placeholder="Min. 8 characters" autocomplete="new-password"><button class="pw-toggle" onclick="togglePW('reg-pass',this)">Show</button></div><div class="password-hint">At least 8 characters, 1 uppercase letter, 1 special character</div></div>
+      <div class="form-group"><label>Referral Code (optional)</label><input type="text" id="reg-ref" placeholder="Enter code"></div>
+      <div id="reg-error" class="error"></div>
+      <div id="reg-success" class="success"></div>
+      <button class="btn-primary" onclick="handleRegister()" id="reg-btn">Create Account</button>
       <div class="divider">or</div>
-      <button type="button" class="btn btn-google" onclick="handleGoogleLogin()">
-        <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z"/><path fill="#FBBC05" d="M3.964 10.71A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.042l3.007-2.332z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z"/></svg>
-        Continue with Google
-      </button>
-    </form>
-    <form id="registerForm" class="hidden" onsubmit="handleRegister(event)">
-      <div class="form-group">
-        <label>Name</label>
-        <input type="text" id="registerName" required placeholder="Your name">
-      </div>
-      <div class="form-group">
-        <label>Email</label>
-        <input type="email" id="registerEmail" required placeholder="you@example.com">
-      </div>
-      <div class="form-group">
-        <label>Password</label>
-        <input type="password" id="registerPassword" required minlength="6" placeholder="Min 6 characters" style="padding-right:36px;"><button type="button" class="password-toggle" id="registerPasswordToggle" onclick="togglePassword('registerPassword')"><i class="fa-regular fa-eye"></i></button>
-      </div>
-      <div class="form-group">
-        <label>Referral Code (optional)</label>
-        <input type="text" id="registerRefCode" placeholder="Enter referral code">
-      </div>
-      <button type="submit" class="btn btn-primary">Create Account</button>
+      <a class="btn-google" href="/auth/google"><svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.95 1 11.02 1 13s.43 4.05 1.18 5.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>Continue with Google</a>
+    </div>
+
+    <!-- Login Form -->
+    <div id="login-form" style="display:none">
+      <div class="form-group"><label>Email</label><input type="email" id="login-email" placeholder="you@example.com" autocomplete="email"></div>
+      <div class="form-group"><label>Password</label><div class="pw-wrap"><input type="password" id="login-pass" placeholder="Enter password" autocomplete="current-password"><button class="pw-toggle" onclick="togglePW('login-pass',this)">Show</button></div></div>
+      <div id="login-error" class="error"></div>
+      <button class="btn-primary" onclick="handleLogin()" id="login-btn">Sign In</button>
       <div class="divider">or</div>
-      <button type="button" class="btn btn-google" onclick="handleGoogleLogin()">
-        <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z"/><path fill="#FBBC05" d="M3.964 10.71A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.042l3.007-2.332z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z"/></svg>
-        Sign up with Google
-      </button>
-    </form>
-
-    <!-- Forgot Password Form -->
-    <form id="forgotForm" class="hidden" onsubmit="forgotPassword(event)">
-      <div style="text-align:center;margin-bottom:16px">
-        <div style="font-size:32px;margin-bottom:8px">🔑</div>
-        <p style="font-size:14px;color:#6B6865">Enter your email to receive password reset instructions.</p>
-      </div>
-      <div class="form-group">
-        <label>Email</label>
-        <input type="email" id="forgotEmail" required placeholder="you@example.com">
-      </div>
-      <div id="forgotMsg" class="error" style="display:none"></div>
-      <button type="submit" class="btn btn-primary">Send Reset Link</button>
-      <p style="text-align:center;margin-top:12px;font-size:13px"><a href="javascript:void(0)" onclick="showAuth()" style="color:#7C9A8E;text-decoration:none">← Back to Login</a></p>
-    </form>
-
+      <a class="btn-google" href="/auth/google"><svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.95 1 11.02 1 13s.43 4.05 1.18 5.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>Continue with Google</a>
+    </div>
   </div>
-
-  <!-- Dashboard Card -->
-  <div style="text-align: center; padding: 14px 20px 4px; color: rgba(255,255,255,.55); font-size: 12px; display: flex; justify-content: center; gap: 18px; flex-wrap: wrap; margin-top: 4px;">
-    <span>🔒 Encrypted</span><span>🇲🇾 Made for Malaysia</span><span>⚡ Fast Setup</span>
-  </div>
-<div id="dashboardCard" class="card hidden">
-    <div class="dashboard-header">
-      <h2>My Quotation Dashboard</h2>
-      <span id="planBadge" class="plan">Free</span>
-    </div>
-    <div id="dashboardError" class="error"></div>
-    <div id="dashboardSuccess" class="success"></div>
-    <div id="subscriptionBanner" class="subscription-banner">
-      <h3>Upgrade Your Plan</h3>
-      <p>Get unlimited quotations and remove ads</p>
-      <button class="btn" onclick="handleSubscribe()">Upgrade Now</button>
-    </div>
-    <div class="account-info">
-      <p>Name: <span id="accountName">-</span></p>
-      <p>Email: <span id="accountEmail">-</span></p>
-      <p style="margin-top:10px">Quotations: <span id="usageText">0 / 100</span></p>
-      <div class="usage-bar"><div id="usageFill" class="usage-fill" style="width:0%"></div></div>
-    </div>
-    <button class="btn btn-primary" onclick="showCreateModal()">+ New Quotation</button>
-    <div id="quotationsList" class="quotations-list">
-      <h3>My Quotations</h3>
-      <div id="quotationsContent" class="loading">Loading...</div>
-    </div>
-    <button class="btn btn-logout" onclick="handleLogout()">Logout</button>
-  </div>
+  <div class="footer"><a href="/">Back to Home</a> &middot; <a href="/pricing">Pricing</a></div>
 </div>
 
-<!-- Create Quotation Modal -->
-<div id="createModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:100;align-items:center;justify-content:center;">
-  <div style="background:#fff;border-radius:12px;padding:32px;max-width:400px;width:90%;">
-    <h3 style="margin-bottom:20px;font-size:18px;">New Quotation</h3>
-    <div class="form-group">
-      <label>Project Name</label>
-      <input type="text" id="quoteName" placeholder="e.g. Kitchen Renovation 2026">
-    </div>
-    <div class="form-group">
-      <label>Description (optional)</label>
-      <input type="text" id="quoteDesc" placeholder="Brief description">
-    </div>
-    <div style="display:flex;gap:10px;margin-top:20px;">
-      <button onclick="handleCreateQuote()" class="btn btn-primary" style="flex:1;">Create</button>
-      <button onclick="document.getElementById('createModal').style.display='none'" class="btn" style="flex:1;background:#eee;color:#333;">Cancel</button>
-    </div>
-  </div>
-</div>
-
-<script>function showForgotPassword(){document.getElementById('authCard').classList.add('hidden');document.getElementById('forgotForm').classList.remove('hidden');document.getElementById('auth-section').scrollIntoView({behavior:'smooth',block:'center'});}async function forgotPassword(e){e.preventDefault();var em=document.getElementById('forgotEmail').value;if(!em){alert('Please enter your email');return}var msg=document.getElementById('forgotMsg');try{var r=await fetch('/api/forgot-password',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:em})});var d=await r.json();if(d.success){msg.className='success';msg.textContent='Check your email for reset instructions.';msg.style.display='block'}else{msg.className='error';msg.textContent=d.error||'Failed';msg.style.display='block'}}catch(e){msg.className='error';msg.textContent='Network error';msg.style.display='block'}}
-const API = 'https://quotation.hsdesign.biz';
-
-
-function togglePassword(id) {
-  const input = document.getElementById(id);
-  const icon = document.getElementById(id + 'Toggle');
-  if (input.type === 'password') {
-    input.type = 'text';
-    icon.className = 'fa-regular fa-eye-slash';
-  } else {
-    input.type = 'password';
-    icon.className = 'fa-regular fa-eye';
-  }
-}
-
-// ─── Auth Helpers ───────────────────────────────────────────────
-function getToken() { return localStorage.getItem('qs_token'); }
-function setToken(t) { localStorage.setItem('qs_token', t); }
-function clearToken() { localStorage.removeItem('qs_token'); }
-
-function showError(el, msg) {
-  el.textContent = msg;
-  el.style.display = 'block';
-  setTimeout(() => el.style.display = 'none', 5000);
-}
-function showSuccess(el, msg) {
-  el.textContent = msg;
-  el.style.display = 'block';
-  setTimeout(() => el.style.display = 'none', 3000);
-}
-
-function switchTab(tab) {
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  document.querySelector(`.tab[data-tab="${tab}"]`).classList.add('active');
-  document.getElementById('loginForm').classList.toggle('hidden', tab !== 'login');
-  document.getElementById('registerForm').classList.toggle('hidden', tab !== 'register');
-  document.getElementById('authError').style.display = 'none';
-  document.getElementById('authSuccess').style.display = 'none';
-}
-
-async function handleLogin(e) {
-  e.preventDefault();
-  const errEl = document.getElementById('authError');
-  const email = document.getElementById('loginEmail').value;
-  const password = document.getElementById('loginPassword').value;
-  try {
-    const r = await fetch(`${API}/auth/login`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password })
-    });
-    const d = await r.json();
-    if (d.success && d.token) {
-      setToken(d.token);
-      window.location.href = '/app';
-    } else {
-      showError(errEl, d.error || 'Login failed');
-    }
-  } catch(e) { showError(errEl, 'Network error. Try again.'); setBtnLoading('loginBtn', false); }
-}
-
-async function handleRegister(e) {
-  e.preventDefault();
-  const errEl = document.getElementById('authError');
-  const sucEl = document.getElementById('authSuccess');
-  const name = document.getElementById('registerName').value;
-  const email = document.getElementById('registerEmail').value;
-  const password = document.getElementById('registerPassword').value;
-  try {
-    const r = await fetch(`${API}/auth/register`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, email, password, referral_code: (document.getElementById('registerRefCode').value.trim() || undefined) })
-    });
-    const d = await r.json();
-    if (d.success && d.token) {
-      setToken(d.token);
-      showSuccess(sucEl, 'Account created! Redirecting...');
-      loadDashboard();
-    } else {
-      showError(errEl, d.error || 'Registration failed');
-    }
-  } catch(e) { showError(errEl, 'Network error. Try again.'); setBtnLoading('loginBtn', false); }
-}
-
-function handleGoogleLogin() {
-  window.location.href = `${API}/auth/google`;
-}
-
-// ─── Dashboard ───────────────────────────────────────────────────
-async function loadDashboard() {
-  const token = getToken();
-  if (!token) { showAuth(); return; }
-  try {
-    const [meR, quotesR] = await Promise.all([
-      fetch(`${API}/auth/me`, { headers: { Authorization: `Bearer ${token}` } }),
-      fetch(`${API}/api/quotations`, { headers: { Authorization: `Bearer ${token}` } })
-    ]);
-    const me = await meR.json();
-    const quotes = await quotesR.json();
-    if (!meR.ok || !me.account) { clearToken(); showAuth(); return; }
-    showDashboard(me.account, quotes);
-  } catch(e) { clearToken(); showAuth(); }
-}
-
-function showDashboard(account, quotes) {
-  document.getElementById('authCard').classList.add('hidden');
-  document.getElementById('dashboardCard').classList.remove('hidden');
-  document.getElementById('accountName').textContent = account.name || '-';
-  document.getElementById('accountEmail').textContent = account.email;
-  document.getElementById('referralCode').textContent = account.referral_code || '-';
-  document.getElementById('planBadge').textContent = (account.plan || 'free').toUpperCase();
-  const total = quotes.total || 0;
-  const limit = 100;
-  const pct = Math.min(100, Math.round(total / limit * 100));
-  document.getElementById('usageText').textContent = `${total} / ${limit}`;
-  document.getElementById('usageFill').style.width = pct + '%';
-  document.getElementById('subscriptionBanner').classList.toggle('hidden', account.plan !== 'free');
-  renderQuotations(quotes.quotations || []);
-}
-
-function renderQuotations(quotes) {
-  const el = document.getElementById('quotationsContent');
-  if (!quotes.length) {
-    el.innerHTML = '<div class="empty">No quotations yet. Create your first one above!</div>';
-    return;
-  }
-  el.innerHTML = quotes.map(q => `
-    <div class="quote-item">
-      <div>
-        <div class="name">${escapeHtml(q.name || 'Untitled')}</div>
-        <div class="date">${q.created_at ? new Date(q.created_at).toLocaleDateString() : ''}</div>
-      </div>
-      <div class="actions">
-        <button class="btn-sm btn-sm-view" onclick="viewQuote('${q.id}')">View</button>
-        <button class="btn-sm btn-sm-delete" onclick="deleteQuote('${q.id}')">Delete</button>
-      </div>
-    </div>
-  `).join('');
-}
-
-function escapeHtml(s) {
-  const d = document.createElement('div');
-  d.textContent = s;
-  return d.innerHTML;
-}
-
-async function handleLogout() {
-  const token = getToken();
-  try { await fetch(`${API}/auth/logout`, { method: 'POST', headers: { Authorization: `Bearer ${token}` } }); } catch(e) {}
-  clearToken();
-  showAuth();
-}
-
-function showAuth() {
-  document.getElementById('dashboardCard').classList.add('hidden');
-  document.getElementById('authCard').classList.remove('hidden');
-  document.getElementById('forgotForm').classList.add('hidden');
-  document.getElementById('forgotMsg').style.display='none';
-  document.getElementById('loginEmail').value = '';
-  document.getElementById('loginPassword').value = '';
-  document.getElementById('registerName').value = '';
-  document.getElementById('registerEmail').value = '';
-  document.getElementById('registerPassword').value = '';
-}
-
-// ─── Quotation CRUD ──────────────────────────────────────────────
-function showCreateModal() {
-  document.getElementById('createModal').style.display = 'flex';
-  document.getElementById('quoteName').value = '';
-  document.getElementById('quoteDesc').value = '';
-}
-
-async function handleCreateQuote() {
-  const token = getToken();
-  const name = document.getElementById('quoteName').value.trim();
-  if (!name) return;
-  document.getElementById('createModal').style.display = 'none';
-  try {
-    const r = await fetch(`${API}/api/quotations`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-      body: JSON.stringify({ name, description: document.getElementById('quoteDesc').value })
-    });
-    const d = await r.json();
-    if (d.id) {
-      showSuccess(document.getElementById('dashboardSuccess'), 'Quotation created!');
-      loadDashboard();
-    } else {
-      showError(document.getElementById('dashboardError'), d.error || 'Failed to create');
-    }
-  } catch(e) { showError(document.getElementById('dashboardError'), 'Network error'); }
-}
-
-function viewQuote(id) {
-  window.location.href = '/quotation/' + id;
-}
-
-async function deleteQuote(id) {
-  if (!confirm('Delete this quotation?')) return;
-  const token = getToken();
-  try {
-    const r = await fetch(`${API}/api/quotations/${id}`, {
-      method: 'DELETE',
-      headers: { Authorization: `Bearer ${token}` }
-    });
-    if (r.ok) {
-      showSuccess(document.getElementById('dashboardSuccess'), 'Deleted');
-      loadDashboard();
-    }
-  } catch(e) {}
-}
-
-async function handleSubscribe() {
-  const token = getToken();
-  try {
-    const r = await fetch(`${API}/api/subscribe`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
-    });
-    const d = await r.json();
-    if (d.url) {
-      window.location.href = d.url;
-    } else {
-      showError(document.getElementById('dashboardError'), d.error || 'Could not start checkout');
-    }
-  } catch(e) { showError(document.getElementById('dashboardError'), 'Network error'); }
-}
-
-// ─── Handle OAuth Callback ───────────────────────────────────────
-(async function() {
-  const url = new URL(window.location.href);
-  if (url.pathname === '/auth/callback') {
-    const token = url.searchParams.get('token') || url.searchParams.get('session_token');
-    if (token) {
-      setToken(token);
-      window.location.href = '/';
-      return;
-    }
-  }
-  if (getToken()) {
-    loadDashboard();
-  } else {
-    showAuth();
-  }
-})();
-</script>
-
-<!-- Hero Animation -->
 <script>
-(function(){
-  // Dots
-  var dc = document.getElementById('hero-dots');
-  if(dc) {
-    for(var i=0;i<30;i++) {
-      var d = document.createElement('div');
-      d.style.cssText = 'position:absolute;border-radius:50%;background:rgba(201,168,76,0.12);width:'+(2+~~(Math.random()*4))+'px;height:'+(2+~~(Math.random()*4))+'px;left:'+(Math.random()*100)+'%;top:'+(Math.random()*100)+'%;opacity:'+(0.1+Math.random()*0.2);
-      dc.appendChild(d);
-    }
+function switchTab(tab){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  if(tab==='register'){
+    document.querySelector('.tab:first-child').classList.add('active');
+    document.getElementById('register-form').style.display='block';
+    document.getElementById('login-form').style.display='none';
+    document.getElementById('form-title').textContent='Create your account';
+    document.getElementById('form-subtitle').textContent='Start creating professional quotations in minutes.';
+  } else {
+    document.querySelector('.tab:last-child').classList.add('active');
+    document.getElementById('register-form').style.display='none';
+    document.getElementById('login-form').style.display='block';
+    document.getElementById('form-title').textContent='Welcome back';
+    document.getElementById('form-subtitle').textContent='Sign in to your account.';
   }
-  // GSAP hero animation
-  gsap.set('#hero-logo',{opacity:0,scale:0.5,rotation:-15});
-  gsap.set('#hero-title',{opacity:0,y:40});
-  gsap.set('#hero-accent',{scaleX:0});
-  gsap.set('#hero-sub',{opacity:0,y:20});
-  gsap.set('#hero-meta',{opacity:0});
-  gsap.set('.fs-item',{opacity:0,y:20});
-  gsap.set('.scroll-indicator',{opacity:0});
-
-  var ht = gsap.timeline({defaults:{ease:'power2.out'}});
-  ht.to('#hero-logo',{opacity:1,scale:1,rotation:0,duration:0.8,ease:'back.out(1.7)'},0.3);
-  ht.to('#hero-title',{opacity:1,y:0,duration:0.7},1.0);
-  ht.to('#hero-accent',{scaleX:1,duration:0.5,transformOrigin:'50% 50%'},1.8);
-  ht.to('#hero-sub',{opacity:1,y:0,duration:0.5},2.4);
-  ht.to('#hero-meta',{opacity:1,duration:0.4},3.2);
-  ht.to('.fs-item',{opacity:1,y:0,duration:0.3,stagger:0.1},3.8);
-  ht.to('.scroll-indicator',{opacity:1,duration:0.5},4.8);
-})();
+}
+function togglePW(id,btn){
+  var inp=document.getElementById(id);
+  if(inp.type==='password'){inp.type='text';btn.textContent='Hide'}else{inp.type='password';btn.textContent='Show'}
+}
+function showError(id,msg){
+  var el=document.getElementById(id);
+  el.textContent=msg;el.style.display='block';
+  setTimeout(function(){el.style.display='none'},4000);
+}
+async function handleRegister(){
+  var btn=document.getElementById('reg-btn');
+  var email=document.getElementById('reg-email').value.trim();
+  var pass=document.getElementById('reg-pass').value;
+  var name=document.getElementById('reg-name').value.trim();
+  var ref=document.getElementById('reg-ref').value.trim();
+  if(!email||!pass||!name){showError('reg-error','Please fill in all required fields.');return;}
+  btn.classList.add('loading');btn.textContent='Creating account...';
+  try{
+    var r=await fetch('/auth/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,password:pass,name,referral_code:ref||undefined})});
+    var d=await r.json();
+    if(d.success&&d.token){
+      localStorage.setItem('token',d.token);localStorage.setItem('qs_token',d.token);
+      window.location.href='/dashboard';
+    } else {
+      btn.classList.remove('loading');btn.textContent='Create Account';
+      showError('reg-error',d.error||'Registration failed');
+    }
+  }catch(e){btn.classList.remove('loading');btn.textContent='Create Account';showError('reg-error','Network error');}
+}
+async function handleLogin(){
+  var btn=document.getElementById('login-btn');
+  var email=document.getElementById('login-email').value.trim();
+  var pass=document.getElementById('login-pass').value;
+  if(!email||!pass){showError('login-error','Please enter email and password.');return;}
+  btn.classList.add('loading');btn.textContent='Signing in...';
+  try{
+    var r=await fetch('/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,password:pass})});
+    var d=await r.json();
+    if(d.success&&d.token){
+      localStorage.setItem('token',d.token);localStorage.setItem('qs_token',d.token);
+      window.location.href='/dashboard';
+    } else {
+      btn.classList.remove('loading');btn.textContent='Sign In';
+      showError('login-error',d.error||'Login failed');
+    }
+  }catch(e){btn.classList.remove('loading');btn.textContent='Sign In';showError('login-error','Network error');}
+}
 </script>
-
-<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v833ccba57c9e4d2798f2e76cebdd09a11778172276447" integrity="sha512-57MDmcccJXYtNnH+ZiBwzC4jb2rvgVCEokYN+L/nLlmO8rfYT/gIpW2A569iJ/3b+0UEasghjuZH/ma3wIs/EQ==" data-cf-beacon='{"version":"2024.11.0","token":"2bec5673be7846f1aabce009fbb7e2cd","r":1,"server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
-</div></body>
+</body>
 </html>
