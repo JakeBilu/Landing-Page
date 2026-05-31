@@ -173,6 +173,11 @@ export default {
       }
     }
 
+    // ── Test endpoint to verify Worker is running ──
+    if (pathname === '/cf-health') {
+      return new Response('WORKER OK: ' + new Date().toISOString(), { headers: { 'Content-Type': 'text/plain' } });
+    }
+
     // ── SEO static routes ──
     if (pathname === '/robots.txt') {
       return new Response('User-agent: *\nAllow: /\nSitemap: https://hsdesign.biz/sitemap.xml\n', {
