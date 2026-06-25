@@ -5,11 +5,11 @@
 .sec-items .item{padding:8px 4px;border-radius:6px;transition:background .12s}
 .sec-items .item:hover{background:#f8fafc}
 
-// ─── CONFIG ─────────────────────────────────────────────────────────────────
+// 鈹€鈹€鈹€ CONFIG 鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€
 const API_BASE = 'https://quotation.hsdesign.biz'; // SaaS API base
-const UNITS = ['nos', 'set', 'm', 'm²', 'lot', 'box', 'lump sum', 'day', 'trip', 'ft', 'ft²', 'hour'];
+const UNITS = ['nos', 'set', 'm', 'm虏', 'lot', 'box', 'lump sum', 'day', 'trip', 'ft', 'ft虏', 'hour'];
 
-// ─── STATE ────────────────────────────────────────────────────────────────────
+// 鈹€鈹€鈹€ STATE 鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€
 let quotes = [];
 let activeId = null;
 let expandedId = null;
@@ -36,7 +36,7 @@ const DEFAULT_NOTES = [
   'No retention amount after project completion.'
 ];
 
-// ─── UTILS ───────────────────────────────────────────────────────────────────
+// 鈹€鈹€鈹€ UTILS 鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€
 const ISO = () => new Date().toISOString().slice(0, 10);
 const fmt = n => parseFloat(n || 0).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 const esc = s => String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
@@ -106,7 +106,7 @@ setSS('Draft restored');
   }
 
   
-// ─── ONBOARDING TOOLTIP ─────────────────────────────────────────────────────
+// 鈹€鈹€鈹€ ONBOARDING TOOLTIP 鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€
 const ONBOARD_KEY = 'hsdesign_onboarded';
 function showOnboardingTip() {
   if (localStorage.getItem(ONBOARD_KEY)) return;
@@ -137,7 +137,7 @@ function checkOnboard() {
 }
 
 
-// ─── USAGE BANNER ────────────────────────────────────────────────────────────
+// 鈹€鈹€鈹€ USAGE BANNER 鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€
 function showUsageBanner(pct) {
   const existing = document.getElementById('usage-banner');
   if (existing) existing.remove();
@@ -177,19 +177,19 @@ function initMobileSidebar() {
       sb.classList.add('collapsed');
       document.querySelector('.body').classList.add('sidebar-collapsed');
       const toggle = document.getElementById('sidebar-toggle');
-      if (toggle) toggle.textContent = '�?;
+      if (toggle) toggle.textContent = '鈻?;
     }
   };
   window.addEventListener('resize', handleResize);
   handleResize();
 }
 
-// ─── SIDEBAR COLLAPSE ──────────────────────────────────────────────────────────
+// 鈹€鈹€鈹€ SIDEBAR COLLAPSE 鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€
 function toggleSidebar() {
   const sb = document.querySelector('.sidebar');
   const collapsed = sb.classList.toggle('collapsed');
   document.querySelector('.body').classList.toggle('collapsed', collapsed);
-  document.getElementById('sidebar-toggle').textContent = collapsed ? '�? : '�?;
+  document.getElementById('sidebar-toggle').textContent = collapsed ? '鈻? : '鈽?;
   try { localStorage.setItem('hsdesign_sidebar', collapsed ? '1' : '0'); } catch(e) {}
 }
 
@@ -199,12 +199,12 @@ function initSidebar() {
     if (v === '1') {
       document.querySelector('.sidebar').classList.add('collapsed');
       document.querySelector('.body').classList.add('collapsed');
-      document.getElementById('sidebar-toggle').textContent = '�?;
+      document.getElementById('sidebar-toggle').textContent = '鈻?;
     }
   } catch(e) {}
 }
 
-// ─── SECTION DRAG-AND-DROP ────────────────────────────────────────────────────
+// 鈹€鈹€鈹€ SECTION DRAG-AND-DROP 鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€
 function secDragStart(si, el) {
   _dragSection = si;
   el.classList.add('dragging');
@@ -231,7 +231,7 @@ function secDrop(si, el) {
   dirty();
 }
 
-// ─── ITEM DRAG-AND-DROP ───────────────────────────────────────────────────────
+// 鈹€鈹€鈹€ ITEM DRAG-AND-DROP 鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€
 function itemDragStart(si, ii, el) {
   _dragItem = { fromSi: si, fromIi: ii };
   el.classList.add('dragging');
@@ -260,7 +260,7 @@ function itemDrop(si, ii, el) {
   dirty();
 }
 
-// ─── GATE (SaaS) ───────────────────────────────────────────────────────────────
+// 鈹€鈹€鈹€ GATE (SaaS) 鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€
 function checkAuth() {
   const token = localStorage.getItem('token');
   return token || null;
@@ -303,7 +303,7 @@ function chkGate() {
   }, 200);
 }
 
-// ─── NOTION ───────────────────────────────────────────────────────────────────
+// 鈹€鈹€鈹€ NOTION 鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€
 async function loadQuotes() {
   setSS('Loading...');
   const token = localStorage.getItem('token') || '';
@@ -333,7 +333,7 @@ function parsePage(p) {
   return { id:p.id, name:g('Name'), project:g('Project'), date:g('Date'), status:g('Status')||'Quotation', qno, addr, items, terms, notes, notes2 };
 }
 
-// ─── LIST ─────────────────────────────────────────────────────────────────────
+// 鈹€鈹€鈹€ LIST 鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€
 function handleSearch(val) {
   searchFilter = val.trim().toLowerCase();
   renderList();
@@ -356,7 +356,7 @@ function renderList() {
         || (q.status||'').toLowerCase().includes(searchFilter);
   });
   if (!list.length) {
-    el.innerHTML = `<div class="el"><div class="e">${searchFilter ? '🔍' : '📋'}</div><p>${searchFilter ? 'No matches found' : 'No quotations yet'}</p></div>`;
+    el.innerHTML = `<div class="el"><div class="e">${searchFilter ? '馃攳' : '馃搵'}</div><p>${searchFilter ? 'No matches found' : 'No quotations yet'}</p></div>`;
     return;
   }
   el.innerHTML = list.map(q => {
@@ -370,14 +370,14 @@ function renderList() {
       <div class="qc-head" onclick="handleQClick('${q.id}',event)">
         <div class="qc-mini">
           <div class="qc-t">${esc(q.name)||'Unnamed'}</div>
-          <div class="qc-p">${esc(q.project)||'�?}</div>
+          <div class="qc-p">${esc(q.project)||'鈥?}</div>
           <div class="qc-b"><span class="qc-tot">RM ${fmt(tot)}</span><span class="bdg ${bdg}">${q.status}</span></div>
         </div>
-        <button class="qc-chevron ${isExp?'open':''}" onclick="toggleQ('${q.id}',event)" title="Expand">${isExp?'�?:'�?}</button>
+        <button class="qc-chevron ${isExp?'open':''}" onclick="toggleQ('${q.id}',event)" title="Expand">${isExp?'鈻?:'鈻?}</button>
       </div>
       <div class="qc-body ${isExp?'open':''}" onclick="event.stopPropagation()">
-        <div class="qc-detail"><span class="qc-dl">No</span><span>${esc(q.qno)||'�?}</span></div>
-        <div class="qc-detail"><span class="qc-dl">Date</span><span>${q.date||'�?}</span></div>
+        <div class="qc-detail"><span class="qc-dl">No</span><span>${esc(q.qno)||'鈥?}</span></div>
+        <div class="qc-detail"><span class="qc-dl">Date</span><span>${q.date||'鈥?}</span></div>
         <div class="qc-detail"><span class="qc-dl">Sections</span><span>${secNames}</span></div>
         <div class="qc-detail"><span class="qc-dl">Items</span><span>${itemCount} item${itemCount!==1?'s':''}</span></div>
       </div>
@@ -401,8 +401,8 @@ function toggleQ(id, event) {
 }
 
 
-// ─── OPEN / NEW ───────────────────────────────────────────────────────────────
-// Migrate old cost items (desc,amt) �?new structure (desc,unit,qty,unitPrice,amt)
+// 鈹€鈹€鈹€ OPEN / NEW 鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€
+// Migrate old cost items (desc,amt) 鈫?new structure (desc,unit,qty,unitPrice,amt)
 function migrateCi(ci) {
   if (ci.unit !== undefined) return ci; // already migrated
   return { desc: ci.desc||'', unit: 'lump sum', qty: 1, unitPrice: parseFloat(ci.amt)||0, amt: parseFloat(ci.amt)||0 };
@@ -529,7 +529,7 @@ function newQuote() {
 
 function makeItem() { return { desc:'', unit:'nos', qty:1, costItems:[{desc:'',unit:'nos',qty:1,unitPrice:0,amt:0}], sell:0 }; }
 
-// ─── SECTIONS ────────────────────────────────────────────────────────────────
+// 鈹€鈹€鈹€ SECTIONS 鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€
 function renderSections() {
   const c = document.getElementById('sections-container');
   if (!_data.length) _data = [{section:'',items:[makeItem()]}];
@@ -540,7 +540,7 @@ function renderSections() {
     secEl.innerHTML = `
       <div class="sec-hdr">
         <input type="text" class="sec-name" placeholder="Section name, e.g. Electrical Work" value="${esc(sec.section)}" oninput="syncSectionName(${si},this)">
-        <button class="btn btn-r btn-sm" onclick="delSection(${si})" title="Delete section">🗑</button>
+        <button class="btn btn-r btn-sm" onclick="delSection(${si})" title="Delete section">馃棏</button>
       </div>
       <div class="sec-items" id="sec-items-${si}"></div>
       <div class="sec-subtotal" id="sec-total-${si}">Section Total: <strong>RM 0.00</strong></div>
@@ -577,7 +577,7 @@ function buildItemRow(it, si, ii) {
   const ct = (it.costItems||[]).reduce((s,c) => s+(parseFloat(c.amt)||0), 0);
   const mk = ct>0 && it.sell>0 ? ((it.sell-ct)/ct*100) : 0;
   const mkCls = mk>=30?'mk-g':mk>=15?'mk-y':'mk-r';
-  const ctStr = ct>0?`RM ${fmt(ct)}`:'�?;
+  const ctStr = ct>0?`RM ${fmt(ct)}`:'鈥?;
   const mkStr = mk>0?`<span class="mk ${mkCls}">+${fmt(mk)}%</span>`:'';
   const ciRows = (it.costItems||[]).map((ci, cii) => `
     <div class="csub">
@@ -585,8 +585,8 @@ function buildItemRow(it, si, ii) {
       <select class="ci-unit" onchange="syncCi(${si},${ii},${cii},this,'unit')">${UNITS.map(u => `<option value="${u}" ${(ci.unit||'nos')===u?'selected':''}>${u}</option>`).join('')}</select>
       <input type="number" min="0" class="ci-qty" placeholder="Qty" value="${ci.qty||''}" oninput="syncCi(${si},${ii},${cii},this,'qty')" style="text-align:center">
       <input type="number" min="0" class="ci-price" placeholder="RM" value="${ci.unitPrice||ci.unitPrice===0?ci.unitPrice:''}" oninput="syncCi(${si},${ii},${cii},this,'price')">
-      <span class="ci-amt">${ci.amt>0?'RM '+fmt(ci.amt):'�?}</span>
-      <button class="del" style="font-size:13px" onclick="remCi(${si},${ii},${cii},this)">×</button>
+      <span class="ci-amt">${ci.amt>0?'RM '+fmt(ci.amt):'鈥?}</span>
+      <button class="del" style="font-size:13px" onclick="remCi(${si},${ii},${cii},this)">脳</button>
     </div>`).join('');
   el.innerHTML = `
     <div class="item-main">
@@ -597,10 +597,10 @@ function buildItemRow(it, si, ii) {
       <input type="number" class="f-cost" min="0" placeholder="0.00" value="${ct>0?ct.toFixed(2):''}" readonly>
       <input type="number" class="f-sell" min="0" placeholder="0.00" value="${(it.sell||0).toFixed(2)}" oninput="syncItemSell(${si},${ii},this)">
       <button class="btn btn-g btn-sm" style="padding:4px 8px;font-size:11px;white-space:nowrap" onclick="autoSell(${si},${ii})">+25%</button>
-      <button class="del" onclick="remItem(${si},${ii})">×</button>
+      <button class="del" onclick="remItem(${si},${ii})">脳</button>
     </div>
     <div class="exp-h" onclick="toggleCost(this)">
-      💰 Cost breakdown <span style="font-size:11px;color:var(--gold)">${ctStr}</span> ${mkStr}<span class="tog">�?/span>
+      馃挵 Cost breakdown <span style="font-size:11px;color:var(--gold)">${ctStr}</span> ${mkStr}<span class="tog">鈻?/span>
     </div>
     <div class="cb">${ciRows}
       <button class="btn btn-g btn-sm" onclick="addCi(${si},${ii},this)" style="margin-top:4px">+ Add cost line</button>
@@ -609,7 +609,7 @@ function buildItemRow(it, si, ii) {
   return el;
 }
 
-function toggleCost(el) { const cb=el.nextElementSibling; cb.classList.toggle('open'); el.querySelector('.tog').textContent = cb.classList.contains('open')?'�?:'�?; }
+function toggleCost(el) { const cb=el.nextElementSibling; cb.classList.toggle('open'); el.querySelector('.tog').textContent = cb.classList.contains('open')?'鈻?:'鈻?; }
 
 // Item field sync
 function syncItemDesc(si,ii,inp) { _data[si].items[ii].desc = inp.value; dirty(); }
@@ -623,7 +623,7 @@ function autoSell(si,ii) {
   if (ct <= 0) { alert('Cost breakdown is empty or 0! Add cost amounts first.'); return; }
   var mk = parseFloat(document.getElementById("mk-input")?.value||25)/100;const sell = ct * (1 + mk);
   it.sell = sell;
-  // update DOM �?find row by section index + item index
+  // update DOM 鈥?find row by section index + item index
   const secItems = document.querySelectorAll('.sec-items');
   const row = secItems[si] ? secItems[si].children[ii] : null;
   if (row) {
@@ -637,7 +637,7 @@ function autoSell(si,ii) {
     dirty();
   } else {
     // fallback: just update the sell field directly
-    alert('Cost RM ' + fmt(ct) + ' �?Sell RM ' + fmt(sell) + ' (row not found in DOM, please refresh)');
+    alert('Cost RM ' + fmt(ct) + ' 鈫?Sell RM ' + fmt(sell) + ' (row not found in DOM, please refresh)');
   }
 }
 
@@ -651,8 +651,8 @@ function addCi(si, ii, btn) {
   <select class="ci-unit" onchange="syncCi(${si},${ii},${ciRows.length},this,'unit')">${UNITS.map(u => `<option value="${u}">${u}</option>`).join('')}</select>
   <input type="number" min="0" class="ci-qty" placeholder="Qty" value="" oninput="syncCi(${si},${ii},${ciRows.length},this,'qty')" style="text-align:center">
   <input type="number" min="0" class="ci-price" placeholder="RM" value="" oninput="syncCi(${si},${ii},${ciRows.length},this,'price')">
-  <span class="ci-amt">�?/span>
-  <button class="del" style="font-size:13px" onclick="remCi(${si},${ii},${ciRows.length},this)">×</button>`;
+  <span class="ci-amt">鈥?/span>
+  <button class="del" style="font-size:13px" onclick="remCi(${si},${ii},${ciRows.length},this)">脳</button>`;
   row.insertBefore(newRow, btn);
   dirty();
 }
@@ -677,7 +677,7 @@ function syncCi(si, ii, cii, inp, field) {
   ci.unitPrice = priceInp ? (parseFloat(priceInp.value)||0) : ci.unitPrice;
   ci.amt = ci.unitPrice * ci.qty;
   const amtEl = row.querySelector('.ci-amt');
-  if (amtEl) amtEl.textContent = ci.amt > 0 ? 'RM ' + fmt(ci.amt) : '�?;
+  if (amtEl) amtEl.textContent = ci.amt > 0 ? 'RM ' + fmt(ci.amt) : '鈥?;
   const ct = (_data[si].items[ii].costItems||[]).reduce((s,c) => s+(parseFloat(c.amt)||0), 0);
   const itemRow = row.closest('.item');
   const costInput = itemRow.querySelector('.f-cost');
@@ -688,14 +688,14 @@ function syncCi(si, ii, cii, inp, field) {
   dirty();
 }
 
-// ─── TERMS ───────────────────────────────────────────────────────────────────
+// 鈹€鈹€鈹€ TERMS 鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€
 function renderTerms() {
   const c = document.getElementById('terms-container');
   c.innerHTML = '';
   _terms.forEach((t,i) => {
     const row = document.createElement('div');
     row.className = 'terms-row';
-    row.innerHTML = `<input type="text" placeholder="e.g. 50% deposit upon confirmation" value="${esc(t)}" oninput="syncTerm(${i},this)"><button class="del" onclick="remTerm(${i})">×</button>`;
+    row.innerHTML = `<input type="text" placeholder="e.g. 50% deposit upon confirmation" value="${esc(t)}" oninput="syncTerm(${i},this)"><button class="del" onclick="remTerm(${i})">脳</button>`;
     c.appendChild(row);
   });
 }
@@ -703,7 +703,7 @@ function addTerm() { _terms.push(''); renderTerms(); dirty(); }
 function remTerm(i) { _terms.splice(i,1); renderTerms(); dirty(); }
 function syncTerm(i,inp) { _terms[i]=inp.value; dirty(); }
 
-// ─── NOTES / STANDARD T&C ─────────────────────────────────────────────────────
+// 鈹€鈹€鈹€ NOTES / STANDARD T&C 鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€
 function renderNotes() {
   const c = document.getElementById('terms-notes-container');
   if (!c) return;
@@ -711,7 +711,7 @@ function renderNotes() {
   _notes.forEach((t,i) => {
     const row = document.createElement('div');
     row.className = 'terms-row';
-    row.innerHTML = `<input type="text" placeholder="Enter term or note..." value="${esc(t)}" oninput="syncNote(${i},this)"><button class="del" onclick="remNote(${i})">×</button>`;
+    row.innerHTML = `<input type="text" placeholder="Enter term or note..." value="${esc(t)}" oninput="syncNote(${i},this)"><button class="del" onclick="remNote(${i})">脳</button>`;
     c.appendChild(row);
   });
 }
@@ -719,7 +719,7 @@ function addNote() { _notes.push(''); renderNotes(); dirty(); }
 function remNote(i) { _notes.splice(i,1); renderNotes(); dirty(); }
 function syncNote(i,inp) { _notes[i]=inp.value; dirty(); }
 
-// ─── RECALC ──────────────────────────────────────────────────────────────────
+// 鈹€鈹€鈹€ RECALC 鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€
 function applyMarkupAll(){var mk=parseFloat(document.getElementById("mk-input")?.value||25)/100;if(!_data||!_data.length)return;var any=false;_data.forEach(function(sec){sec.items.forEach(function(it){if(it.costItems&&it.costItems.length){var ct=it.costItems.reduce(function(s,ci){return s+(parseFloat(ci.amt)||0)},0);if(ct>0){it.sell=ct*(1+mk);any=true}}});});if(any){renderSections();recalc();dirty()}}
 function attachMarkupListener(){var mi=document.getElementById("mk-input");if(mi&&!mi._hasListener){mi._hasListener=true;mi.addEventListener("change",function(){applyMarkupAll()});mi.addEventListener("input",function(){applyMarkupAll()})}}
 if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",attachMarkupListener)}else{attachMarkupListener()}
@@ -730,7 +730,7 @@ function recalc() {
     let secSell=0;
     (sec.items||[]).forEach(it => {
       const ct = (it.costItems||[]).reduce((s,c) => s+(parseFloat(c.amt)||0), 0);
-      // cost breakdown amt already includes qty×unitPrice; main qty multiplies sell only
+      // cost breakdown amt already includes qty脳unitPrice; main qty multiplies sell only
       totalCost += ct;
       const lineSell = (parseFloat(it.sell)||0) * (parseFloat(it.qty)||0);
       secSell += lineSell;
@@ -745,10 +745,10 @@ function recalc() {
   document.getElementById('tot-sell').textContent = 'RM '+fmt(totalSell);
   const mkEl = document.getElementById('tot-mk');
   if (mkPct>0) { mkEl.textContent = `+${fmt(mkPct)}% (RM ${fmt(profit)})`; mkEl.style.color = mkPct>=30?'#166534':mkPct>=15?'#92400e':'#dc2626'; }
-  else { mkEl.textContent='�?; mkEl.style.color=''; }
+  else { mkEl.textContent='鈥?; mkEl.style.color=''; }
 }
 
-// ─── SAVE ────────────────────────────────────────────────────────────────────
+// 鈹€鈹€鈹€ SAVE 鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€
 function gatherForm() {
   _name = document.getElementById('f-name').value||'Unnamed';
   _code = document.getElementById('f-code').value;
@@ -792,13 +792,13 @@ async function saveQuote() {
       if (idx !== -1) quotes[idx] = { ...quotes[idx], name: _name, project: _proj, date: _date, status: _status, qno: _qno, addr: _addr, items: _data, terms: _terms, notes2: _notes, notes: _notesTxt };
     }
     isDirty = false;
-    setSS('Saved �?);
+    setSS('Saved 鉁?);
     renderList();
     clearDraft();
   } catch(e) { setSS('Network error'); }
 }
 
-// ─── DELETE ──────────────────────────────────────────────────────────────────
+// 鈹€鈹€鈹€ DELETE 鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€
 async function delQuote() {
   if (!activeId||activeId==='__new__') { alert('Nothing to delete'); return; }
   if (!confirm('Delete this quotation?')) return;
@@ -816,11 +816,11 @@ async function delQuote() {
   setSS('Deleted');
 }
 
-// ─── PDF ─────────────────────────────────────────────────────────────────────
+// 鈹€鈹€鈹€ PDF 鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€
 function openPDF() {
   setExportLoading(true);
   gatherForm();
-  // Sync section names and item sell values from DOM �?_data before PDF generation
+  // Sync section names and item sell values from DOM 鈫?_data before PDF generation
   const sectionBlocks = document.querySelectorAll('.section-block');
   sectionBlocks.forEach((block, si) => {
     const secNameInput = block.querySelector('.sec-name');
@@ -851,7 +851,7 @@ function openPDF() {
       grandTotal += line;
       rows.push(`<tr>
         <td style="width:24px;color:var(--gray-400)">${itemNum}</td>
-        <td>${esc(it.desc)||'�?}</td>
+        <td>${esc(it.desc)||'鈥?}</td>
         <td style="width:60px;text-align:center">${esc(it.unit)}</td>
         <td style="width:40px;text-align:right">${it.qty||0}</td>
         <td style="width:80px;text-align:right">RM ${fmt(it.sell)}</td>
@@ -871,12 +871,12 @@ function openPDF() {
   try { _cmpSettings = JSON.parse(localStorage.getItem('hsdesign_company') || '{}'); } catch(e) {}
   // Show placeholder guide if company not set yet
   var _hasCompany = _acct.company || _cmpSettings.company;
-  var _cmpName = _acct.company || _cmpSettings.company || '⚠️ Please fill in your company name';
+  var _cmpName = _acct.company || _cmpSettings.company || '鈿狅笍 Please fill in your company name';
   var _cmpReg = _hasCompany ? (_cmpSettings.reg || '') : '';
   var _cmpAddr = _hasCompany ? (_cmpSettings.addr || '') : '';
   var _cmpPhone = _hasCompany ? (_cmpSettings.phone || '') : '';
   var _cmpColor = _acct.color_hex || _cmpSettings.color_hex || '#5a9e8f';
-  // Helper: hex �?rgba with opacity
+  // Helper: hex 鈫?rgba with opacity
   function hexToRgba(hex, alpha) {
     var r = 0, g = 0, b = 0;
     if (hex.length === 4) { r=parseInt(hex[1]+hex[1],16); g=parseInt(hex[2]+hex[2],16); b=parseInt(hex[3]+hex[3],16); }
@@ -889,9 +889,9 @@ function openPDF() {
   const html = `<div class="qp">
     <div class="qp-hdr">
       <div class="qp-logo">${_cmpLogoHtml}<h2 style="color:${_cmpColor}">${esc(_cmpName)}</h2><p>${esc(_cmpReg)}</p>${_cmpAddr.split('\n').map(function(l){return '<p>'+esc(l)+'</p>';}).join('')}<p>${esc(_cmpPhone)}</p></div>
-      <div class="qp-ref"><h3>${_status === 'Invoice' ? 'INVOICE' : 'QUOTATION'}</h3><p><strong>Ref:</strong> ${esc(_qno)||'�?}</p><p><strong>Date:</strong> ${dateStr}</p><p><strong>Status:</strong> ${_status}</p></div>
+      <div class="qp-ref"><h3>${_status === 'Invoice' ? 'INVOICE' : 'QUOTATION'}</h3><p><strong>Ref:</strong> ${esc(_qno)||'鈥?}</p><p><strong>Date:</strong> ${dateStr}</p><p><strong>Status:</strong> ${_status}</p></div>
     </div>
-    <div class="qp-ci"><h4>Prepared For</h4><p>${esc(_name)}</p><span>${esc(_addr||_proj||'�?)}</span></div>
+    <div class="qp-ci"><h4>Prepared For</h4><p>${esc(_name)}</p><span>${esc(_addr||_proj||'鈥?)}</span></div>
     <table class="qp-table"><thead><tr><th style="width:24px">#</th><th>Description</th><th style="width:60px;text-align:center">Unit</th><th style="width:40px;text-align:right">Qty</th><th style="width:80px;text-align:right">Unit Price</th><th style="width:90px;text-align:right">Amount</th></tr></thead><tbody>${rows.join('')}</tbody></table>
     <div class="qp-totals"><div class="qp-tbox"><div class="qp-tr gd"><span>Grand Total</span><span>RM ${fmt(grandTotal)}</span></div></div></div>
     ${termList}
@@ -905,7 +905,7 @@ function openPDF() {
 
 function closePDF() { document.getElementById('pdfmo').classList.remove('open'); }
 
-// ─── EXPORT / IMPORT JSON ─────────────────────────────────────────────────────
+// 鈹€鈹€鈹€ EXPORT / IMPORT JSON 鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€
 function exportJSON() {
   gatherForm();
   const data = {
@@ -919,7 +919,7 @@ function exportJSON() {
   a.download = 'HS_Quote_' + (_qno || ISO()) + '.json';
   a.click();
   URL.revokeObjectURL(url);
-  setSS('Exported �?);
+  setSS('Exported 鉁?);
 }
 
 function importJSON() {
@@ -1011,5 +1011,5 @@ function printPDF() {
   setTimeout(()=>win.print(),600);
 }
 
-// ─── INIT ─────────────────────────────────────────────────────────────────────
+// 鈹€鈹€鈹€ INIT 鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€
 document.getElementById('pass')?.focus();
