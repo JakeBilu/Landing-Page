@@ -1,11 +1,3 @@
-
-/* UX: taller rows with hover highlight */
-.section-block{min-height:48px;border-bottom:1px solid var(--gray-200);transition:background .15s}
-.section-block:hover{background:#f8fafc}
-.sec-items .item{padding:8px 4px;border-radius:6px;transition:background .12s}
-.sec-items .item:hover{background:#f8fafc}
-
-// 鈹€鈹€鈹€ CONFIG 鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€
 const API_BASE = 'https://quotation.hsdesign.biz'; // SaaS API base
 const UNITS = ['nos', 'set', 'm', 'm虏', 'lot', 'box', 'lump sum', 'day', 'trip', 'ft', 'ft虏', 'hour'];
 
