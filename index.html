@@ -576,22 +576,246 @@ footer{background:#0f0f11;color:#555;padding:32px 28px;}
 </style>
 
 
+
+
+<!-- JSON-LD Structured Data for Google Search, AI Overview & GEO Knowledge Graph -->
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
-  "@type": "LocalBusiness",
-  "name": "HS Design",
-  "description": "柔佛一站式室内设计与装修服务 — 从设计到施工，打造理想空间",
-  "url": "https://hsdesign.biz",
-  "telephone": "+601116880145",
-  "email": "ida.czia@gmail.com",
-  "areaServed": {"@type": "City", "name": "Johor Bahru", "containedInPlace": {"@type": "State", "name": "Johor"}},
-  "address": {"@type": "PostalAddress", "addressLocality": "Johor Bahru", "addressRegion": "Johor", "addressCountry": "MY"},
-  "priceRange": "RM500 - RM50000",
-  "openingHours": "Mo-Sa 09:00-18:00",
-  "sameAs": ["https://www.facebook.com/hsdesign", "https://www.instagram.com/hsdesign/"]
+  "@graph": [
+    {
+      "@type": ["HomeAndConstructionBusiness", "LocalBusiness", "ProfessionalService", "GeneralContractor"],
+      "@id": "https://hsdesign.biz/#organization",
+      "name": "HS Design",
+      "alternateName": ["Health Space Design & Build", "HS Design 柔佛新山室内设计与装修", "HS Design Malaysia"],
+      "url": "https://hsdesign.biz",
+      "logo": "https://hsdesign.biz/images/founder-photo.jpg",
+      "image": [
+        "https://hsdesign.biz/images/case-1.jpg",
+        "https://hsdesign.biz/images/case-2.jpg",
+        "https://hsdesign.biz/images/case-3.jpg",
+        "https://hsdesign.biz/images/founder-photo.jpg"
+      ],
+      "description": "HS Design 是马来西亚柔佛新山一站式全案健康室内设计与交钥匙装修总包工作室。提供住宅精装、4K 60fps 3D 全景漫游设计、昼夜节律健康光照系统与全案施工监理，专注服务新山在地及新加坡远程业主。",
+      "telephone": "+6011-1688-0145",
+      "email": "ida.czia@gmail.com",
+      "priceRange": "RM 500 - RM 300,000+",
+      "currenciesAccepted": "MYR, SGD",
+      "paymentAccepted": "Cash, Bank Transfer, Credit Card",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "Johor Bahru",
+        "addressLocality": "Johor Bahru",
+        "addressRegion": "Johor",
+        "postalCode": "81100",
+        "addressCountry": "MY"
+      },
+      "geo": {
+        "@type": "GeoCoordinates",
+        "latitude": 1.4927,
+        "longitude": 103.7414
+      },
+      "areaServed": [
+        { "@type": "City", "name": "Johor Bahru" },
+        { "@type": "City", "name": "Iskandar Puteri" },
+        { "@type": "City", "name": "Mount Austin" },
+        { "@type": "City", "name": "Skudai" },
+        { "@type": "City", "name": "Seri Austin" },
+        { "@type": "City", "name": "Eco Botanic" },
+        { "@type": "City", "name": "Permas Jaya" },
+        { "@type": "Country", "name": "Singapore" }
+      ],
+      "founder": {
+        "@type": "Person",
+        "@id": "https://hsdesign.biz/#founder",
+        "name": "Jake Ti",
+        "alternateName": "瘦仔设计师",
+        "jobTitle": "Founder & Principal Interior Designer",
+        "description": "JIDA (Johor Interior Designers Association) 2024 Certified Member, former CIDB Registered Contractor, Pioneer in Health Space Architecture & 4K 60fps 3D Walkthroughs.",
+        "sameAs": [
+          "https://hsdesign.biz/#founder"
+        ]
+      },
+      "openingHoursSpecification": [
+        {
+          "@type": "OpeningHoursSpecification",
+          "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+          "opens": "09:00",
+          "closes": "18:30"
+        }
+      ],
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "4.9",
+        "reviewCount": "48",
+        "bestRating": "5",
+        "worstRating": "1"
+      },
+      "hasOfferCatalog": {
+        "@type": "OfferCatalog",
+        "name": "HS Design 核心设计与施工服务目录",
+        "itemListElement": [
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Service",
+              "name": "4K 60fps 3D 室内漫游设计方案 (Precision 3D Walkthrough)",
+              "description": "2D平面动线规划、3D高清效果图与 4K 60fps 动态漫游视频，适合本地与新加坡/远程自管施工业主。",
+              "offers": {
+                "@type": "Offer",
+                "price": "500",
+                "priceCurrency": "MYR"
+              }
+            }
+          },
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Service",
+              "name": "公寓全案交钥匙装修 (Condo Turnkey Renovation)",
+              "description": "新山公寓 800-1200 sqft 全包装修，含拆改、泥水、E0定制木工、健康照明与全案监理。",
+              "offers": {
+                "@type": "Offer",
+                "priceRange": "RM 35,000 - RM 150,000",
+                "priceCurrency": "MYR"
+              }
+            }
+          },
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Service",
+              "name": "排屋与洋房全案改造 (Landed Property Turnkey Transformation)",
+              "description": "双层排屋及独立洋房结构翻新、空间动线重构、干湿厨房扩建与奢华定制整装。",
+              "offers": {
+                "@type": "Offer",
+                "priceRange": "RM 90,000 - RM 450,000+",
+                "priceCurrency": "MYR"
+              }
+            }
+          },
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Service",
+              "name": "空间健康与睡眠光照诊断 (Space Health & Circadian Lighting Audit)",
+              "description": "30分钟空间健康诊断，分析低蓝光环境、空气气流与无害材料选型。",
+              "offers": {
+                "@type": "Offer",
+                "price": "0",
+                "priceCurrency": "MYR"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://hsdesign.biz/#website",
+      "url": "https://hsdesign.biz",
+      "name": "HS Design 柔佛新山室内设计与装修",
+      "publisher": {
+        "@id": "https://hsdesign.biz/#organization"
+      }
+    }
+  ]
 }
 </script>
+
+<!-- WebMCP (Web Model Context Protocol) Browser Agent Descriptor -->
+<meta name="webmcp:version" content="1.0.0">
+<meta name="webmcp:server" content="hsdesign-client-agent">
+<script type="application/webmcp+json">
+{
+  "name": "hsdesign-web-agent",
+  "version": "1.0.0",
+  "description": "HS Design Official WebMCP Server for Johor Bahru Interior Design & Renovation Instant Agent Actions",
+  "tools": [
+    {
+      "name": "estimate_renovation_cost",
+      "description": "即时估算马来西亚柔佛新山各楼盘户型的室内设计与施工装修预算（包含公寓、排屋、洋房及商业空间，按不同档次输出明细项、总预算区间及预计工期）",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "propertyType": {
+            "type": "string",
+            "enum": ["condo", "landed_terrace", "semi_d_bungalow", "commercial"],
+            "description": "物业类型: condo(公寓), landed_terrace(双层排屋), semi_d_bungalow(半独立/洋房), commercial(商业空间/诊所)"
+          },
+          "squareFeet": {
+            "type": "number",
+            "description": "室内建筑面积（平方英尺 sqft），如 950 或 2200"
+          },
+          "renovationScope": {
+            "type": "string",
+            "enum": ["drawings_only", "standard_turnkey", "luxury_turnkey"],
+            "description": "装修交付范围: drawings_only(仅3D图纸), standard_turnkey(标准全包精装), luxury_turnkey(高端隐奢全案整装)"
+          },
+          "location": {
+            "type": "string",
+            "description": "所在区域或楼盘名，例如 Mount Austin, Iskandar Puteri, Skudai, Singapore remote 等",
+            "default": "Johor Bahru"
+          }
+        },
+        "required": ["propertyType", "squareFeet"]
+      }
+    },
+    {
+      "name": "get_portfolio_by_style",
+      "description": "按设计风格（现代极简、隐奢轻奢、侘寂、日式原木、健康空间等）筛选并获取 HS Design 官方已落地实景案例",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "style": {
+            "type": "string",
+            "enum": ["all", "modern_minimalist", "quiet_luxury", "wabi_sabi", "japandi", "health_space"],
+            "description": "设计风格: modern_minimalist(现代极简), quiet_luxury(隐奢/轻奢), wabi_sabi(侘寂), japandi(日式原木), health_space(健康空间/睡眠优化), all(全部风格)",
+            "default": "all"
+          },
+          "propertyType": {
+            "type": "string",
+            "enum": ["all", "residential", "commercial"],
+            "description": "空间类别: residential(住宅), commercial(商业/诊所), all(全部)",
+            "default": "all"
+          }
+        }
+      }
+    },
+    {
+      "name": "book_designer_consultation",
+      "description": "一键调起与 HS Design 创始人兼主案设计师 Jake Ti 的 WhatsApp 官方 1v1 免费咨询与空间健康诊断通道",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "clientName": {
+            "type": "string",
+            "description": "客户姓名或尊称"
+          },
+          "phone": {
+            "type": "string",
+            "description": "客户联系电话或 WhatsApp 号码"
+          },
+          "propertyType": {
+            "type": "string",
+            "description": "物业详情或户型描述，如 'Mount Austin 公寓 3房 1000sqft' 或 'Seri Austin 排屋翻新'"
+          },
+          "preferredDate": {
+            "type": "string",
+            "description": "期望咨询时间或当面量房日期"
+          },
+          "notes": {
+            "type": "string",
+            "description": "装修需求或特别关注点（如睡眠健康、预算范围、完工时间）"
+          }
+        },
+        "required": ["clientName"]
+      }
+    }
+  ]
+}
+</script>
+
 </head>
 
 <body>
@@ -1348,6 +1572,245 @@ footer{background:#0f0f11;color:#555;padding:32px 28px;}
 
 
 
-<a href="https://wa.me/601116880145" target="_blank" class="wa-float" title="Chat on WhatsApp">&#9743;</a></body>
+<a href="https://wa.me/601116880145" target="_blank" class="wa-float" title="Chat on WhatsApp">&#9743;</a>
+
+
+
+<!-- WebMCP Runtime & Agent Execution Engine -->
+<script>
+(function() {
+  const HS_PORTFOLIO_DB = [
+    {
+      id: "mount-austin-villa",
+      title: "Mount Austin 奢华现代独栋别墅",
+      style: "quiet_luxury",
+      styleName: "隐奢轻奢 / Modern Quiet Luxury",
+      propertyType: "residential",
+      location: "Mount Austin, Johor Bahru",
+      sqft: 4500,
+      highlights: ["挑高通透双层采光", "健康昼夜节律照明系统", "进口微水泥与连纹岩板定制", "超静音主卧睡眠舱设计"],
+      url: "https://hsdesign.biz/#cases"
+    },
+    {
+      id: "entrepreneur-home-office",
+      title: "新山创业者极简家庭健康办公空间",
+      style: "health_space",
+      styleName: "健康空间 / Circadian & Focus Office",
+      propertyType: "residential",
+      location: "Johor Bahru",
+      sqft: 1200,
+      highlights: ["深度专注时段延长至3小时以上", "入睡时间缩短25分钟", "全光谱低蓝光照明", "全热交换新风与空气流动优化"],
+      url: "https://hsdesign.biz/#cases"
+    },
+    {
+      id: "seri-austin-terrace",
+      title: "Seri Austin 双层角头排屋极简全案重塑",
+      style: "modern_minimalist",
+      styleName: "现代极简 / Modern Minimalist",
+      propertyType: "residential",
+      location: "Seri Austin, Johor Bahru",
+      sqft: 2400,
+      highlights: ["打拆打通餐厨一体化中岛", "无主灯隐藏式线形光带", "E0级环保全屋定制收纳", "零死角通风采光设计"],
+      url: "https://hsdesign.biz/#cases"
+    },
+    {
+      id: "skyfront-remote-sg",
+      title: "新加坡业主远程 3D 4K 漫游与全套施工图方案",
+      style: "japandi",
+      styleName: "日式原木 / Japandi",
+      propertyType: "residential",
+      location: "Singapore Remote / JB Condo",
+      sqft: 980,
+      highlights: ["100% 远程 4K 60fps 动态漫游交付", "高精毫米级木工节点图", "原木色温搭配呼吸感布局", "全套软装与灯具选型清单"],
+      url: "https://hsdesign.biz/#cases"
+    },
+    {
+      id: "johor-jaya-heritage",
+      title: "Johor Jaya 30年老屋结构与空间蜕变",
+      style: "wabi_sabi",
+      styleName: "现代侘寂 / Modern Wabi-Sabi",
+      propertyType: "residential",
+      location: "Johor Jaya, Johor Bahru",
+      sqft: 1900,
+      highlights: ["老旧水电管线彻底全换", "泥水结构加固与防潮重做", "天然质感微水泥与木百叶光影", "焕发新生的舒适静谧生活"],
+      url: "https://hsdesign.biz/#cases"
+    },
+    {
+      id: "trust-physio-clinic",
+      title: "Trust Physio 物理治疗与康复中心",
+      style: "health_space",
+      styleName: "健康商业空间 / Health & Medical Space",
+      propertyType: "commercial",
+      location: "Permas Jaya, Johor Bahru",
+      sqft: 2200,
+      highlights: ["医疗级防滑环保耐磨地材", "声学降噪独立私密诊室", "无障碍动线与亲自然治愈系色彩", "专业声光热综合舒适度"],
+      url: "https://hsdesign.biz/#cases"
+    }
+  ];
+
+  const tools = {
+    estimate_renovation_cost: function(params) {
+      params = params || {};
+      const type = (params.propertyType || 'condo').toLowerCase();
+      const sqft = Number(params.squareFeet) || 1000;
+      const scope = (params.renovationScope || 'standard_turnkey').toLowerCase();
+      const loc = params.location || 'Johor Bahru';
+
+      let rateMin = 35;
+      let rateMax = 70;
+      let durationWeeks = "6 - 8 周";
+      let packageName = "标准全包精装套餐";
+
+      if (scope === 'drawings_only') {
+        const designFee = Math.max(500, Math.round(sqft * 2.5));
+        return {
+          status: "success",
+          service: "4K 60fps 3D 室内漫游设计方案",
+          currency: "MYR",
+          location: loc,
+          squareFeet: sqft,
+          estimatedCostRange: {
+            minMYR: designFee,
+            maxMYR: Math.round(designFee * 1.3),
+            formattedRange: "RM " + designFee.toLocaleString() + " - RM " + Math.round(designFee * 1.3).toLocaleString()
+          },
+          estimatedTimeline: "1 - 2 周",
+          breakdown: {
+            conceptAndFloorPlan: "RM " + Math.round(designFee * 0.35).toLocaleString(),
+            precision3DWalkthrough4K: "RM " + Math.round(designFee * 0.45).toLocaleString(),
+            constructionDrawingsAndMNE: "RM " + Math.round(designFee * 0.2).toLocaleString()
+          },
+          highlights: [
+            "4K 60fps 动态漫游视频与360°全景透视图",
+            "健康光照与昼夜节律设计规范",
+            "完整施工节点与定制木工详细尺寸图",
+            "适合本地施工或新加坡/远程业主自管施工"
+          ],
+          directWhatsAppBooking: "https://wa.me/601116880145?text=" + encodeURIComponent("Hi Jake, 我想咨询 " + loc + " " + sqft + "sqft 的 3D 设计图纸方案")
+        };
+      }
+
+      if (type === 'condo') {
+        if (scope === 'luxury_turnkey') {
+          rateMin = 75; rateMax = 140; durationWeeks = "8 - 12 周"; packageName = "公寓高端隐奢全案定制";
+        } else {
+          rateMin = 38; rateMax = 68; durationWeeks = "6 - 8 周"; packageName = "公寓标准精装全包";
+        }
+      } else if (type === 'landed_terrace') {
+        if (scope === 'luxury_turnkey') {
+          rateMin = 70; rateMax = 110; durationWeeks = "12 - 16 周"; packageName = "双层排屋豪华全案整装";
+        } else {
+          rateMin = 48; rateMax = 68; durationWeeks = "8 - 12 周"; packageName = "双层排屋标准全包装修";
+        }
+      } else if (type === 'semi_d_bungalow') {
+        if (scope === 'luxury_turnkey') {
+          rateMin = 85; rateMax = 150; durationWeeks = "16 - 24 周"; packageName = "洋房/半独立奢华全案定制";
+        } else {
+          rateMin = 58; rateMax = 85; durationWeeks = "12 - 18 周"; packageName = "洋房/半独立标准整装";
+        }
+      } else if (type === 'commercial') {
+        rateMin = 45; rateMax = 95; durationWeeks = "6 - 10 周"; packageName = "商业/诊所空间健康定制";
+      }
+
+      const totalMin = Math.round(sqft * rateMin);
+      const totalMax = Math.round(sqft * rateMax);
+
+      return {
+        status: "success",
+        package: packageName,
+        propertyType: type,
+        squareFeet: sqft,
+        location: loc,
+        currency: "MYR",
+        estimatedCostRange: {
+          minMYR: totalMin,
+          maxMYR: totalMax,
+          formattedRange: "RM " + totalMin.toLocaleString() + " - RM " + totalMax.toLocaleString()
+        },
+        estimatedTimeline: durationWeeks,
+        breakdownEstimated: {
+          designAnd3DWalkthrough4K: "RM " + Math.round(totalMin * 0.06).toLocaleString() + " - RM " + Math.round(totalMax * 0.06).toLocaleString(),
+          demolitionAndWetWorks: "RM " + Math.round(totalMin * 0.22).toLocaleString() + " - RM " + Math.round(totalMax * 0.24).toLocaleString(),
+          plasterCeilingAndCircadianLighting: "RM " + Math.round(totalMin * 0.18).toLocaleString() + " - RM " + Math.round(totalMax * 0.18).toLocaleString(),
+          customCarpentryE0Board: "RM " + Math.round(totalMin * 0.38).toLocaleString() + " - RM " + Math.round(totalMax * 0.36).toLocaleString(),
+          plumbingElectricalAndPainting: "RM " + Math.round(totalMin * 0.16).toLocaleString() + " - RM " + Math.round(totalMax * 0.16).toLocaleString()
+        },
+        credentials: {
+          leadDesigner: "Jake Ti (瘦仔设计师)",
+          affiliation: "JIDA 2024 Certified (柔佛室内设计师协会) & CIDB 注册资质",
+          guarantee: "100% 透明清单报价，无未经批准的额外增项 (Zero Hidden Costs)"
+        },
+        directWhatsAppBooking: "https://wa.me/601116880145?text=" + encodeURIComponent("Hi Jake, 我在网站估算了 " + loc + " " + sqft + "sqft (" + packageName + ")，预计预算 RM " + totalMin.toLocaleString() + " - RM " + totalMax.toLocaleString() + "，想进一步预约免费空间健康诊断与详细报价。")
+      };
+    },
+
+    get_portfolio_by_style: function(params) {
+      params = params || {};
+      const style = (params.style || 'all').toLowerCase();
+      const pType = (params.propertyType || 'all').toLowerCase();
+
+      let results = HS_PORTFOLIO_DB;
+      if (style !== 'all') {
+        results = results.filter(p => p.style === style);
+      }
+      if (pType !== 'all') {
+        results = results.filter(p => p.propertyType === pType);
+      }
+
+      return {
+        status: "success",
+        totalMatches: results.length,
+        styleFilter: style,
+        propertyTypeFilter: pType,
+        projects: results
+      };
+    },
+
+    book_designer_consultation: function(params) {
+      params = params || {};
+      const clientName = params.clientName || '业主';
+      const phone = params.phone || '';
+      const prop = params.propertyType || '新山房产';
+      const date = params.preferredDate || '近期';
+      const notes = params.notes || '咨询全案设计与空间健康诊断';
+
+      const msg = "Hi Jake，我是 " + clientName + "。\n房产信息：" + prop + "\n联系电话：" + phone + "\n期望咨询时间：" + date + "\n需求备注：" + notes + "\n希望预约 30 分钟免费空间健康诊断与方案沟通！";
+      const waUrl = "https://wa.me/601116880145?text=" + encodeURIComponent(msg);
+
+      return {
+        status: "success",
+        clientName: clientName,
+        designer: "Jake Ti (瘦仔设计师)",
+        whatsappUrl: waUrl,
+        instructions: "请点击 whatsappUrl 直接与主案设计师 Jake 发起实时对话，或在浏览器中打开此链接。",
+        actionTriggered: "READY_FOR_DISPATCH"
+      };
+    }
+  };
+
+  window.hsDesignAgent = {
+    version: "1.0.0",
+    tools: tools,
+    execute: function(toolName, args) {
+      if (typeof tools[toolName] === 'function') {
+        return tools[toolName](args);
+      }
+      throw new Error("WebMCP Tool not found: " + toolName);
+    }
+  };
+
+  if (!window.navigator.modelContext) {
+    window.navigator.modelContext = {
+      tools: tools,
+      provideTools: function() { return Object.keys(tools); },
+      callTool: function(name, args) { return tools[name] ? tools[name](args) : null; }
+    };
+  }
+  window.modelContext = window.navigator.modelContext;
+  console.log('✅ WebMCP [hsdesign-client-agent] Ready. navigator.modelContext & window.hsDesignAgent initialized.');
+})();
+</script>
+
+</body>
 
 </html>
