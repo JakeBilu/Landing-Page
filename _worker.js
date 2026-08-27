@@ -173,7 +173,7 @@ export default {
       }
     }
 
-    // ── Test endpoint to verify Worker is running ──
+        // ── Test endpoint to verify Worker is running ──
     if (pathname === '/cf-health') {
       return new Response('WORKER OK: ' + new Date().toISOString(), { headers: { 'Content-Type': 'text/plain' } });
     }
@@ -183,18 +183,13 @@ export default {
       return env.ASSETS.fetch(request);
     }
 
-    // ── SPA fallback: serve index.html for /app and other client routes ──
-    if (pathname.startsWith('/app') || pathname === '/') {
-      const indexReq = new Request(request.url.origin + '/index.html', {
-        method: request.method,
-        headers: request.headers,
-        body: request.method !== 'GET' && request.method !== 'HEAD' ? request.body : null,
-        redirect: 'manual',
-      });
-      return env.ASSETS.fetch(indexReq);
+    // ── SPA fallback: serve index.html for /app ──
+    if (pathname.startsWith('/app')) {
+      const u = new URL(request.url);
+      return env.ASSETS.fetch(new Request(u.origin + '/index.html', request));
     }
 
-    // Serve static assets
+    // Serve all other static assets (including / and /index.html)
     return env.ASSETS.fetch(request);
   }
 };
